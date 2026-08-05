@@ -14,11 +14,13 @@ Last updated: 2026-08-05
       rules in both prompts (tests assert them)
 - [x] `validateTeaser()` mechanical output gate + 8 tests (42/42 total)
 - [x] Git repo initialized, pushed to GitHub
+- [x] Historical timezone resolver (`src/birthtime.ts`, tz-lookup +
+      Node ICU tz database, 6 tests incl. pre-1940 Madrid GMT+0)
+- [x] Next.js 16 app scaffolded in `web/`, wired to astro-core sources
+      via `@core/*` path alias + `turbopack.root` (build + typecheck green)
 
 ### Next up (in order)
 - [ ] Next.js app: landing page + birth-data form
-  - [ ] Historical timezone resolver (lat/lon + birth date → UTC offset AT
-        that date) — build and test FIRST, everything depends on it
   - [ ] Places autocomplete for birth location (provider undecided)
   - [ ] Free teaser flow: buildTeaserMessages → Flash → validateTeaser →
         retry ≤2 → flag
