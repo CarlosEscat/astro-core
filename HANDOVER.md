@@ -22,9 +22,9 @@ Last updated: 2026-08-05
 ### Next up (in order)
 - [x] Birth-place autocomplete: bundled GeoNames index + searchPlaces()
       + /api/places route, live end-to-end (Addendum 4)
-- [ ] Next.js app: landing page + birth-data form
-  - [ ] Free teaser flow: buildTeaserMessages → Flash → validateTeaser →
-        retry ≤2 → flag
+- [x] Landing page + birth-data form (es-ES, mobile-first), free teaser
+      flow live: /api/chart (instant) + /api/teaser (Flash → gate →
+      retry ≤2). Design direction + latency findings in Addendum 5.
 - [ ] Supabase schema: charts, orders, reports, quotas (not designed)
 - [ ] Stripe checkout: one-time, Bizum enabled, webhook-triggered
       generation (never block checkout on LLM latency)
@@ -404,3 +404,35 @@ doesn't change. Ranking: Spain first, then Spanish-speaking countries,
 population within tier, dominant tier capped at 60% of results so big
 LatAm cities always surface. ES region names translated to Spanish in
 the build script.
+
+---
+
+## Addendum 5: web MVP — design direction and LLM latency (2026-08-05)
+
+**Design direction: "precision as mysticism."** The product's moat is
+that every sentence names its placement, so the visual world is the
+astronomer's instrument (ink #10131C, bone #ECE6DA, brass #C9A227,
+copper #B4653A; Fraunces for the voice, IBM Plex Sans/Mono for the
+data), not the purple fog of the category. Signature element: a zodiac
+arc drawn with real geometry — ticks every 2°, heavier rules on the 30°
+sign boundaries. Zodiac glyphs MUST carry U+FE0E or they render as
+colour emoji on Apple platforms.
+
+**Turn reasoning OFF for the teaser.** Measured on the real teaser
+prompt: reasoning enabled = 12-60s per call and it passed the gate 1/2;
+`reasoning: {enabled: false}` = 4-8s, identical cost, passed 2/2. The
+unpredictable reasoning bursts were also what produced empty
+completions. Kimi K3 for the paid report is a different case — it is a
+reasoning model and needs its budget.
+
+**Perceived latency is solved by splitting the request.** The
+placements are local math (~80ms) and the prose is ~8s, so the UI calls
+`/api/chart` first and renders the exact Sol/Luna/Ascendente readout
+immediately, then fills in the prose when `/api/teaser` returns. The
+precision arrives first, which is also the product's argument. Do the
+same for any future periodic product.
+
+**Gate retries are the real latency variable**, not the model: a
+rejected attempt doubles the wait. Observed ~1 retry in 4 on the canary
+bilbao chart (gendered participle, invented retrogradation) — worth
+re-measuring if the teaser prompt changes.
