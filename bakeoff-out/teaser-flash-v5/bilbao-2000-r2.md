@@ -1,0 +1,3 @@
+Llevas el Sol en Leo y la Luna en Cáncer, una combinación que quiere brillar y a la vez refugiarse en lo íntimo, con un Ascendente Piscis que funde esa tensión en una sensibilidad casi porosa: necesitas ser vista sin dejar de proteger tu mundo interior.  
+El aspecto más afinado de tu carta es la oposición entre Venus en Leo y Urano retrógrado en Acuario, apenas separada por 0,27 grados: ahí hay una llamada a amar de forma libre y original que choca con tu deseo de ser admirada de manera estable, y esa sacudida se produce justo en el terreno de tu trabajo y tu servicio cotidiano.  
+Mercurio en Cáncer en tu casa 5, sin desarrollar aquí, sugiere que tu forma de hablar y crear guarda ecos de una infancia que aún pide ser expresada.

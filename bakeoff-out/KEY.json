@@ -1,0 +1,7 @@
+{
+  "A": "mistralai/mistral-small-2603",
+  "B": "moonshotai/kimi-k3",
+  "C": "anthropic/claude-haiku-4.5",
+  "D": "z-ai/glm-5.2",
+  "E": "deepseek/deepseek-v4-pro"
+}

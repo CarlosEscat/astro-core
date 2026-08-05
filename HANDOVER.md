@@ -1,0 +1,256 @@
+# Handover: Destiny Reports (Spanish AI astrology product)
+
+## What this is
+
+A Spanish-market consumer product: paid AI-generated natal chart reports
+(€9.90-14.90 one-time), free teaser readings as the conversion hook, daily
+horoscope content for SEO/TikTok as a Tier-1 free layer. Business context:
+copying a proven Chinese paid-AI-astrology pattern into the EU market where
+Chinese exporters aren't competing (deep localization play, not a thin
+wrapper). Full strategy reasoning lives in prior chat history if needed —
+conversation_search for "destiny reports" or "AI fortune telling China" will
+surface it — but the code is self-contained and doesn't require that context.
+
+Second idea in the same conversation (not started): a nautical-license
+(PER/PNB) AI exam tutor with photo-graded chart-plotting exercises. Ranked
+#2, not built yet. Ignore unless explicitly asked to pick it up.
+
+## What's built so far: `astro-core` package
+
+A standalone TypeScript package, NOT yet wired into a Next.js app. It has
+two layers:
+
+**1. Chart computation** (`src/chart.ts`, `ephemeris.ts`, `houses.ts`,
+`aspects.ts`, `zodiac.ts`, `types.ts`)
+- `computeNatalChart({utc, latitude, longitude}, {houseSystem?})` → full
+  `NatalChart` JSON. Pure math via `astronomy-engine` (MIT license), zero
+  network calls, safe for edge functions.
+- Placidus houses by default (Spain standard), auto-fallback to whole-sign
+  above ±66° latitude (flagged via `houseSystemFallback: true`).
+- **Deliberately does NOT do timezone resolution or geocoding** — caller
+  must resolve birth locale time → UTC instant before calling this. This is
+  the single most important integration detail; get it wrong and every
+  chart downstream is silently wrong. Use a tz-database-by-coordinates
+  lookup keyed to the *historical* birth date, not the browser's current
+  timezone.
+- Tests (`tests/chart.test.ts`, 25 cases) validate against astronomical
+  ground truth (equinox/solstice instants, new/full moon, geometric sunrise
+  = Ascendant), not hand-copied numbers. All passing.
+
+**2. Report/prompt layer** (`src/report.ts`, `prompts/*.md`)
+- `buildReportMessages({chart, firstName?, focus?})` and
+  `buildTeaserMessages({chart, firstName?})` → provider-agnostic
+  `[{role:"system",...},{role:"user",...}]` arrays, ready for any
+  OpenAI-compatible chat completions endpoint.
+- The chart JSON is slimmed before it reaches the LLM (no raw longitudes,
+  no obliquity/sidereal metadata) — full report prompt ≈1.7K tokens, teaser
+  ≈1K tokens.
+- **No PII crosses into the LLM call** — only sign/degree/house/retrograde
+  data plus an optional first name. This was a deliberate architecture
+  choice so the LLM provider choice (see below) is a low-stakes GDPR
+  decision.
+- `prompts/system-report.md` (es-ES): 8 fixed sections, ~2000-2500 words,
+  hard grounding rule (every claim names its placement), anti-Barnum
+  rule, content bans (no health/death/money/dated predictions).
+- `prompts/system-teaser.md` (es-ES): 120-160 word free hook engineered for
+  a "how did it know that" moment plus one dangling thread, no sales CTA.
+- `parseReport(markdown)` validates the 8-section structure for downstream
+  rendering; returns `null` on structural failure → caller should retry
+  once then flag.
+- First-name input is sanitized (letters only, 40 char cap) as
+  prompt-injection defense-in-depth.
+- Tests (`tests/report.test.ts`, 8 cases) cover message assembly, PII
+  absence, injection sanitization, and parser correctness. All passing.
+
+**3. Model bake-off harness** (`bakeoff.ts`, `prompts/rubric.md`)
+- NOT YET RUN — needs an `OPENROUTER_API_KEY` with a few euros of credit,
+  which wasn't available in the build sandbox.
+- Generates the same 3 test charts (Madrid/Buenos Aires/Bilbao, chosen for
+  different chart "textures") across 5 candidate models: Kimi K3, DeepSeek
+  V4, GLM 5.2, Mistral Small 4, Claude Haiku 4.5 (quality baseline).
+  **Verify these exact model slugs against openrouter.ai/models before
+  running — names drift and a stale slug just writes an ERROR file for
+  that letter, doesn't crash the run.**
+- Outputs blinded to `bakeoff-out/<chart-name>/[A-E].md`, mapping saved
+  separately to `bakeoff-out/KEY.json` — rank via the rubric BEFORE
+  opening the key file, or the blinding is worthless.
+- `prompts/rubric.md`: weighted rubric, chart-grounding is an eliminatory
+  criterion (one invented planetary placement disqualifies a model
+  regardless of prose quality).
+
+## Full package status
+
+```
+astro-core/
+├── package.json          # "type":"module", scripts: test/example/build
+├── tsconfig.json
+├── example.ts             # run: npm run example (prints a sample chart)
+├── bakeoff.ts              # NOT YET RUN — needs OPENROUTER_API_KEY
+├── README.md               # setup + design-contract docs, keep in sync
+├── src/
+│   ├── types.ts            # NatalChart JSON contract — the LLM boundary
+│   ├── zodiac.ts, ephemeris.ts, houses.ts, aspects.ts, chart.ts
+│   └── report.ts            # prompt assembly + parseReport()
+├── prompts/
+│   ├── system-report.md, system-teaser.md, rubric.md
+└── tests/
+    ├── chart.test.ts (25 tests), report.test.ts (8 tests)
+```
+33/33 tests passing as of last run. `npm test` and `npm run example` both
+verified working.
+
+## Immediate next steps, in order
+
+1. **Run the bake-off.** Get an OpenRouter key, verify model slugs, run
+   `npx tsx bakeoff.ts`, rank blind with the rubric, pick the paid-report
+   model. Cheap models (DeepSeek Flash / Gemini Flash-Lite) for the free
+   teaser + daily cron tier regardless of bake-off winner — cost only
+   matters at scale on the free tier, not on the €9.90 paid tier.
+2. **Landing page + birth-data form** (Next.js, per Carlos's usual stack).
+   Needs: places autocomplete for birth location, server-side historical
+   timezone resolution (lat/lon + date → UTC offset at that date — NOT the
+   current offset), free teaser rendering.
+3. **Stripe checkout** — one-time payment, enable Bizum explicitly (Spain
+   conversion driver), webhook-triggered generation (don't block checkout
+   on LLM latency; background job + email delivery + "preparing your
+   reading" holding page).
+4. **PDF rendering** — Puppeteer server-side rendering the same report
+   page component, not a separate layout.
+5. **Daily cron** (Tier 1, free/SEO layer) — n8n or Vercel cron, computes
+   today's transits once, generates 12 sign horoscopes, caches in
+   Supabase, feeds both the SEO pages and the Remotion/TikTok pipeline.
+
+## Key architectural decisions already made (don't relitigate without cause)
+
+- **Web-first, not mobile app** — Bizum + Stripe's low take-rate vs Apple/
+  Google's 30% cut on digital goods; app-store review risk for fortune-
+  telling category; distribution (TikTok, SEO) is web-native anyway.
+- **One-time payments, not subscription** — matches impulse-purchase
+  psychology in this category; subscription fatigue is the incumbents'
+  weak point.
+- **Placidus default, whole-sign fallback** — not user-configurable at
+  launch; Placidus is the Spanish-market expectation.
+- **PII never reaches the LLM** — only derived chart data + optional first
+  name. Keep this invariant when wiring up the real backend.
+- **Two-tier LLM cost model**: cheap/fast model for teaser + daily cron
+  (scales with traffic), quality-optimized model for the €9.90+ paid report
+  (cost is a rounding error there — six cents either way against the
+  price point, so optimize for Spanish prose quality, not price).
+
+## Things NOT yet decided / open questions for Claude Code to flag back
+
+- Which model wins the bake-off (blocked on running it).
+- Exact Supabase schema for storing charts, reports, orders (not designed
+  yet — natural next artifact once the backend build starts).
+- Geocoding/timezone provider choice (needs an API — Google Places +
+  a tz-by-coordinate library, or similar; not selected yet).
+- Whether to pursue the palm-photo-reading feature (Chinese-market
+  differentiator mentioned in strategy discussion) at launch or as a v2.
+
+---
+
+## Addendum: Competitive positioning + the Oracle chat feature (added after initial handover)
+
+Not yet built in code — this section documents product decisions made in chat
+that Claude Code should design toward once the MVP report pipeline is done.
+
+### Competitive positioning vs Co-Star (the market's dominant reference point)
+
+Same category (AI-powered natal chart astrology), deliberately different
+shape — don't build toward feature parity with Co-Star, build toward this
+contrast:
+
+| | Co-Star | This product |
+|---|---|---|
+| Model | Free app, subscription for depth | One-time paid report + free teaser |
+| Engagement engine | Daily push notifications | Oracle chat (see below) |
+| Voice | Blunt, dry, algorithmic | Warm, intimate, es-ES tarotista voice |
+| Market | English-first, global | Spanish-first, Spain (Bizum) |
+| Platform | Native mobile app | Web-first |
+
+Researched Western competitors and their single differentiators (don't
+duplicate, don't need to match): Co-Star = social/friend compatibility +
+shareable blunt notifications. CHANI = single-voice thoughtful writing +
+guided rituals. Sanctuary = chat-format delivery + human astrologer access
+(explicitly NOT copying the human-in-loop part). The Pattern = psychological/
+relationship depth. Nobody in the Western market currently offers live,
+open-ended conversation with your own chart — that's the identified gap.
+
+Researched Chinese revenue benchmarks for pricing-ladder validation: CeCe
+(测测) ~$5M/yr App Store revenue via AI base reading + paid human-expert
+upsell (NOT replicating the human part). Lingji (灵机) ~80M registered users,
+2M+ daily divination sessions. Common pricing ladder across Chinese apps:
+¥9.9 basic reading / ¥199 annual forecast / ¥999 premium tier — this maps
+directly onto: free teaser → €9.90 report → annual "tu año" forecast →
+Oracle chat quota top-ups (see below) as the fourth rung.
+
+### The Oracle chat feature ("wow" / word-of-mouth driver)
+
+**Concept:** after buying the full report, the user gets access to a chat
+interface that has their `NatalChart` JSON + today's transits loaded as
+permanent context, and can ask anything in natural language, grounded in
+their actual placements — not a generic chatbot, a conversational layer
+over `computeNatalChart()` output. Reuses the exact grounding discipline
+already built into `system-report.md` (name the placement behind every
+claim, no invented positions, no health/death/dated-prediction claims,
+agency-preserving language — not fatalistic).
+
+**Why this over a generic chatbot:** the report is necessarily generic-to-
+the-chart (same output every time for the same person); the chat is
+generic-to-the-moment (two people with identical charts get different
+conversations depending what they ask "today"). That's a harder thing for
+a cloner to replicate quickly — the moat is prompt-craft and grounding
+discipline, not a feature checklist.
+
+**Cost-control architecture (IMPORTANT — this is the part that makes the
+feature viable, not a nice-to-have):**
+
+The naive failure mode is resending full conversation history on every
+message, which makes cost grow quadratically with conversation length — a
+100-message conversation could cost several dollars against a one-time
+€9.90 purchase. Do NOT build it that way.
+
+Correct design:
+1. **Fixed context per message**: chart JSON (~1.5K tokens, constant) +
+   a short rolling window (last 2-3 exchanges only, NOT full history) +
+   the new question. Cost per message stays flat regardless of
+   conversation length.
+2. **Cheap model for chat** (DeepSeek Flash-class or similar from the
+   bake-off's free-tier candidates, NOT the premium report-writing model).
+   At flat context size, per-message cost is roughly $0.0004-0.001.
+3. **Quota bundled with purchase, not "unlimited forever"**: e.g. "20
+   preguntas incluidas con tu informe." Concrete, honest, cheap to fulfill.
+4. **Top-up as a real SKU**: "10 preguntas más — €2.99" — turns the
+   feature into a second monetization surface (the 4th rung on the
+   pricing ladder above) rather than an open liability. Converts your
+   most-engaged users into repeat payers instead of being a cost sink.
+5. **Daily rate cap regardless of quota remaining** (e.g. 5 msgs/day) —
+   kills bot abuse / scraping risk without affecting real users.
+
+**Marketing line to use once built** (honest, bounded, still differentiated):
+"Tu informe no termina cuando lo terminas de leer — puedes seguir
+preguntando" with quota terms stated plainly on the product page.
+
+### Secondary viral mechanic: shareable "cosmic signature" card
+
+Auto-generated on report delivery: Big Three + one real, computed statistic
+("Solo el 3% de las cartas natales tienen esta combinación exacta de
+Sol-Luna-Ascendente") styled for Instagram Stories / TikTok native aspect
+ratio, one-tap share. The percentage should be genuinely computed from
+sign/degree distribution logic (extend `src/report.ts` or a sibling module),
+not a fake/random number — same grounding discipline as the report itself.
+This is cheap to build relative to the Oracle chat and should probably ship
+alongside the report/card MVP, with the Oracle chat as the fast-follow.
+
+### Revised build sequencing (supersedes the "immediate next steps" list above)
+
+1. Bake-off → pick paid-report model (unchanged).
+2. Landing page + birth form + Stripe/Bizum checkout (unchanged).
+3. Report delivery + **shareable cosmic-signature card** (moved up — cheap,
+   high distribution value, ship with MVP not as a v2).
+4. Daily cron / Tier-1 free content (unchanged).
+5. **Oracle chat** as the fast-follow after MVP validates — needs: a new
+   prompt file (`system-oracle.md`, same grounding rules as the report
+   prompt but conversational), a rolling-window context builder (do NOT
+   reuse `buildReportMessages` as-is — it assumes single-shot), quota
+   tracking in Supabase (messages_remaining per order), and a rate limiter.
