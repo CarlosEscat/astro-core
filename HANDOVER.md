@@ -20,8 +20,9 @@ Last updated: 2026-08-05
       via `@core/*` path alias + `turbopack.root` (build + typecheck green)
 
 ### Next up (in order)
+- [x] Birth-place autocomplete: bundled GeoNames index + searchPlaces()
+      + /api/places route, live end-to-end (Addendum 4)
 - [ ] Next.js app: landing page + birth-data form
-  - [ ] Places autocomplete for birth location (provider undecided)
   - [ ] Free teaser flow: buildTeaserMessages → Flash → validateTeaser →
         retry ≤2 → flag
 - [ ] Supabase schema: charts, orders, reports, quotas (not designed)
@@ -382,3 +383,24 @@ speculatively:
    report bans dated predictions; a daily horoscope IS one. Split rules
    into universal (health/death/money, grounding, gender) vs per-product
    (prediction scope, length, structure).
+
+---
+
+## Addendum 4: birth-place autocomplete = bundled GeoNames, not an API (2026-08-05)
+
+Decision: place search runs on our own server over a bundled GeoNames
+cities500 index (`data/cities.json.gz`, 235K places, built by
+`scripts/build-cities.ts`, refresh ~yearly). Not Google Places, not
+Photon. Reasons: (1) birth place + date is sensitive data and this way
+no third party sees a keystroke — consistent with the no-PII posture;
+(2) no rate limits / outage mode at the top of the funnel; (3) village-
+level coordinate precision is irrelevant to chart accuracy (~1° of
+Ascendant per ~100km). Trade-offs accepted: towns under ~500 people
+missing (UI should hint "elige el municipio más cercano"), and foreign
+exonyms don't match (a user typing "Londres" won't find London — fine
+for the ES/LatAm birth-place use case). If real users report missing
+towns, bolt Google Places on as a fallback endpoint; the form component
+doesn't change. Ranking: Spain first, then Spanish-speaking countries,
+population within tier, dominant tier capped at 60% of results so big
+LatAm cities always surface. ES region names translated to Spanish in
+the build script.
