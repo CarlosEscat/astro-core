@@ -350,3 +350,33 @@ truth in `bakeoff-out/`, mapping in `bakeoff-out/KEY.json`.
   token budget without unblinding.
 - `meter.ts` — metered cost measurement (billed `usage.cost`) for the
   DeepSeek report/teaser calls.
+
+---
+
+## Addendum 3: extensibility notes for future products (2026-08-05)
+
+Future upsells (daily/weekly/monthly/yearly horoscopes, per the pricing
+ladder) fit the existing architecture as new instances of the product
+template: prompt file → build*Messages → model+budget → mechanical
+validator → retry policy. Four things to do at the right moment, none
+speculatively:
+
+1. **Transit-to-natal aspects** (engine, build with the first periodic
+   product): aspects.ts only computes intra-chart aspects. Personalized
+   periodic content needs cross-aspects between today's positions and the
+   natal chart; yearly needs a solar-return instant finder (root-search
+   on the Sun's longitude). Both are small pure modules.
+2. **Shared prompt fragments** (do on next prompt touch): grounding,
+   gender-neutrality and content-ban rules are currently copy-pasted per
+   prompt file — drift already happened once. Compose prompts from a
+   shared rules fragment + product-specific body at build time.
+3. **Product-generic schema** (do when designing the Supabase schema —
+   expensive to retrofit): orders carry a product_code; access is modeled
+   as entitlements (report access, oracle quota, "daily pass until date
+   X"). New SKU = product row + prompt file, no migration. Periodic
+   upsells are sold as one-time time-boxed passes, never subscriptions
+   (locked decision).
+4. **Per-product content rules** (with the first periodic product): the
+   report bans dated predictions; a daily horoscope IS one. Split rules
+   into universal (health/death/money, grounding, gender) vs per-product
+   (prediction scope, length, structure).
