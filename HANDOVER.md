@@ -63,8 +63,9 @@ two layers:
   absence, injection sanitization, and parser correctness. All passing.
 
 **3. Model bake-off harness** (`bakeoff.ts`, `prompts/rubric.md`)
-- NOT YET RUN — needs an `OPENROUTER_API_KEY` with a few euros of credit,
-  which wasn't available in the build sandbox.
+- RUN on 2026-08-05 — see "Addendum 2" at the bottom of this file for
+  results, model selections and costs. Original notes kept below for
+  context on how the harness works.
 - Generates the same 3 test charts (Madrid/Buenos Aires/Bilbao, chosen for
   different chart "textures") across 5 candidate models: Kimi K3, DeepSeek
   V4, GLM 5.2, Mistral Small 4, Claude Haiku 4.5 (quality baseline).
@@ -254,3 +255,59 @@ alongside the report/card MVP, with the Oracle chat as the fast-follow.
    prompt but conversational), a rolling-window context builder (do NOT
    reuse `buildReportMessages` as-is — it assumes single-shot), quota
    tracking in Supabase (messages_remaining per order), and a rate limiter.
+
+---
+
+## Addendum 2: bake-off results and model selection (2026-08-05)
+
+Everything in this section is reproducible from the repo: full blind
+scoring in `bakeoff-out/RANKING.md`, raw outputs + per-chart ground
+truth in `bakeoff-out/`, mapping in `bakeoff-out/KEY.json`.
+
+### Selected models
+
+| Tier | Model | Measured cost/unit | Notes |
+|---|---|---|---|
+| Paid report (€9.90+) | `moonshotai/kimi-k3` | $0.216 | Bake-off winner, 54/55. Reasoning model: needs `max_tokens` ≈ 24000 (returns EMPTY content at 6000). Re-verify on the pinned production host before launch (fp8 vs bf16). |
+| Free teaser + daily cron | `deepseek/deepseek-v4-flash` | ~$0.0008 | Must run behind `validateTeaser()` with retry ≤2 (expected delivered cost ~$0.0011–0.0015). Needs `max_tokens` ≈ 8000 (intermittent reasoning bursts). |
+
+### Bake-off ranking (blind, per prompts/rubric.md)
+
+1. Kimi K3 — 54. Only model with a perfect grounding record; found true
+   negative-space insights (aspectless "Luna isla" in bilbao, Venus
+   conjunct MC in buenosaires). Best Spanish of the five.
+2. DeepSeek V4 Pro — 49.5. Fully grounded; structure/length slips.
+3. GLM 5.2 — 46, DISCARDED: invented two aspects on the madrid chart.
+4. Claude Haiku 4.5 — 38.5. English sign names leak into Spanish text.
+5. Mistral Small 2603 — 33, DISCARDED: invented placements on madrid.
+
+### Decisions made after the bake-off
+
+- **Teaser tier = Flash + mechanical gate, not a better model.** A 6-run
+  V4 Pro teaser comparison failed at the same ~1-in-3 rate as Flash
+  (invented retrogradation, gendered participle) at ~6x the cost. Model
+  upgrades do not fix teaser compliance; the gate does. `validateTeaser()`
+  in `src/report.ts` checks word range, truncation, gendered phrasing,
+  invented retrogradations and invented aspect claims — verified to catch
+  6/6 known-bad and pass 12/12 known-good stored outputs.
+- **Prompt hardening (both prompts):** aspect vocabulary restricted to
+  pairs in the JSON `aspects` list; "retrógrado" restricted to planets
+  with `retrograde: true`; gender-neutral phrasing rule (no gender
+  inference from first name) — tests assert both prompts contain it.
+- **Observed failure pattern worth remembering:** the bilbao chart
+  (Leo Sun/Venus — "being seen/admired" themes) pulls Spanish toward
+  feminine participles ("ser vista/admirada/reconocida") across ALL
+  models and rounds. Multi-chart test batteries are mandatory for any
+  prompt or model change; bilbao-2000 is the canary.
+- **Empty-output failure mode:** reasoning models can spend the whole
+  token budget before emitting content (HTTP 200, `finish_reason:
+  "stop"`, empty `content`). Any production call needs a generous
+  `max_tokens` plus an emptiness check — never trust status alone.
+
+### Harness scripts kept in repo
+
+- `bakeoff.ts` — the original 5x3 blinded run.
+- `retry-empties.ts` — re-runs empty/truncated bake-off cells at higher
+  token budget without unblinding.
+- `meter.ts` — metered cost measurement (billed `usage.cost`) for the
+  DeepSeek report/teaser calls.
