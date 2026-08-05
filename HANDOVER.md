@@ -1,5 +1,44 @@
 # Handover: Destiny Reports (Spanish AI astrology product)
 
+## Estado actual (keep this section updated — it is the first thing read)
+
+Last updated: 2026-08-05
+
+### Done
+- [x] Chart computation engine (Placidus + whole-sign fallback), 25 tests
+- [x] Report + teaser prompt layer, PII-free, injection-sanitized
+- [x] Model bake-off run, ranked blind → `bakeoff-out/RANKING.md`
+- [x] Models selected: Kimi K3 (paid report, $0.216), DeepSeek V4 Flash
+      (teaser, ~$0.0008) — details in Addendum 2
+- [x] Prompt hardening: aspect-vocabulary, retrograde, gender-neutrality
+      rules in both prompts (tests assert them)
+- [x] `validateTeaser()` mechanical output gate + 8 tests (42/42 total)
+- [x] Git repo initialized, pushed to GitHub
+
+### Next up (in order)
+- [ ] Next.js app: landing page + birth-data form
+  - [ ] Historical timezone resolver (lat/lon + birth date → UTC offset AT
+        that date) — build and test FIRST, everything depends on it
+  - [ ] Places autocomplete for birth location (provider undecided)
+  - [ ] Free teaser flow: buildTeaserMessages → Flash → validateTeaser →
+        retry ≤2 → flag
+- [ ] Supabase schema: charts, orders, reports, quotas (not designed)
+- [ ] Stripe checkout: one-time, Bizum enabled, webhook-triggered
+      generation (never block checkout on LLM latency)
+- [ ] Report delivery + shareable cosmic-signature card (computed rarity
+      stat, IG/TikTok aspect ratio)
+- [ ] PDF rendering (Puppeteer over the same report component)
+- [ ] Daily cron: transits once/day → 12 horoscopes → Supabase cache
+- [ ] Oracle chat (post-MVP): system-oracle.md, rolling window, quotas
+
+### Small pending fixes
+- [ ] `parseReport` tolerant of `#` vs `##` first heading (saves paid
+      retries; bake-off lost 4 good reports to this)
+- [ ] Compiled `dist/` can't find `prompts/` (only matters when the
+      package is consumed from build output)
+- [ ] Re-verify Kimi K3 on its pinned production host before launch
+      (fp8/bf16 + the new gender rule, untested in the bake-off)
+
 ## What this is
 
 A Spanish-market consumer product: paid AI-generated natal chart reports
