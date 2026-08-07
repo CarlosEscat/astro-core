@@ -314,7 +314,9 @@ con bilbao-2000 como canario (`CLAUDE.md`).
 
 ## Pruebas
 
-`npm test` debe seguir en verde (42 → ~65).
+`npm test` debe seguir en verde. Línea base real medida hoy: **55
+pruebas en 4 ficheros** (no 42, como decían `CLAUDE.md` y `HANDOVER.md`).
+Este trabajo debería dejarlo alrededor de 78.
 
 - `profile.ts` es puro: se prueba contra las tres cartas de referencia.
   Aserción clave: **mismo Sol y distinto Ascendente ⇒ signos compatibles

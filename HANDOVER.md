@@ -2,7 +2,7 @@
 
 ## Estado actual (keep this section updated — it is the first thing read)
 
-Last updated: 2026-08-05
+Last updated: 2026-08-07
 
 ### Done
 - [x] Chart computation engine (Placidus + whole-sign fallback), 25 tests
@@ -12,7 +12,9 @@ Last updated: 2026-08-05
       (teaser, ~$0.0008) — details in Addendum 2
 - [x] Prompt hardening: aspect-vocabulary, retrograde, gender-neutrality
       rules in both prompts (tests assert them)
-- [x] `validateTeaser()` mechanical output gate + 8 tests (42/42 total)
+- [x] `validateTeaser()` mechanical output gate + 8 tests
+      (baseline measured 2026-08-07: 55 tests in 4 files, all green —
+      the "42" quoted here and in CLAUDE.md was stale)
 - [x] Git repo initialized, pushed to GitHub
 - [x] Historical timezone resolver (`src/birthtime.ts`, tz-lookup +
       Node ICU tz database, 6 tests incl. pre-1940 Madrid GMT+0)
