@@ -102,105 +102,11 @@ export interface ParsedReport {
 }
 
 /**
- * Mechanical output gate for teasers. Every check is verifiable against the
- * chart or the text alone — no LLM judgment involved. On failure the caller
- * should retry once (a retry costs a fraction of a cent) then flag.
+ * The mechanical output gate lives in ./validate. Re-exported here because
+ * callers (and tests) have always reached for it through this module.
  */
-export interface TeaserValidation {
-  ok: boolean;
-  problems: string[];
-}
-
-const TEASER_MIN_WORDS = 110;
-const TEASER_MAX_WORDS = 175;
-
-const PLANET_ES: Record<string, string> = {
-  sol: "Sun", luna: "Moon", mercurio: "Mercury", venus: "Venus", marte: "Mars",
-  "júpiter": "Jupiter", jupiter: "Jupiter", saturno: "Saturn", urano: "Uranus",
-  neptuno: "Neptune", "plutón": "Pluto", pluton: "Pluto",
-};
-
-const ASPECT_ES: Record<string, string> = {
-  "conjunción": "conjunction", conjuncion: "conjunction",
-  "oposición": "opposition", oposicion: "opposition",
-  cuadratura: "square",
-  "trígono": "trine", trigono: "trine", trino: "trine",
-  sextil: "sextile",
-};
-
-// Gendered agreement aimed at the reader. Sentences about planets can trip
-// these too ("una Luna que necesita ser vista") — acceptable: a false
-// positive costs one cheap retry, a false negative ships a gendered teaser.
-const GENDERED_PATTERNS = [
-  /\b(?:t[uú]|ti|s[ií])\s+mism[oa]\b/iu,
-  /\b(?:ser|estar|verte|sentirte|sentirse|saberte|mostrarte)\s+(?:\p{L}+(?:ad|id)|vist|hech|dich|puest|abiert|escrit|vuelt|satisfech)[oa]s?\b/iu,
-];
-
-function sentencesOf(text: string): string[] {
-  return text.split(/(?<=[.!?…])\s+/);
-}
-
-function planetsIn(fragment: string): string[] {
-  const lower = fragment.toLowerCase();
-  const found = new Set<string>();
-  for (const [es, en] of Object.entries(PLANET_ES)) {
-    if (new RegExp(`\\b${es}\\b`, "u").test(lower)) found.add(en);
-  }
-  return [...found];
-}
-
-export function validateTeaser(text: string, chart: NatalChart): TeaserValidation {
-  const problems: string[] = [];
-  const trimmed = text.trim();
-
-  const words = trimmed.split(/\s+/).filter(Boolean).length;
-  if (words < TEASER_MIN_WORDS || words > TEASER_MAX_WORDS) {
-    problems.push(`${words} palabras (rango ${TEASER_MIN_WORDS}-${TEASER_MAX_WORDS})`);
-  }
-
-  if (!/[.!?…»")]$/.test(trimmed)) {
-    problems.push("texto truncado: no termina en puntuación final");
-  }
-
-  for (const pattern of GENDERED_PATTERNS) {
-    const m = trimmed.match(pattern);
-    if (m) problems.push(`posible marca de género: "${m[0]}"`);
-  }
-
-  // "retrógrado" may only follow a planet whose retrograde flag is true.
-  const retro = new Set<string>(
-    chart.planets.filter((p) => p.retrograde).map((p) => p.body),
-  );
-  for (const m of trimmed.matchAll(/((?:\p{L}+[\s,]+){1,4})retr[oó]grad[oa]s?/giu)) {
-    for (const planet of planetsIn(m[1])) {
-      if (!retro.has(planet)) {
-        problems.push(`retrogradación inventada: ${planet} no está retrógrado`);
-      }
-    }
-  }
-
-  // An aspect keyword in a sentence naming exactly two planets must match a
-  // real aspect of that type between them. Other counts are unattributable.
-  for (const sentence of sentencesOf(trimmed)) {
-    const types = Object.entries(ASPECT_ES)
-      .filter(([es]) => new RegExp(`\\b${es}\\b`, "iu").test(sentence))
-      .map(([, en]) => en);
-    if (types.length === 0) continue;
-    const mentioned = planetsIn(sentence);
-    if (mentioned.length !== 2) continue;
-    const [p1, p2] = mentioned;
-    const matches = chart.aspects.some(
-      (a) =>
-        types.includes(a.type) &&
-        ((a.a === p1 && a.b === p2) || (a.a === p2 && a.b === p1)),
-    );
-    if (!matches) {
-      problems.push(`aspecto no presente en la carta: ${p1}-${p2} (${types.join("/")})`);
-    }
-  }
-
-  return { ok: problems.length === 0, problems };
-}
+export { validateTeaser, validateProse } from "./validate";
+export type { Validation, ProseOptions } from "./validate";
 
 export function parseReport(markdown: string): ParsedReport | null {
   const sections: Array<{ title: string; body: string }> = [];
