@@ -44,8 +44,15 @@ function pick(c: { sign: string; signDegree: number }) {
   return { sign: c.sign, degree: Math.round(c.signDegree * 10) / 10 };
 }
 
+/**
+ * Prompts are composed, not copy-pasted: the universal rules drifted between
+ * files once already. A prompt opts in by putting {{RULES}} on its own line.
+ */
 function loadPrompt(name: string): string {
-  return readFileSync(join(ROOT, "prompts", name), "utf8");
+  const body = readFileSync(join(ROOT, "prompts", name), "utf8");
+  if (!body.includes("{{RULES}}")) return body;
+  const rules = readFileSync(join(ROOT, "prompts", "rules-universal.md"), "utf8");
+  return body.replace("{{RULES}}", rules.trim());
 }
 
 export function buildReportMessages(req: ReportRequest): ChatMessage[] {

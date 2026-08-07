@@ -127,6 +127,25 @@ describe("validateTeaser", () => {
   });
 });
 
+describe("shared rules fragment", () => {
+  it("injects the universal rules into every prompt", () => {
+    const report = buildReportMessages({ chart })[0].content;
+    const teaser = buildTeaserMessages({ chart })[0].content;
+    for (const prompt of [report, teaser]) {
+      expect(prompt).toContain("No asumas ni indiques el género de la persona");
+      expect(prompt).not.toContain("{{RULES}}");
+    }
+  });
+
+  it("keeps the content bans in both prompts", () => {
+    for (const prompt of [buildReportMessages({ chart })[0].content,
+                          buildTeaserMessages({ chart })[0].content]) {
+      expect(prompt).toMatch(/salud/i);
+      expect(prompt).toMatch(/muerte/i);
+    }
+  });
+});
+
 describe("parseReport", () => {
   const fakeBody = "x".repeat(250);
   const good = SECTION_TITLES.map((t) => `## ${t}\n\n${fakeBody}`).join("\n\n");
