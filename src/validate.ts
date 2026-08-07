@@ -1,4 +1,5 @@
 import type { Body, NatalChart } from "./types";
+import type { FreeReading } from "./report";
 import { SIGN_ES } from "./copy/signs.es";
 
 /**
@@ -64,10 +65,13 @@ const CLICHES = [
 const GENDERED_READER = [
   /\b(?:t[uú]|ti|s[ií])\s+mism[oa]\b/iu,
   /\b(?:ser|estar|verte|sentirte|sentirse|saberte|mostrarte)\s+(?:\p{L}+(?:ad|id)|vist|hech|dich|puest|abiert|escrit|vuelt|satisfech)[oa]s?\b/iu,
-  // The gerund exclusion is load-bearing: -ando/-iendo never carries gender,
-  // and without it every "estás buscando" burns a retry. Mirrored in
-  // tests/copy.test.ts so hand-written copy is held to the same standard.
-  /\b(?:eres|seas|fueras|ser[íi]as|est[áa]s|estabas|te\s+sientes|te\s+ves)\s+(?:m[áa]s\s+|muy\s+|tan\s+|un[ao]\s+|demasiado\s+)?(?!\p{L}*(?:ando|iendo)\b)\p{L}{4,}[oa]\b/iu,
+  // Two exclusions, both measured against real model output on the battery:
+  //  - gerunds: -ando/-iendo never carries gender, so "estás buscando" is fine;
+  //  - NEUTRAL_NOUNS: "persona"/"gente" are feminine in form but neutral in
+  //    reference, and are the very forms the rules fragment tells the model to
+  //    use. Without this, "no es que seas una persona fría" burns a retry.
+  // Mirrored in tests/copy.test.ts so hand-written copy meets the same standard.
+  /\b(?:eres|seas|fueras|ser[íi]as|est[áa]s|estabas|te\s+sientes|te\s+ves)\s+(?:m[áa]s\s+|muy\s+|tan\s+|un[ao]\s+|demasiado\s+)?(?!\p{L}*(?:ando|iendo)\b)(?!(?:persona|gente|criatura)\b)\p{L}{4,}[oa]\b/iu,
   /\bte\s+(?:hace|vuelve|convierte)\s+(?:en\s+)?(?:m[áa]s\s+)?\p{L}+[oa]\b/iu,
 ];
 
@@ -116,7 +120,11 @@ const REPAIRS: Array<[RegExp, string]> = [
   [/\bser\s+reconocid[ao]\b/giu, "que te reconozcan"],
   [/\bsentirte\s+querid[ao]\b/giu, "que te quieran"],
   [/\bsentirte\s+comprendid[ao]\b/giu, "que te entiendan"],
-  [/\bni\s+t[úu]\s+mism[ao]\b/giu, "ni tú"],
+  // "tú mismo/a" and "ti mismo/a" are pure intensifiers: dropping the
+  // agreement word costs nothing semantically and saves a ~5 s retry. These
+  // were the single most frequent gender rejection on the live battery.
+  [/\bt[úu]\s+mism[ao]\b/giu, "tú"],
+  [/\bti\s+mism[ao]\b/giu, "ti"],
   [/\beres\s+de\s+los\s+que\b/giu, "eres de quienes"],
 ];
 
@@ -224,4 +232,31 @@ export function validateProse(
   }
 
   return { ok: problems.length === 0, problems };
+}
+
+const APERTURA_RANGE: ProseOptions = {
+  minWords: 100, maxWords: 140, requireTerminalPunctuation: true,
+};
+/**
+ * Wider than the prompt asks for: the model overshoots consistently. Measured
+ * on the live battery, four-sentence love blocks land at 105-150 words against
+ * an 80-110 ask, so 135 is where the gate stops rejecting prose that is merely
+ * a little long rather than broken. The screenshot unit is the hook line, not
+ * the block, so length past the ask costs the product nothing — whereas each
+ * rejection costs ~5 s and risks serving an error page.
+ */
+const AMOR_RANGE: ProseOptions = {
+  minWords: 70, maxWords: 135, requireTerminalPunctuation: true,
+};
+
+export function validateFree(reading: FreeReading, chart: NatalChart): Validation {
+  const a = validateProse(reading.apertura, chart, APERTURA_RANGE);
+  const l = validateProse(reading.amor, chart, AMOR_RANGE);
+  return {
+    ok: a.ok && l.ok,
+    problems: [
+      ...a.problems.map((p) => `apertura: ${p}`),
+      ...l.problems.map((p) => `amor: ${p}`),
+    ],
+  };
 }

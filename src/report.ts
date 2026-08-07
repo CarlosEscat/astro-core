@@ -2,6 +2,9 @@ import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { NatalChart } from "./types";
+import { relationshipProfile, selectFeature } from "./profile";
+import { AREA_ES } from "./copy/areas.es";
+import { SIGN_ES } from "./copy/signs.es";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -12,6 +15,12 @@ export interface ReportRequest {
   /** First name only — never surname, email, or birth data. */
   firstName?: string;
   focus?: Focus;
+  /**
+   * Which chart feature the free reading writes about, by rank. Retries walk
+   * this forward: a feature that trips the gender gate trips it every time,
+   * so re-rolling the model on the same feature is wasted latency.
+   */
+  featureIndex?: number;
 }
 
 export interface ChatMessage {
@@ -80,6 +89,76 @@ export function buildTeaserMessages(req: ReportRequest): ChatMessage[] {
     { role: "system", content: loadPrompt("system-teaser.md") },
     { role: "user", content: parts.join("\n\n") },
   ];
+}
+
+export interface FreeReading {
+  apertura: string;
+  amor: string;
+  /** First line of the love block — the screenshot unit. */
+  hook: string;
+}
+
+/** Everything the model learns about the relationship axis, in plain Spanish. */
+function loveFacts(chart: NatalChart) {
+  const p = relationshipProfile(chart);
+  const phrase = (t: string) =>
+    t === "conjunction" ? "van pegados"
+    : t === "opposition" || t === "square" ? "tiran cada uno para un lado"
+    : "van de la mano";
+  return {
+    como_quieres: { planeta: "tu Venus", signo: SIGN_ES[p.venus.sign], zona: AREA_ES[p.venus.house] },
+    a_quien_buscas: {
+      signo: SIGN_ES[p.descendant.sign],
+      nota: "es el signo que tienes justo enfrente: el tipo de persona hacia la que miras",
+    },
+    quien_manda_en_tus_relaciones: {
+      signo: SIGN_ES[p.rulerOfSeventh.sign],
+      zona: AREA_ES[p.rulerOfSeventh.house],
+    },
+    que_persigues: { planeta: "tu Marte", signo: SIGN_ES[p.mars.sign], zona: AREA_ES[p.mars.house] },
+    // Only the relation phrase, never which planets: naming them invites the
+    // model to attach the relation to the wrong pair. If the prose ever reads
+    // too vague, add plain planet names — never aspect names.
+    tensiones: [...p.venusAspects, ...p.marsAspects].map((a) => ({
+      relacion: phrase(a.type),
+    })),
+  };
+}
+
+export function buildFreeMessages(req: ReportRequest): ChatMessage[] {
+  const parts = [
+    `rasgo:\n${JSON.stringify(selectFeature(req.chart, req.featureIndex ?? 0).payload)}`,
+    `amor:\n${JSON.stringify(loveFacts(req.chart))}`,
+  ];
+  if (req.firstName) parts.push(`Nombre de pila: ${sanitizeName(req.firstName)}`);
+  parts.push("Escribe ahora los dos bloques.");
+
+  return [
+    { role: "system", content: loadPrompt("system-free.md") },
+    { role: "user", content: parts.join("\n\n") },
+  ];
+}
+
+export function parseFree(markdown: string): FreeReading | null {
+  const a = markdown.match(/#{1,3}\s*APERTURA\s*([\s\S]*?)(?=#{1,3}\s*AMOR|$)/i);
+  const l = markdown.match(/#{1,3}\s*AMOR\s*([\s\S]*)$/i);
+  if (!a || !l) return null;
+  const apertura = a[1].trim();
+  const amor = l[1].trim();
+  if (!apertura || !amor) return null;
+  return { apertura, amor, hook: firstSentence(amor) };
+}
+
+/**
+ * The screenshot unit is one sentence, not one line. The model does not
+ * reliably break the line after the hook — when it returns the love block as a
+ * single paragraph, taking the first line hands the UI the whole block as a
+ * display quote and leaves the body empty.
+ */
+function firstSentence(text: string): string {
+  const line = text.split(/\n+/)[0].trim();
+  const end = line.match(/^[\s\S]*?[.!?…](?=\s|$)/);
+  return (end ? end[0] : line).trim();
 }
 
 /** Defense-in-depth: a "first name" field is user input; keep it a name. */

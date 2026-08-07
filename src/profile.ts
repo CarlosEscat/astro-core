@@ -351,9 +351,16 @@ export function chartFeatures(chart: NatalChart): ChartFeature[] {
 /**
  * One feature, chosen by us. Handing the model a menu made it fuse two
  * features into a claim that was true of neither.
+ *
+ * `index` lets a retry loop move down the ranking. Some features are gender
+ * traps in Spanish — the canary chart's money stellium drags every attempt
+ * toward "no es que seas agarrada" — and re-rolling the model on an unchanged
+ * prompt just hits the same trap again. Clamped, so a caller can retry past
+ * the end of the list without special-casing.
  */
-export function selectFeature(chart: NatalChart): ChartFeature {
-  return chartFeatures(chart)[0];
+export function selectFeature(chart: NatalChart, index = 0): ChartFeature {
+  const features = chartFeatures(chart);
+  return features[Math.min(index, features.length - 1)];
 }
 
 export interface Signature {
