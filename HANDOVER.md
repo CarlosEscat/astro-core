@@ -2,7 +2,7 @@
 
 ## Estado actual (keep this section updated — it is the first thing read)
 
-Last updated: 2026-08-07
+Last updated: 2026-08-07 (free-reading redesign shipped)
 
 ### Done
 - [x] Chart computation engine (Placidus + whole-sign fallback), 25 tests
@@ -14,7 +14,8 @@ Last updated: 2026-08-07
       rules in both prompts (tests assert them)
 - [x] `validateTeaser()` mechanical output gate + 8 tests
       (baseline measured 2026-08-07: 55 tests in 4 files, all green —
-      the "42" quoted here and in CLAUDE.md was stale)
+      the "42" quoted here and in CLAUDE.md was stale). After the
+      free-reading redesign: **151 tests in 9 files**.
 - [x] Git repo initialized, pushed to GitHub
 - [x] Historical timezone resolver (`src/birthtime.ts`, tz-lookup +
       Node ICU tz database, 6 tests incl. pre-1940 Madrid GMT+0)
@@ -27,10 +28,13 @@ Last updated: 2026-08-07
 - [x] Landing page + birth-data form (es-ES, mobile-first), free teaser
       flow live: /api/chart (instant) + /api/teaser (Flash → gate →
       retry ≤2). Design direction + latency findings in Addendum 5.
-- [ ] Free-reading redesign — spec approved, plan not written yet:
-      `docs/superpowers/specs/2026-08-07-free-reading-redesign-design.md`
-      (plain-Spanish register, computed profile modules, short viral
-      love hook, paid report section 5 reframed — Addendum 6)
+- [x] Free-reading redesign — SHIPPED. Plan:
+      `docs/superpowers/plans/2026-08-07-free-reading-redesign.md`,
+      spec: `docs/superpowers/specs/2026-08-07-free-reading-redesign-design.md`.
+      Computed profile layer (`src/rulers.ts`, `src/profile.ts`,
+      `src/copy/`), one Flash call behind `src/validate.ts`, new
+      `/api/free` + UI modules. Measured results in Addendum 7 — read
+      that before touching the free prompt or the gate.
 - [ ] Supabase schema: charts, orders, reports, quotas (not designed)
 - [ ] Stripe checkout: one-time, Bizum enabled, webhook-triggered
       generation (never block checkout on LLM latency)
@@ -492,3 +496,98 @@ blocks): $0.000150 for a clean attempt, $0.000541 delivered across 4
 attempts. Inside the Addendum 2 budget. Merging teaser and love into one
 call matters because the prompt dominates: ~1,950 input tokens against
 ~370 output.
+
+---
+
+## Addendum 7: what the free-reading battery actually measured (2026-08-07)
+
+The redesign shipped. Everything below is measured on live DeepSeek V4
+Flash calls via `scripts/battery-free.ts` (3 charts x 6 readers), not
+estimated. Re-run it after ANY change to `prompts/system-free.md`,
+`prompts/rules-universal.md` or `src/validate.ts`.
+
+### Delivered results
+
+| Chart | Readers served | Notes |
+|---|---|---|
+| madrid-1992 | 6/6 | |
+| buenosaires-1985 | 6/6 | |
+| bilbao-2000 (canary) | 6/6 | 1/6 before feature rotation |
+
+29 attempts for 18 readings = **1.61 attempts per delivered reading**.
+First-attempt rate 11/18 (61%). Cost **$0.000375 per attempt** (metered
+`usage.cost`, 1,988 prompt + ~365 completion tokens), so **$0.000603
+delivered** — under the $0.0011-0.0015 budgeted in the plan. Latency
+~9.5 s observed end-to-end on `/api/free` for a first-attempt pass.
+
+### The finding that mattered: rotate the feature, don't just retry
+
+`selectFeature()` is deterministic, so every retry re-rolled the model on
+the *same* topic. The canary's chosen feature is its house-2 money
+stellium, and describing thrift in Spanish drags relentlessly toward a
+gendered adjective — killing "no es que seas agarrada" just brought back
+"seas cuidadosa". Bilbao sat at 1/6 no matter how the prompt was tuned.
+
+`selectFeature(chart, index)` now walks the ranked feature list and
+`/api/free` passes `featureIndex: attempt - 1`. Bilbao went 1/6 → 6/6.
+**If pass rate ever collapses on one chart again, check whether every
+attempt is being handed the same feature before touching the prompt.**
+
+### Word budgets are ignored; sentence counts are obeyed
+
+Asking for "70-100 palabras, cuéntalas y recorta" returned 123-155 words
+consistently. Asking for "exactamente CUATRO frases" landed in range.
+Note the overcorrection risk: a three-sentence ask with per-sentence word
+caps crushed both blocks below their minimums (0/18). The love gate is
+70-135, deliberately wider than the 80-110 the prompt asks for — the
+screenshot unit is the hook line, not the block, so mild length costs the
+product nothing while each rejection costs ~5 s.
+
+### Two gate bugs found only by running it
+
+- **`seas una persona` was a false positive.** "persona" is feminine in
+  form but neutral in reference, and is the very form the rules tell the
+  model to use. `persona|gente|criatura` are now excluded, as are gerunds
+  (`estás buscando` is not a gendered adjective).
+- **`parseFree` took the first LINE as the hook.** The model often
+  returns the love block as one unbroken paragraph, which handed the UI
+  the whole block as a display quote and left the body empty. It now
+  takes the first *sentence*.
+
+`repair()` also handles `tú mismo`/`ti mismo` generally now — that was
+the single most frequent gender rejection, and it costs no retry.
+
+### Known limitation
+
+The gate is mechanical, so it cannot catch gendered *similes*: one
+delivered hook read "quieres que te miren como una reina". No agreement
+error, but it still genders the reader. If this shows up in real user
+output, the fix is a prompt rule, not a regex.
+
+### Paid report section 5, re-briefed and re-measured
+
+`scripts/battery-report.ts` (Kimi K3, `max_tokens: 24000`, ~$0.22/report)
+regenerated all three charts against the rewritten `## Amor y vínculos`
+brief. Outputs kept in `bakeoff-out/section5/`.
+
+| Chart | Report | Section 5 |
+|---|---|---|
+| madrid-1992 | 2571 words | 415 |
+| buenosaires-1985 | 2411 words | 394 |
+| bilbao-2000 | 2630 words | 431 |
+
+`parseReport` returned non-null on all three. All three cover the new
+material — the repeating pattern and where each cycle turns, what gets
+projected onto partners, house eight and the Moon, closing on agency.
+
+Two caveats a future session should know rather than rediscover:
+
+- **The section runs long.** 394-431 words against a 300-350 brief.
+  Nothing enforces it; `parseReport` only rejects sections under 200
+  characters. Add a length check if it matters.
+- **"No overlap" is weaker than the script claims.** The
+  `FREE_TIER_ECHO` regex only matches "tu Venus **en** X" and missed
+  bilbao's "Tu Venus **está en** Leo, a 20 grados, en la casa tres".
+  That opening is a deliberate springboard, not a restatement — it is
+  immediately followed by "Hasta ahí, lo que quizá ya intuías" — so the
+  brief is satisfied. But the regex is not proof. Read the sections.
