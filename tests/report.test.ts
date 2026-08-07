@@ -127,6 +127,28 @@ describe("validateTeaser", () => {
   });
 });
 
+describe("paid report section 5", () => {
+  it("keeps the section titles stable", () => {
+    expect(SECTION_TITLES[4]).toBe("Amor y vínculos");
+    expect(SECTION_TITLES).toHaveLength(8);
+  });
+
+  it("briefs the model on what the free reading already covered", () => {
+    const prompt = buildReportMessages({ chart })[0].content;
+    const section = prompt.slice(prompt.indexOf("## Amor y vínculos"),
+                                prompt.indexOf("## Vocación y propósito"));
+    expect(section).toMatch(/patr[óo]n/i);
+    expect(section).toMatch(/proyect/i);        // what gets projected onto partners
+    expect(section).toMatch(/casa ocho|casa 8/i);
+    expect(section).toMatch(/Saturno|Plut[óo]n/);
+  });
+
+  it("still grows under the amor focus", () => {
+    const prompt = buildReportMessages({ chart, focus: "amor" })[0].content;
+    expect(prompt).toMatch(/450 palabras/);
+  });
+});
+
 describe("shared rules fragment", () => {
   it("injects the universal rules into every prompt", () => {
     const report = buildReportMessages({ chart })[0].content;

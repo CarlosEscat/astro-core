@@ -34,7 +34,18 @@ Tu Luna (250-300 palabras). Cómo sientes, qué necesitas para sentirte en casa,
 Tu Ascendente y su regente si su posición está en el JSON (200-250 palabras). La primera impresión que causas y el papel que la vida te invita a ensayar.
 
 ## Amor y vínculos
-Venus, Marte, la casa siete y su cúspide, y los aspectos relevantes entre ellos (300-350 palabras). Cómo amas, qué buscas, qué patrón se repite y cómo trabajarlo. Si el enfoque elegido es "amor", esta sección crece hasta 450 palabras y gana profundidad.
+300-350 palabras. Si el enfoque elegido es "amor", crece hasta 450 palabras y gana profundidad.
+
+La lectura gratuita YA le ha dado a esta persona tres cosas: su Venus por signo y por zona de la vida, su Descendente, y los signos con los que mejor encaja. No las repitas: si esta sección se limita a reformularlas, el informe no vale lo que cuesta. Aquí vas más hondo.
+
+Cubre, tejido en prosa continua y no como lista:
+
+- El patrón que se repite de una relación a otra, y cómo empieza cada ciclo: qué le atrae al principio y en qué momento se tuerce siempre.
+- Los aspectos duros de Venus y Marte con Saturno, Plutón, Urano y Neptuno, leídos como dinámicas de relación —qué pasa de verdad entre dos personas cuando eso está en juego— y nunca como etiquetas.
+- Lo que proyecta sobre la otra persona: la distancia entre lo que dice que busca en voz alta y a quién elige de hecho.
+- La casa ocho y la Luna: la intimidad, la dependencia, y qué necesita para soltar del todo cuando algo se acaba.
+
+Cierra explicando cómo se trabaja ese patrón, con agencia: describe la tendencia y deja la decisión en sus manos, nunca como destino cerrado.
 
 ## Vocación y propósito
 Medio Cielo, casa diez, Saturno y los planetas en casas dos, seis y diez (300-350 palabras). Hacia dónde apunta tu ambición, qué estilo de trabajo te sostiene, qué reconocimiento buscas. Si el enfoque es "trabajo", esta sección crece hasta 450 palabras.
