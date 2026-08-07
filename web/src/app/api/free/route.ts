@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { chartFromBirthData, buildTeaserMessages, validateTeaser } from "@/lib/astro";
+import {
+  chartFromBirthData, buildFreeMessages, parseFree, repair, validateFree,
+} from "@/lib/astro";
 
 export const runtime = "nodejs";
 
 const MODEL = "deepseek/deepseek-v4-flash";
-const MAX_ATTEMPTS = 3; // one generation + up to two retries
+const MAX_ATTEMPTS = 6; // a retry costs ~$0.00015; the canary chart needs them
 
 interface Body {
   firstName?: string;
@@ -44,21 +46,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Falta OPENROUTER_API_KEY en el servidor." }, { status: 500 });
   }
 
-  const messages = buildTeaserMessages({ chart, firstName });
   let lastProblems: string[] = [];
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    // Rotate the chart feature as retries go. A feature that trips the gender
+    // gate trips it on every re-roll — measured on the canary chart, where the
+    // money stellium pulled all six attempts toward a gendered adjective.
+    // Rotating took bilbao-2000 from 1/6 to 6/6.
+    const messages = buildFreeMessages({ chart, firstName, featureIndex: attempt - 1 });
+
     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: MODEL,
-        messages,
-        temperature: 0.7,
-        max_tokens: 8000,
-        // Reasoning off: measured 4-8s vs 12-60s, identical cost, and it
-        // passed the gate at least as often. The unpredictable reasoning
-        // bursts were also what produced empty completions.
+        model: MODEL, messages, temperature: 0.8, max_tokens: 8000,
+        // Reasoning off: 4-8s vs 12-60s, identical cost, and the reasoning
+        // bursts were what produced empty completions.
         reasoning: { enabled: false },
       }),
     });
@@ -67,33 +70,23 @@ export async function POST(req: NextRequest) {
     }
     const data = await res.json();
     const text: string = data.choices?.[0]?.message?.content ?? "";
-    const verdict = validateTeaser(text, chart);
-    if (verdict.ok) {
-      return NextResponse.json({ teaser: text.trim(), chart: bigThree(chart), attempts: attempt });
-    }
+    // Never trust status alone — reasoning models can return HTTP 200 with
+    // empty content after spending the whole budget.
+    if (!text.trim()) { lastProblems = ["respuesta vacía"]; continue; }
+
+    const parsed = parseFree(repair(text));
+    if (!parsed) { lastProblems = ["estructura rota"]; continue; }
+
+    const verdict = validateFree(parsed, chart);
+    if (verdict.ok) return NextResponse.json({ ...parsed, attempts: attempt });
+
     lastProblems = verdict.problems;
-    console.warn(`teaser gate rejected attempt ${attempt}:`, verdict.problems.join("; "));
+    console.warn(`free gate rejected attempt ${attempt}:`, verdict.problems.join("; "));
   }
 
-  // Every attempt failed the gate. Never ship ungrounded copy.
-  console.warn("teaser gate failed after retries:", lastProblems);
+  console.warn("free gate failed after retries:", lastProblems);
   return NextResponse.json(
     { error: "No hemos podido preparar una lectura fiable ahora mismo. Vuelve a intentarlo." },
     { status: 503 },
   );
-}
-
-/** The three placements the reader recognizes, for the instrument readout. */
-function bigThree(chart: ReturnType<typeof chartFromBirthData>["chart"]) {
-  const find = (body: string) => chart.planets.find((p) => p.body === body)!;
-  const sun = find("Sun");
-  const moon = find("Moon");
-  return {
-    sun: { sign: sun.sign, degree: sun.signDegree, house: sun.house },
-    moon: { sign: moon.sign, degree: moon.signDegree, house: moon.house },
-    ascendant: {
-      sign: chart.angles.ascendant.sign,
-      degree: chart.angles.ascendant.signDegree,
-    },
-  };
 }

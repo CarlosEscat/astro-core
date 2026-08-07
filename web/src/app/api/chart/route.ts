@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { chartFromBirthData } from "@/lib/astro";
+import {
+  chartFromBirthData, chartRuler, elementBalance, frictionSign, signature,
+  topMatches, ASC_ES, MOON_ES, PARTNER_ES, SUN_ES,
+} from "@/lib/astro";
 
 export const runtime = "nodejs";
 
@@ -27,17 +30,30 @@ export async function POST(req: NextRequest) {
     longitude,
   );
 
-  const find = (body: string) => chart.planets.find((p) => p.body === body)!;
-  const sun = find("Sun");
-  const moon = find("Moon");
+  const sun = chart.planets.find((p) => p.body === "Sun")!;
+  const moon = chart.planets.find((p) => p.body === "Moon")!;
+  const elements = elementBalance(chart);
+  const ruler = chartRuler(chart);
+  const friction = frictionSign(chart);
 
   return NextResponse.json({
     timeZone,
-    sun: { sign: sun.sign, degree: sun.signDegree, house: sun.house },
-    moon: { sign: moon.sign, degree: moon.signDegree, house: moon.house },
-    ascendant: {
-      sign: chart.angles.ascendant.sign,
-      degree: chart.angles.ascendant.signDegree,
+    bigThree: {
+      sun: { sign: sun.sign, degree: sun.signDegree, gloss: SUN_ES[sun.sign] },
+      moon: { sign: moon.sign, degree: moon.signDegree, gloss: MOON_ES[moon.sign] },
+      ascendant: {
+        sign: chart.angles.ascendant.sign,
+        degree: chart.angles.ascendant.signDegree,
+        gloss: ASC_ES[chart.angles.ascendant.sign],
+      },
     },
+    matches: topMatches(chart).map((m) => ({
+      sign: m.sign, say: PARTNER_ES[m.sign], why: m.reasons[0],
+    })),
+    friction: { sign: friction.sign, say: PARTNER_ES[friction.sign], why: friction.reason },
+    elements: { totals: elements.totals, dominant: elements.dominant,
+                weakest: elements.weakest, total: elements.total },
+    ruler: { body: ruler.body, sign: ruler.sign, inDomicile: ruler.inDomicile },
+    signature: signature(chart),
   });
 }

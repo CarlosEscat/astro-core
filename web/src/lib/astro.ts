@@ -1,7 +1,6 @@
 import "server-only";
 import { resolveBirthUtc, type BirthLocalTime } from "@core/birthtime";
 import { computeNatalChart } from "@core/chart";
-import { buildTeaserMessages, validateTeaser } from "@core/report";
 import type { NatalChart } from "@core/types";
 
 /**
@@ -23,4 +22,11 @@ export function chartFromBirthData(
   return { chart, timeZone: resolved.timeZone, offsetMinutes: resolved.offsetMinutes };
 }
 
-export { buildTeaserMessages, validateTeaser };
+export { buildFreeMessages, parseFree } from "@core/report";
+export type { FreeReading } from "@core/report";
+export { validateFree, repair } from "@core/validate";
+export {
+  relationshipProfile, topMatches, frictionSign, elementBalance,
+  modalityBalance, chartRuler, signature,
+} from "@core/profile";
+export { SIGN_ES, SIGN_GLYPH, SUN_ES, MOON_ES, ASC_ES, PARTNER_ES } from "@core/copy/signs.es";
