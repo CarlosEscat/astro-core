@@ -20,7 +20,7 @@ dated addenda in the same file.
 
 ## Working notes
 
-- `npm test` must stay green (42 tests). `npm run example` smoke-tests
+- `npm test` must stay green (55 tests). `npm run example` smoke-tests
   the tsx path — vitest passing does NOT prove tsx works (ESM interop).
 - `OPENROUTER_API_KEY` lives in `.env.local` (gitignored). Never commit
   or print it.
