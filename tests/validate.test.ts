@@ -99,3 +99,35 @@ describe("word range", () => {
     expect(v.problems.join(" ")).toContain("palabras");
   });
 });
+
+import { repair } from "../src/validate";
+
+describe("repair", () => {
+  it.each([
+    ["que eres única", "que no hay nadie como tú"],
+    ["necesitas ser vista", "necesitas que te miren"],
+    ["quieres ser admirada", "quieres que te admiren"],
+    ["sentirte comprendida", "que te entiendan"],
+    ["ni tú misma lo ves", "ni tú lo ves"],
+    ["eres de los que guardan", "eres de quienes guardan"],
+  ])("rewrites %s", (input, expected) => {
+    expect(repair(input)).toContain(expected);
+  });
+
+  it("turns a rejected text into a passing one", () => {
+    const before = "Tu Venus en Leo necesita ser vista y que te lo digan.";
+    expect(check(before).ok).toBe(false);
+    expect(check(repair(before)).ok).toBe(true);
+  });
+
+  it("leaves clean text untouched", () => {
+    const clean = "Tu Venus en Leo necesita que te miren.";
+    expect(repair(clean)).toBe(clean);
+  });
+
+  it("does not attempt semantic repair of unknown phrasing", () => {
+    const unknown = "no es que seas tacaño con el dinero";
+    expect(repair(unknown)).toBe(unknown);
+    expect(check(repair(unknown)).ok).toBe(false);
+  });
+});

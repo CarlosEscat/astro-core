@@ -103,6 +103,29 @@ function planetsIn(fragment: string): string[] {
   return [...found];
 }
 
+/**
+ * Literal, deterministic rewrites of stock gendered phrasing. Applied before
+ * the gate so a known slip costs no retry. Whitelist only: if a phrasing is
+ * not on this list it goes to the gate untouched and gets rejected there.
+ */
+const REPAIRS: Array<[RegExp, string]> = [
+  [/\bque\s+eres\s+[úu]nic[ao]\b/giu, "que no hay nadie como tú"],
+  [/\beres\s+[úu]nic[ao]\b/giu, "no hay nadie como tú"],
+  [/\bser\s+vist[ao]\b/giu, "que te miren"],
+  [/\bser\s+admirad[ao]\b/giu, "que te admiren"],
+  [/\bser\s+reconocid[ao]\b/giu, "que te reconozcan"],
+  [/\bsentirte\s+querid[ao]\b/giu, "que te quieran"],
+  [/\bsentirte\s+comprendid[ao]\b/giu, "que te entiendan"],
+  [/\bni\s+t[úu]\s+mism[ao]\b/giu, "ni tú"],
+  [/\beres\s+de\s+los\s+que\b/giu, "eres de quienes"],
+];
+
+export function repair(text: string): string {
+  let out = text;
+  for (const [re, replacement] of REPAIRS) out = out.replace(re, replacement);
+  return out;
+}
+
 /** The original teaser gate, unchanged in behaviour. */
 export function validateTeaser(text: string, chart: NatalChart): Validation {
   return validateProse(text, chart, TEASER_RANGE);
