@@ -25,6 +25,10 @@ Last updated: 2026-08-05
 - [x] Landing page + birth-data form (es-ES, mobile-first), free teaser
       flow live: /api/chart (instant) + /api/teaser (Flash → gate →
       retry ≤2). Design direction + latency findings in Addendum 5.
+- [ ] Free-reading redesign — spec approved, plan not written yet:
+      `docs/superpowers/specs/2026-08-07-free-reading-redesign-design.md`
+      (plain-Spanish register, computed profile modules, short viral
+      love hook, paid report section 5 reframed — Addendum 6)
 - [ ] Supabase schema: charts, orders, reports, quotas (not designed)
 - [ ] Stripe checkout: one-time, Bizum enabled, webhook-triggered
       generation (never block checkout on LLM latency)
@@ -436,3 +440,53 @@ same for any future periodic product.
 rejected attempt doubles the wait. Observed ~1 retry in 4 on the canary
 bilbao chart (gendered participle, invented retrogradation) — worth
 re-measuring if the teaser prompt changes.
+
+---
+
+## Addendum 6: the free reading was bland for structural reasons (2026-08-07)
+
+Diagnosed on real pipeline output across several charts, not on
+assumptions. Full design: `docs/superpowers/specs/2026-08-07-free-reading-redesign-design.md`.
+
+**The grounding was never the problem.** Teaser prose named real
+placements, real aspects, correct houses, and passed the gate. What
+failed was shape: three fixed beats every time (mandated by the prompt),
+one 140-word block, no answer to what users arrive asking (love,
+compatibility), model tic phrases repeating across different users
+("casi telepática" appeared independently on two unrelated charts), and
+a register the target audience can't read.
+
+**Governing principle now: the model never derives structure and never
+sees jargon.** Evidence — when asked to *find* the chart's most striking
+feature (stelliums, unaspected planets, tight orbs) it invented all
+three: Jupiter placed in Taurus when it is in Gemini, a 6.35° conjunction
+called "exacta", Mercury declared unaspected while conjunct the Moon.
+The love section, handed a precomputed relationship profile, came out
+clean. So: compute the features, hand over a single chosen one, and
+translate houses to plain-language life areas and aspects to plain
+phrases before they ever reach a prompt. It cannot write jargon it never
+receives, and cannot misstate an orb it never sees.
+
+**The gender gate is the binding constraint on the free tier** — not
+cost, not latency. On bilbao-2000 it rejected 3 of 4 attempts. Retries
+cost $0.00015 each (irrelevant) but ~5s each (not irrelevant), and a
+fully failed batch serves an error page. `validateTeaser()` also had two
+real holes found in production-shaped output: gendered *nouns* ("te
+convierte en una diplomática innata") and predicative adjectives ("te
+hace más profundo"). Mitigations specced: broader predicative rule, a
+deterministic whitelist repair pass before spending a retry, and
+MAX_ATTEMPTS 3 → 6. **Pass rate still needs measuring across the full
+multi-chart battery before launch.**
+
+**Two process lessons worth keeping.** A literal example inside a prompt
+becomes a tic: the sample line "quieres fuegos artificiales con alguien
+que llegue puntual" came back copied verbatim, and is now blocklisted.
+And template UI copy needs the same gender discipline as LLM output — a
+hand-written section heading ("De qué vas cargado") shipped gendered in
+the prototype, so the copy tables go under test.
+
+**Costs measured** (DeepSeek V4 Flash, single call returning both
+blocks): $0.000150 for a clean attempt, $0.000541 delivered across 4
+attempts. Inside the Addendum 2 budget. Merging teaser and love into one
+call matters because the prompt dominates: ~1,950 input tokens against
+~370 output.
