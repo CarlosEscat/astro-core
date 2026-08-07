@@ -174,3 +174,63 @@ describe("topMatches", () => {
     for (const s of topMatches(bilbao)) expect(s.score).toBeGreaterThan(0);
   });
 });
+
+import { chartFeatures, selectFeature, signature } from "../src/profile";
+
+describe("chartFeatures", () => {
+  it("finds a stellium of three planets sharing a house", () => {
+    const houses = chartFeatures(bilbao).filter((f) => f.kind === "cumulo-casa");
+    expect(houses).toHaveLength(1);
+    // Sun, Moon and Mars all sit in house 2.
+    expect(houses[0].payload.planetas).toEqual(
+      expect.arrayContaining(["el Sol", "la Luna", "Marte"]));
+  });
+
+  it("finds a stellium of three planets sharing a sign", () => {
+    const signs = chartFeatures(bilbao).filter((f) => f.kind === "cumulo-signo");
+    expect(signs).toHaveLength(1);
+    expect(signs[0].payload.signo).toBe("Cáncer");
+  });
+
+  it("flags an element that barely registers", () => {
+    const absent = chartFeatures(bilbao).find((f) => f.kind === "elemento-ausente");
+    expect(absent).toBeDefined();
+    expect(absent!.payload.falta).toBe("Tierra");
+  });
+
+  it("flags a ruler sitting in its own sign", () => {
+    expect(chartFeatures(bilbao).some((f) => f.kind === "regente-domicilio")).toBe(true);
+  });
+
+  it("never leaks house numbers, degrees or aspect names into a payload", () => {
+    const leak = /casa\s*\d|\d+\s*°|tr[íi]gono|sextil|cuadratura|conjunci[óo]n|oposici[óo]n|orbe/i;
+    for (const f of chartFeatures(bilbao)) {
+      expect(JSON.stringify(f.payload)).not.toMatch(leak);
+    }
+  });
+
+  it("always offers at least one feature for any chart", () => {
+    const plain = chartFor({ year: 1992, month: 4, day: 15, hour: 8, minute: 30 }, 40.4168, -3.7038);
+    expect(chartFeatures(plain).length).toBeGreaterThan(0);
+  });
+});
+
+describe("selectFeature", () => {
+  it("prefers a house stellium over everything else", () => {
+    expect(selectFeature(bilbao).kind).toBe("cumulo-casa");
+  });
+
+  it("is deterministic for a given chart", () => {
+    expect(selectFeature(bilbao)).toEqual(selectFeature(bilbao));
+  });
+});
+
+describe("signature", () => {
+  it("reports the big-three combination and its rarity", () => {
+    const s = signature(bilbao);
+    expect(s.sun).toBe("Leo");
+    expect(s.moon).toBe("Cancer");
+    expect(s.ascendant).toBe("Cancer");
+    expect(s.oneIn).toBe(1728);
+  });
+});

@@ -238,3 +238,137 @@ export function topMatches(chart: NatalChart, n = 3): SignScore[] {
     .filter((s) => s.sign !== friction && s.score > 0)
     .slice(0, n);
 }
+
+import { AREA_ES } from "./copy/areas.es";
+
+export type FeatureKind =
+  | "cumulo-casa"
+  | "cumulo-signo"
+  | "sin-aspectos"
+  | "elemento-ausente"
+  | "regente-domicilio"
+  | "aspecto-estrecho";
+
+export interface ChartFeature {
+  kind: FeatureKind;
+  /** Lower sorts first. */
+  priority: number;
+  /** Plain-Spanish payload — this is what the model actually receives. */
+  payload: Record<string, unknown>;
+}
+
+const PRIORITY: Record<FeatureKind, number> = {
+  "cumulo-casa": 1,
+  "cumulo-signo": 2,
+  "sin-aspectos": 3,
+  "elemento-ausente": 4,
+  "regente-domicilio": 5,
+  "aspecto-estrecho": 6,
+};
+
+/** How a pair of planets get on, in words a reader already knows. */
+function relationPhrase(type: Aspect["type"]): string {
+  if (type === "conjunction") return "van pegados";
+  if (type === "opposition" || type === "square") return "tiran cada uno para un lado";
+  return "van de la mano";
+}
+
+const MIN_STELLIUM = 3;
+const ABSENT_ELEMENT_THRESHOLD = 2;
+
+export function chartFeatures(chart: NatalChart): ChartFeature[] {
+  const out: ChartFeature[] = [];
+  const push = (kind: FeatureKind, payload: Record<string, unknown>) =>
+    out.push({ kind, priority: PRIORITY[kind], payload });
+
+  const byHouse = new Map<number, Body[]>();
+  const bySign = new Map<Sign, Body[]>();
+  for (const p of chart.planets) {
+    byHouse.set(p.house, [...(byHouse.get(p.house) ?? []), p.body]);
+    bySign.set(p.sign, [...(bySign.get(p.sign) ?? []), p.body]);
+  }
+
+  for (const [house, bodies] of byHouse) {
+    if (bodies.length < MIN_STELLIUM) continue;
+    push("cumulo-casa", {
+      zona: AREA_ES[house],
+      planetas: bodies.map((b) => PLANET_ES[b]),
+      significa: "ahí se le va casi toda la energía",
+    });
+  }
+
+  for (const [sign, bodies] of bySign) {
+    if (bodies.length < MIN_STELLIUM) continue;
+    push("cumulo-signo", {
+      signo: SIGN_ES[sign],
+      planetas: bodies.map((b) => PLANET_ES[b]),
+      significa: "esa forma de ser tiñe todo lo demás",
+    });
+  }
+
+  const aspected = new Set<Body>();
+  for (const a of chart.aspects) { aspected.add(a.a); aspected.add(a.b); }
+  for (const p of chart.planets) {
+    if (aspected.has(p.body)) continue;
+    push("sin-aspectos", {
+      planeta: PLANET_ES[p.body],
+      signo: SIGN_ES[p.sign],
+      zona: AREA_ES[p.house],
+      significa: "eso funciona por su cuenta, sin negociar con el resto",
+    });
+  }
+
+  const elements = elementBalance(chart);
+  if (elements.totals[elements.weakest] < ABSENT_ELEMENT_THRESHOLD) {
+    push("elemento-ausente", {
+      falta: elements.weakest,
+      significa: "es justo lo que le cuesta y lo que va buscando fuera",
+    });
+  }
+
+  const ruler = chartRuler(chart);
+  if (ruler.inDomicile) {
+    push("regente-domicilio", {
+      planeta: PLANET_ES[ruler.body],
+      signo: SIGN_ES[ruler.sign],
+      zona: AREA_ES[ruler.house],
+      significa: "juega en casa: manda desde su propio terreno",
+    });
+  }
+
+  const tightest = chart.aspects[0];
+  if (tightest) {
+    push("aspecto-estrecho", {
+      planetas: [PLANET_ES[tightest.a], PLANET_ES[tightest.b]],
+      relacion: relationPhrase(tightest.type),
+      significa: "es el lazo más fuerte de toda la carta",
+    });
+  }
+
+  return out.sort((a, b) => a.priority - b.priority);
+}
+
+/**
+ * One feature, chosen by us. Handing the model a menu made it fuse two
+ * features into a claim that was true of neither.
+ */
+export function selectFeature(chart: NatalChart): ChartFeature {
+  return chartFeatures(chart)[0];
+}
+
+export interface Signature {
+  sun: Sign;
+  moon: Sign;
+  ascendant: Sign;
+  /** Honest combinatorial rarity: 12 x 12 x 12. Not a made-up percentage. */
+  oneIn: number;
+}
+
+export function signature(chart: NatalChart): Signature {
+  return {
+    sun: chart.planets.find((p) => p.body === "Sun")!.sign,
+    moon: chart.planets.find((p) => p.body === "Moon")!.sign,
+    ascendant: chart.angles.ascendant.sign,
+    oneIn: 12 * 12 * 12,
+  };
+}
