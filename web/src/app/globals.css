@@ -248,21 +248,25 @@ body {
 
 .reading { margin-top: 2.5rem; }
 
+/* Each placement carries a plain-language gloss, so the three read as rows
+   rather than columns — a gloss sentence has nowhere to go in a 125px column. */
 .readout {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
   border: 1px solid var(--ink-line);
-  border-radius: 3px 3px 0 0;
-  border-bottom: none;
+  border-radius: 3px;
   overflow: hidden;
 }
 
 .readout > div {
-  padding: 0.9rem 0.5rem;
-  text-align: center;
-  border-right: 1px solid var(--ink-line);
+  padding: 0.9rem 1.1rem;
+  border-bottom: 1px solid var(--ink-line);
 }
-.readout > div:last-child { border-right: none; }
+.readout > div:last-child { border-bottom: none; }
+
+.readout .rt {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+}
 
 .readout .role {
   font-family: var(--font-mono);
@@ -270,36 +274,49 @@ body {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--slate);
-  display: block;
-  margin-bottom: 0.45rem;
+  flex: 0 0 5.5rem;
 }
 
 .readout .sym {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: var(--brass);
   line-height: 1;
-  display: block;
-  margin-bottom: 0.3rem;
 }
 
-.readout .sign { font-size: 0.9375rem; display: block; }
+.readout .sign { font-size: 0.9375rem; }
 
 .readout .deg {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   color: var(--bone-dim);
-  display: block;
-  margin-top: 0.15rem;
+  margin-left: auto;
 }
 
-.reading__prose {
-  border: 1px solid var(--ink-line);
-  border-radius: 0 0 3px 3px;
-  padding: 1.5rem 1.35rem;
-  background: var(--ink-raised);
+.readout .gloss {
+  margin: 0.35rem 0 0 6.05rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--bone-dim);
+  text-wrap: pretty;
 }
 
-.reading__prose p {
+/* ── Modules ────────────────────────────────────────────────────── */
+
+.module { margin-top: 2rem; }
+
+.module__title {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.625rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin: 0 0 0.85rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--ink-line);
+}
+
+.prose p {
   margin: 0;
   font-family: var(--font-display);
   font-size: 1.1875rem;
@@ -307,10 +324,11 @@ body {
   text-wrap: pretty;
 }
 
-.reading__prose p + p { margin-top: 1rem; }
+.prose p + p { margin-top: 1rem; }
 
-/* Prose still being written — the placements above are already exact. */
-.reading__prose .writing {
+/* Prose still being written — the computed modules are already exact. */
+.writing {
+  margin: 0;
   font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 0.2em;
@@ -318,9 +336,180 @@ body {
   color: var(--slate);
 }
 
-.reading__prose .writing span {
+.writing span {
   display: inline-block;
   animation: pulse 1.6s ease-in-out infinite;
+}
+
+/* ── Love hook: the screenshot unit ─────────────────────────────── */
+
+.hook {
+  border: 1px solid var(--brass);
+  border-radius: 3px;
+  padding: 1.35rem 1.35rem 1rem;
+  background: var(--ink-raised);
+  margin-bottom: 1.25rem;
+}
+
+.hook p {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
+/* Beneath the quote so a cropped screenshot still carries the mark. */
+.hook .mark {
+  display: block;
+  margin-top: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+
+/* ── Matches ────────────────────────────────────────────────────── */
+
+.fit { padding: 0.95rem 0; border-bottom: 1px solid var(--ink-line); }
+.fit:last-child { border-bottom: none; }
+
+.fit__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.fit__rank {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--slate);
+}
+
+.fit__sym { font-size: 1.125rem; color: var(--brass); line-height: 1; }
+
+.fit__name {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+}
+
+.fit__say {
+  margin: 0.4rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* The receipt: why this sign, in words with no jargon in them. */
+.fit__why {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--slate);
+  text-wrap: pretty;
+}
+
+.friction {
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--ink-line);
+}
+
+.friction .label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--copper);
+}
+
+.friction .fit { border-bottom: none; padding-bottom: 0; }
+
+/* ── Element balance ────────────────────────────────────────────── */
+
+.bars { display: grid; gap: 0.5rem; }
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.bar__name {
+  flex: 0 0 3.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+}
+
+.bar__track {
+  flex: 1 1 auto;
+  height: 0.5rem;
+  background: var(--ink-raised);
+  border: 1px solid var(--ink-line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.bar__fill { display: block; height: 100%; background: var(--brass); }
+.bar__fill.low { background: var(--copper); }
+
+.bar__val {
+  flex: 0 0 2rem;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--bone-dim);
+}
+
+.verdict {
+  margin: 1rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.verdict.punch { color: var(--bone); }
+.verdict.punch strong { color: var(--brass); font-weight: 400; }
+
+/* ── Signature card ─────────────────────────────────────────────── */
+
+.card {
+  margin-top: 2rem;
+  border: 1px solid var(--ink-line);
+  border-radius: 3px;
+  background: var(--ink-raised);
+  padding: 1.35rem 1.1rem;
+}
+
+.sig { text-align: center; }
+
+.sig__label {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+
+.sig__combo {
+  margin: 0.7rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  color: var(--brass);
+  text-wrap: balance;
+}
+
+.sig__stat {
+  margin: 0.55rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--bone-dim);
 }
 
 .next-step {

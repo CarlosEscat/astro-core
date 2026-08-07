@@ -1,6 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Readout } from "./Readout";
+import { Matches } from "./Matches";
+import { Elements } from "./Elements";
+import { Signature } from "./Signature";
+import { LoveHook } from "./LoveHook";
+import type { ChartResponse, FreeReading } from "./types";
 
 interface Place {
   name: string;
@@ -8,35 +14,6 @@ interface Place {
   countryCode: string;
   latitude: number;
   longitude: number;
-}
-
-interface BigThree {
-  sun: { sign: string; degree: number; house: number };
-  moon: { sign: string; degree: number; house: number };
-  ascendant: { sign: string; degree: number };
-}
-
-// U+FE0E keeps the glyphs as engraved text rather than colour emoji.
-const SIGNS: Record<string, { es: string; glyph: string }> = {
-  Aries: { es: "Aries", glyph: "♈︎" },
-  Taurus: { es: "Tauro", glyph: "♉︎" },
-  Gemini: { es: "Géminis", glyph: "♊︎" },
-  Cancer: { es: "Cáncer", glyph: "♋︎" },
-  Leo: { es: "Leo", glyph: "♌︎" },
-  Virgo: { es: "Virgo", glyph: "♍︎" },
-  Libra: { es: "Libra", glyph: "♎︎" },
-  Scorpio: { es: "Escorpio", glyph: "♏︎" },
-  Sagittarius: { es: "Sagitario", glyph: "♐︎" },
-  Capricorn: { es: "Capricornio", glyph: "♑︎" },
-  Aquarius: { es: "Acuario", glyph: "♒︎" },
-  Pisces: { es: "Piscis", glyph: "♓︎" },
-};
-
-/** 10.1 → 10°06' — the notation an astrologer actually writes. */
-function formatDegree(decimal: number): string {
-  const d = Math.floor(decimal);
-  const m = Math.round((decimal - d) * 60);
-  return m === 60 ? `${d + 1}°00'` : `${d}°${String(m).padStart(2, "0")}'`;
 }
 
 export function BirthForm() {
@@ -51,8 +28,8 @@ export function BirthForm() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [teaser, setTeaser] = useState<string | null>(null);
-  const [bigThree, setBigThree] = useState<BigThree | null>(null);
+  const [profile, setProfile] = useState<ChartResponse | null>(null);
+  const [free, setFree] = useState<FreeReading | null>(null);
 
   const comboRef = useRef<HTMLDivElement>(null);
 
@@ -115,8 +92,8 @@ export function BirthForm() {
       return;
     }
     setLoading(true);
-    setTeaser(null);
-    setBigThree(null);
+    setFree(null);
+    setProfile(null);
 
     const payload = {
       firstName: firstName.trim() || undefined,
@@ -127,8 +104,9 @@ export function BirthForm() {
     };
 
     try {
-      // The placements are local math: show them immediately, then wait
-      // only for the prose. The reader sees exact data within a blink.
+      // Every computed module is local math: show them immediately, then wait
+      // only for the prose. The page fills with dense, specific content before
+      // any LLM call returns — the precision arrives first.
       const chartRes = await fetch("/api/chart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -140,9 +118,9 @@ export function BirthForm() {
         setLoading(false);
         return;
       }
-      setBigThree(chartData);
+      setProfile(chartData);
 
-      const res = await fetch("/api/teaser", {
+      const res = await fetch("/api/free", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -151,7 +129,7 @@ export function BirthForm() {
       if (!res.ok) {
         setError(data.error ?? "Algo ha fallado. Inténtalo de nuevo.");
       } else {
-        setTeaser(data.teaser);
+        setFree({ apertura: data.apertura, amor: data.amor, hook: data.hook });
       }
     } catch {
       setError("No hay conexión con el servidor. Inténtalo de nuevo.");
@@ -260,46 +238,50 @@ export function BirthForm() {
         )}
       </form>
 
-      {loading && !bigThree && (
+      {loading && !profile && (
         <p className="working" aria-live="polite">
           <span>Calculando posiciones</span>
         </p>
       )}
 
-      {bigThree && (
+      {profile && (
         <section className="reading" aria-live="polite">
-          <div className="readout">
-            <div>
-              <span className="role">Sol</span>
-              <span className="sym">{SIGNS[bigThree.sun.sign]?.glyph}</span>
-              <span className="sign">{SIGNS[bigThree.sun.sign]?.es}</span>
-              <span className="deg">{formatDegree(bigThree.sun.degree)}</span>
-            </div>
-            <div>
-              <span className="role">Luna</span>
-              <span className="sym">{SIGNS[bigThree.moon.sign]?.glyph}</span>
-              <span className="sign">{SIGNS[bigThree.moon.sign]?.es}</span>
-              <span className="deg">{formatDegree(bigThree.moon.degree)}</span>
-            </div>
-            <div>
-              <span className="role">Ascendente</span>
-              <span className="sym">{SIGNS[bigThree.ascendant.sign]?.glyph}</span>
-              <span className="sign">{SIGNS[bigThree.ascendant.sign]?.es}</span>
-              <span className="deg">{formatDegree(bigThree.ascendant.degree)}</span>
-            </div>
-          </div>
+          <Readout big={profile.bigThree} />
 
-          <div className="reading__prose">
-            {teaser ? (
-              teaser.split(/\n{2,}/).map((para, i) => <p key={i}>{para}</p>)
+          {/* Love sits second: it is the shareable unit. */}
+          <section className="module">
+            <h2 className="module__title">En el amor</h2>
+            {free ? (
+              <LoveHook hook={free.hook} prose={free.amor} />
             ) : (
-              <p className="writing">
-                <span>Leyendo tu carta</span>
-              </p>
+              <p className="writing"><span>Leyendo tu carta</span></p>
             )}
-          </div>
+          </section>
 
-          {teaser && <div className="next-step">
+          <section className="module">
+            <h2 className="module__title">Con quién encajas</h2>
+            <Matches matches={profile.matches} friction={profile.friction} />
+          </section>
+
+          <section className="module">
+            <h2 className="module__title">De qué está hecha tu mezcla</h2>
+            <Elements elements={profile.elements} matches={profile.matches} />
+          </section>
+
+          <section className="module">
+            <h2 className="module__title">Lo que más pesa en tu carta</h2>
+            {free ? (
+              <div className="prose">
+                {free.apertura.split(/\n{2,}/).map((p, i) => <p key={i}>{p}</p>)}
+              </div>
+            ) : (
+              <p className="writing"><span>Leyendo tu carta</span></p>
+            )}
+          </section>
+
+          <Signature sig={profile.signature} />
+
+          {free && <div className="next-step">
             <h2>Esto es solo la superficie</h2>
             <p>
               El informe completo son ocho secciones y unas 2.000 palabras sobre
