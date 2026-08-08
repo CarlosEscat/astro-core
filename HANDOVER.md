@@ -2,15 +2,18 @@
 
 ## Estado actual (keep this section updated — it is the first thing read)
 
-Last updated: 2026-08-08 (prompt fragments split, Addendum 8; gate word
-boundaries fixed, Addendum 9)
+Last updated: 2026-08-08 — prompt fragments split (Addendum 8), gate word
+boundaries fixed (Addendum 9), paid report re-modelled and flow designed
+(Addenda 10-11, spec + four plans).
 
 ### Done
 - [x] Chart computation engine (Placidus + whole-sign fallback), 25 tests
 - [x] Report + teaser prompt layer, PII-free, injection-sanitized
 - [x] Model bake-off run, ranked blind → `bakeoff-out/RANKING.md`
 - [x] Models selected: Kimi K3 (paid report, $0.216), DeepSeek V4 Flash
-      (teaser, ~$0.0008) — details in Addendum 2
+      (teaser, ~$0.0008) — details in Addendum 2. **The paid half of this
+      was superseded on 2026-08-08 (Addendum 10): DeepSeek V4 Pro per
+      section, Kimi K3 as escalation. The free tier is unchanged.**
 - [x] Prompt hardening: aspect-vocabulary, retrograde, gender-neutrality
       rules in both prompts (tests assert them)
 - [x] `validateTeaser()` mechanical output gate + 8 tests
@@ -46,22 +49,53 @@ boundaries fixed, Addendum 9)
 - [x] Gate word boundaries made Unicode-aware (Addendum 9) — `\b` is
       ASCII-only, so "te hace soñar" and "solía" were misread. Three
       false positives fixed, one known false negative left open.
-- [ ] Supabase schema: charts, orders, reports, quotas (not designed)
-- [ ] Stripe checkout: one-time, Bizum enabled, webhook-triggered
-      generation (never block checkout on LLM latency)
-- [ ] Report delivery + shareable cosmic-signature card (computed rarity
-      stat, IG/TikTok aspect ratio)
-- [ ] PDF rendering (Puppeteer over the same report component)
+- [x] **Paid report flow designed** (2026-08-08). Spec:
+      `docs/superpowers/specs/2026-08-08-paid-report-flow-design.md`.
+      Roadmap of all four plans:
+      `docs/superpowers/plans/2026-08-08-paid-report-roadmap.md`.
+      Read the spec before touching any of the plans below. Two calls in
+      it are counterintuitive and both have their reasoning recorded in
+      Addendum 10: the paid report moves off Kimi to DeepSeek V4 Pro
+      per section, and the paid tier gets no gender gate.
+
+The paid report is now four sequential plans. Nothing below is built.
+
+- [ ] **Plan 1 — section generation core** (WRITTEN, not executed):
+      `docs/superpowers/plans/2026-08-08-per-section-report-generation.md`.
+      Pure TypeScript in astro-core, no vendor accounts, 169 → 205 tests.
+      Ends with `scripts/battery-sections.ts`, which **measures the risk
+      accepted in Addendum 10**. Run it before building anything on top.
+- [ ] **Plan 2 — orders, payment, persistence.** Supabase schema
+      (`orders`, `report_sections`, `entitlements`), `/api/checkout`,
+      Stripe with Bizum, webhook with signature verification and
+      idempotency, 24h expiry sweep that deletes unpaid birth data.
+      Can be built in parallel with plan 1: the schema does not depend
+      on which model wins.
+- [ ] **Plan 3 — queued generation pipeline.** Inngest two-wave fan-out,
+      conditional `paid → generating` claim, per-section retry and Kimi
+      escalation, Resend email.
+- [ ] **Plan 4 — delivery UI.** `/informe/<token>` holding page with
+      progressive rendering, report component, shareable 9:16 card,
+      and wiring the buy CTA that is currently just copy in
+      `BirthForm.tsx:287`.
+- [ ] PDF rendering (Puppeteer over the same report component) — own spec
 - [ ] Daily cron: transits once/day → 12 horoscopes → Supabase cache
 - [ ] Oracle chat (post-MVP): system-oracle.md, rolling window, quotas
 
 ### Small pending fixes
-- [ ] `parseReport` tolerant of `#` vs `##` first heading (saves paid
-      retries; bake-off lost 4 good reports to this)
+- [ ] `parseReport` tolerant of `#` vs `##` — **scheduled as plan 1
+      task 3**, no longer loose. Saves paid retries; the bake-off lost 4
+      good reports to this.
 - [ ] Compiled `dist/` can't find `prompts/` (only matters when the
       package is consumed from build output)
-- [ ] Re-verify Kimi K3 on its pinned production host before launch
-      (fp8/bf16 + the new gender rule, untested in the bake-off)
+- [ ] Re-verify Kimi K3 on its pinned production host before launch.
+      Now better evidenced: on 2026-08-08 the same slug cost $0.218 and
+      $0.481 on two calls and returned empty once. Kimi is no longer the
+      primary paid model (Addendum 10) but it IS the escalation path, so
+      this still matters.
+- [ ] `acabas agotada` escapes the gender check — the rule's verb list
+      omits "acabas" (Addendum 9). A false negative, the dangerous
+      direction. Free tier only; the paid tier logs rather than gates.
 
 ## What this is
 
@@ -80,8 +114,10 @@ Second idea in the same conversation (not started): a nautical-license
 
 ## What's built so far: `astro-core` package
 
-A standalone TypeScript package, NOT yet wired into a Next.js app. It has
-two layers:
+A TypeScript package consumed by the Next.js app in `web/` through the
+`@core/*` path alias. (This section used to say "NOT yet wired into a
+Next.js app" — that stopped being true when the app was scaffolded.) It
+has two layers:
 
 **1. Chart computation** (`src/chart.ts`, `ephemeris.ts`, `houses.ts`,
 `aspects.ts`, `zodiac.ts`, `types.ts`)
@@ -160,8 +196,11 @@ astro-core/
 └── tests/
     ├── chart.test.ts (25 tests), report.test.ts (8 tests)
 ```
-33/33 tests passing as of last run. `npm test` and `npm run example` both
-verified working.
+**The tree above is the 2026-08-05 snapshot and is now incomplete** — it
+predates `src/birthtime.ts`, `places.ts`, `profile.ts`, `rulers.ts`,
+`validate.ts`, `src/copy/`, the `prompts/rules-*.md` fragments, `web/`
+and `scripts/`. Trust `ls` over this diagram. **169 tests passing** as of
+2026-08-08; `npm test` and `npm run example` both verified.
 
 ## Immediate next steps, in order
 
@@ -838,3 +877,67 @@ Also recorded there and worth knowing before touching the pipeline:
 - **The free tier keeps its gate**, because a rejection there costs
   $0.000375 and it can rotate the feature on retry — a lever the paid
   report does not have.
+
+---
+
+## Addendum 11: the paid report is four plans, in this order (2026-08-08)
+
+Spec: `docs/superpowers/specs/2026-08-08-paid-report-flow-design.md`
+Roadmap: `docs/superpowers/plans/2026-08-08-paid-report-roadmap.md`
+
+**Nothing of the paid report exists yet.** The prompt layer works and
+`scripts/battery-report.ts` writes reports to disk, but there is no
+route, no component, no checkout and no delivery. The only mention of it
+in `web/` is sales copy at `BirthForm.tsx:287`.
+
+| Plan | Delivers | Vendors |
+|---|---|---|
+| 1 (written) | section generation core in astro-core | none |
+| 2 | orders, payment, persistence | Stripe, Supabase |
+| 3 | queued generation pipeline | Inngest, Resend |
+| 4 | delivery UI and share card | none |
+
+**Why plan 1 comes first even though it builds nothing sellable.** It
+needs no vendor accounts, and it ends by measuring the risk Addendum 10
+accepted. If DeepSeek V4 Pro does not hold quality under per-section
+briefing, that reopens the model decision — and the difference between
+learning it in plan 1 and learning it in plan 4 is a few dollars versus
+several weeks of infrastructure built on a wrong assumption.
+
+Plan 2 can run in parallel: the schema does not depend on which model
+wins. Plans 3 and 4 cannot.
+
+### Decisions in the spec that are easy to get wrong later
+
+- **No user account.** Tokenised link plus email. No users table. Oracle
+  quota later hangs off the order, not a person.
+- **Birth data is stored only at checkout intent**, and Stripe receives
+  an opaque id — never the birth date, time or place. Same reasoning as
+  the bundled GeoNames index (Addendum 4). The 24h expiry sweep deletes
+  the birth data of people who never paid.
+- **The chart is snapshotted with the finished report**, not recomputed
+  on read. If the engine ever changes, a delivered report must stay
+  auditable against the exact chart it was grounded in — that claim is
+  the whole product.
+- **The webhook never generates.** It marks paid and enqueues. A
+  conditional `paid → generating` claim stops at-least-once delivery
+  generating (and billing) twice.
+- **Section 8 cannot be generated in parallel** — it is a synthesis of
+  the other seven. Hence two waves. It receives the first sentence of
+  each earlier section, not their full prose.
+- **A deterministic allocation pass** hands each section the aspects it
+  owns before any call happens, so seven concurrent calls cannot all
+  reach for the same tightest aspect. Same principle as the free tier's
+  `selectFeature`: compute the structure, hand the model one chosen thing.
+
+### What the queue is still for at ~30 seconds
+
+The async architecture was designed for a 5-7 minute wait. Per-section
+DeepSeek generation is ~25-30s, so that justification mostly evaporated.
+It stays for different reasons, and a future session should know they are
+the real ones: the Stripe webhook must return in seconds regardless;
+at-least-once delivery needs the conditional claim; retries and
+escalation need durable state; and the buyer can close the tab.
+
+What changed is that **email stops being the primary delivery and becomes
+a safety net** — the holding page fills in progressively instead.
