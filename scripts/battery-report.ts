@@ -12,8 +12,14 @@ import { buildReportMessages, parseReport, SECTION_TITLES } from "../src/report"
 import type { NatalChart } from "../src/types";
 
 const MODEL = "moonshotai/kimi-k3";
-/** Reasoning model: returns EMPTY content at lower budgets. */
-const MAX_TOKENS = 24000;
+/**
+ * Reasoning model: returns EMPTY content at lower budgets. 24000 was measured
+ * on 2026-08-05 and went empty on bilbao-2000 on 2026-08-08 — the reasoning
+ * burst is variable (8851 tokens on the successful retry, >24000 on the empty
+ * run), so the old figure was marginal, not wrong. Raising the ceiling costs
+ * nothing: you are billed for tokens used, not for the budget.
+ */
+const MAX_TOKENS = 40000;
 const OUT = "bakeoff-out/section5";
 
 function chartFor(
@@ -66,7 +72,21 @@ async function main() {
     const text: string = data.choices?.[0]?.message?.content ?? "";
     // Never trust status alone — reasoning models spend the budget and return
     // HTTP 200 with empty content.
-    if (!text.trim()) { console.log("VACÍO"); continue; }
+    // Log everything on the empty path. The 2026-08-08 run discarded it and
+    // left us unable to tell budget exhaustion (finish_reason "length") from a
+    // provider fault ("stop" with no content), or to see which host served it.
+    if (!text.trim()) {
+      const u = data.usage ?? {};
+      console.log(
+        `VACÍO · finish=${data.choices?.[0]?.finish_reason}` +
+        `/${data.choices?.[0]?.native_finish_reason ?? "?"}` +
+        ` · provider=${data.provider ?? "?"}` +
+        ` · prompt=${u.prompt_tokens} completion=${u.completion_tokens}` +
+        ` reasoning=${u.completion_tokens_details?.reasoning_tokens ?? "?"}` +
+        ` · $${u.cost ?? "?"}`,
+      );
+      continue;
+    }
 
     writeFileSync(`${OUT}/${c.name}.md`, text);
     const parsed = parseReport(text);
@@ -80,7 +100,13 @@ async function main() {
       `OK · ${parsed.wordCount} palabras · sección 5 "${section.title}" ${words} palabras · ` +
       (echoes.length ? `REPITE LO GRATUITO: ${echoes.map((r) => r.source).join(" | ")}` : "sin solapamiento"),
     );
-    console.log(`    cost: $${data.usage?.cost ?? "?"} → ${OUT}/${c.name}.md`);
+    // provider + reasoning tokens on every call: the 2.2x cost spread measured
+    // on 2026-08-08 is only diagnosable if we know which host served each one.
+    console.log(
+      `    cost: $${data.usage?.cost ?? "?"} · provider=${data.provider ?? "?"}` +
+      ` · reasoning=${data.usage?.completion_tokens_details?.reasoning_tokens ?? "?"}` +
+      ` → ${OUT}/${c.name}.md`,
+    );
   }
   console.log(`\nSecciones completas guardadas en ${OUT}/ — léelas antes de dar esto por bueno.`);
 }

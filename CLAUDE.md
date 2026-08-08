@@ -20,8 +20,12 @@ dated addenda in the same file.
 
 ## Working notes
 
-- `npm test` must stay green (151 tests). `npm run example` smoke-tests
+- `npm test` must stay green (169 tests). `npm run example` smoke-tests
   the tsx path — vitest passing does NOT prove tsx works (ESM interop).
+- Prompts are composed from fragments, never copy-pasted. `{{RULES}}` is
+  universal; `{{RULES_CHART}}` holds the technical vocabulary and may
+  ONLY go in prompts that receive the raw chart JSON — the free tier is
+  handed pre-translated data so it never learns the jargon (Addendum 8).
 - `OPENROUTER_API_KEY` lives in `.env.local` (gitignored). Never commit
   or print it.
 - LLM calls: reasoning models return empty content when max_tokens is
