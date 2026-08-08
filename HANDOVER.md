@@ -785,3 +785,56 @@ model to avoid "acabas agotada". That is a false negative, the dangerous
 direction. It was out of scope here (widening the verb list risks new
 false positives and needs its own battery), but it is a real hole worth
 closing before launch.
+
+---
+
+## Addendum 10: the paid report's model choice is superseded (2026-08-08)
+
+Full reasoning: `docs/superpowers/specs/2026-08-08-paid-report-flow-design.md`.
+
+**The two-tier model decision (Kimi K3 paid / DeepSeek Flash free) no
+longer describes the paid tier.** The paid report becomes **DeepSeek V4
+Pro, one call per section, eight sections in two waves**, with Kimi K3
+kept as a per-section escalation path.
+
+This is a change to a decision CLAUDE.md lists as settled, so the cause
+is recorded rather than assumed. The bake-off compared *whole reports in
+a single call*, and the paid pipeline no longer works that way — the old
+result does not automatically transfer.
+
+**Why it holds up.** V4 Pro scored 49.5 to Kimi's 54, and its recorded
+weakness was exactly *"fully grounded; structure/length slips"*.
+Per-section generation removes structure and length from the model: each
+call gets one brief, one word range and a deterministic allocation of
+chart features. Part of the bake-off's margin was measuring a problem
+this architecture deletes. Grounding, the eliminatory criterion, V4 Pro
+already passed.
+
+**The argument is speed, not cost.** Cost on this tier is a rounding
+error and arguing from it would relitigate a locked decision on weak
+grounds. But ~5 min → ~25-30 s changes the product: the buyer reads
+section one while the rest generates, and the holding page stops being a
+apology.
+
+**The fallback inverts.** A section that exhausts its DeepSeek retries
+escalates to Kimi. Two providers are preserved (a DeepSeek outage does
+not stop sales) and a section DeepSeek cannot land degrades *upward* in
+quality, for the price of one section rather than one report.
+
+**Risk accepted, stated plainly:** paid prose drops from 54-class to
+49.5-class on the rubric, and per-section briefing closing that gap is
+**predicted, not measured**. Re-running the blind bake-off per section
+against the same rubric and the same three charts is cheap and is listed
+as the first thing to measure.
+
+Also recorded there and worth knowing before touching the pipeline:
+
+- **No gender gate on the paid tier**, deliberately. Extrapolating the
+  free tier's rate across 2,400 words gives ~5% of reports passing —
+  half the revenue spent on rejected drafts. The paid path runs
+  `repair()`, validates structure only, and *logs* gender marks instead
+  of rejecting. If the log shows it is frequent, the fix is a prompt
+  rule, not a regex.
+- **The free tier keeps its gate**, because a rejection there costs
+  $0.000375 and it can rotate the feature on retry — a lever the paid
+  report does not have.

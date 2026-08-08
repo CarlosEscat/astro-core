@@ -15,8 +15,11 @@ dated addenda in the same file.
   first name ever enter a prompt.
 - **Grounding discipline**: LLM output may only claim what the chart
   JSON contains. Teaser output must pass `validateTeaser()` (retry ≤2).
-- Settled decisions (web-first, one-time payments, Placidus, two-tier
-  models: Kimi K3 paid / DeepSeek V4 Flash free) are in `HANDOVER.md`.
+- Settled decisions (web-first, one-time payments, Placidus) are in
+  `HANDOVER.md`. **Models: the two-tier choice was superseded on
+  2026-08-08** — the paid report is DeepSeek V4 Pro one call per
+  section, Kimi K3 as per-section escalation; the free tier stays
+  DeepSeek V4 Flash. Reasoning in Addendum 10.
 
 ## Working notes
 
