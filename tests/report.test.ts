@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { computeNatalChart } from "../src/chart";
 import {
-  buildReportMessages, buildTeaserMessages, parseReport, validateTeaser, SECTION_TITLES,
+  buildReportMessages, buildTeaserMessages, buildFreeMessages, parseReport, validateTeaser,
+  SECTION_TITLES,
 } from "../src/report";
 
 const chart = computeNatalChart({
@@ -150,20 +151,58 @@ describe("paid report section 5", () => {
 });
 
 describe("shared rules fragment", () => {
+  const report = () => buildReportMessages({ chart })[0].content;
+  const teaser = () => buildTeaserMessages({ chart })[0].content;
+  const free = () => buildFreeMessages({ chart })[0].content;
+
   it("injects the universal rules into every prompt", () => {
-    const report = buildReportMessages({ chart })[0].content;
-    const teaser = buildTeaserMessages({ chart })[0].content;
-    for (const prompt of [report, teaser]) {
+    for (const prompt of [report(), teaser(), free()]) {
       expect(prompt).toContain("No asumas ni indiques el género de la persona");
-      expect(prompt).not.toContain("{{RULES}}");
     }
   });
 
-  it("keeps the content bans in both prompts", () => {
-    for (const prompt of [buildReportMessages({ chart })[0].content,
-                          buildTeaserMessages({ chart })[0].content]) {
+  // A fragment needs somewhere to tell a human editor which prompts may use it.
+  // That note must not reach the model: it costs tokens and describes the system,
+  // which the universal rules forbid the model from ever mentioning.
+  it("strips editor notes from the composed prompts", () => {
+    for (const prompt of [report(), teaser(), free()]) {
+      expect(prompt).not.toContain("<!--");
+      expect(prompt).not.toContain("Los productos que reciben datos ya traducidos");
+    }
+  });
+
+  it("leaves no placeholder unreplaced in any prompt", () => {
+    for (const prompt of [report(), teaser(), free()]) {
+      expect(prompt).not.toMatch(/\{\{[A-Z_]+\}\}/);
+    }
+  });
+
+  it("keeps the content bans in every prompt", () => {
+    for (const prompt of [report(), teaser(), free()]) {
       expect(prompt).toMatch(/salud/i);
       expect(prompt).toMatch(/muerte/i);
+    }
+  });
+
+  it("gives the chart-data rules to the prompts that receive the chart JSON", () => {
+    for (const prompt of [report(), teaser()]) {
+      expect(prompt).toContain("figuren en la lista `aspects`");
+      expect(prompt).toContain('La palabra "retrógrado" solo puede aplicarse');
+    }
+  });
+
+  // Addendum 6's governing principle: the free-tier model never sees jargon,
+  // because it cannot write a word it was never given. The universal fragment
+  // used to smuggle the aspect and retrogradation vocabulary back in.
+  it("keeps chart-data jargon out of the free prompt", () => {
+    const outsideItsOwnBanList = free()
+      .split("\n")
+      .filter((line) => !line.includes("NO puedes usar ninguna de estas palabras"))
+      .join("\n")
+      .toLowerCase();
+    for (const word of ["conjunción", "oposición", "cuadratura", "trígono",
+                        "sextil", "aspecto", "retrógrado"]) {
+      expect(outsideItsOwnBanList).not.toContain(word);
     }
   });
 });

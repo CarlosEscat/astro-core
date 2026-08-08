@@ -55,13 +55,34 @@ function pick(c: { sign: string; signDegree: number }) {
 
 /**
  * Prompts are composed, not copy-pasted: the universal rules drifted between
- * files once already. A prompt opts in by putting {{RULES}} on its own line.
+ * files once already. A prompt opts in by putting a placeholder on its own line.
+ *
+ * Two fragments, because the split is not cosmetic. {{RULES}} holds what every
+ * tier owes the reader (grounding, gender, content bans). {{RULES_CHART}} holds
+ * the technical-vocabulary rules, and ONLY prompts that receive the raw chart
+ * JSON may have it: the free tier is handed pre-translated data precisely so it
+ * never learns the jargon, and injecting these rules there would hand back the
+ * very words it is forbidden to write.
  */
+const FRAGMENTS: Record<string, string> = {
+  "{{RULES}}": "rules-universal.md",
+  "{{RULES_CHART}}": "rules-chart-data.md",
+};
+
+/** HTML comments in a fragment are notes to the next editor, not to the model. */
+function fragment(file: string): string {
+  return readFileSync(join(ROOT, "prompts", file), "utf8")
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .trim();
+}
+
 function loadPrompt(name: string): string {
-  const body = readFileSync(join(ROOT, "prompts", name), "utf8");
-  if (!body.includes("{{RULES}}")) return body;
-  const rules = readFileSync(join(ROOT, "prompts", "rules-universal.md"), "utf8");
-  return body.replace("{{RULES}}", rules.trim());
+  let body = readFileSync(join(ROOT, "prompts", name), "utf8");
+  for (const [placeholder, file] of Object.entries(FRAGMENTS)) {
+    if (!body.includes(placeholder)) continue;
+    body = body.replace(placeholder, fragment(file));
+  }
+  return body;
 }
 
 export function buildReportMessages(req: ReportRequest): ChatMessage[] {

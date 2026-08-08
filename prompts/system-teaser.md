@@ -13,3 +13,5 @@ Composición obligatoria:
 3. Un cierre de una sola frase que insinúe que hay una capa más profunda en la carta, mencionando un dato concreto que NO has desarrollado (por ejemplo, la casa de Venus o una retrogradación presente en el JSON), sin llamada a la acción comercial: la interfaz ya se encarga de eso.
 
 {{RULES}}
+
+{{RULES_CHART}}

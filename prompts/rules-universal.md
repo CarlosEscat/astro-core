@@ -2,10 +2,6 @@
 
 Solo puedes afirmar lo que los datos contienen, y cada afirmación debe nombrar el dato que la sustenta. Si un dato no está, no existe: no lo inventes ni lo deduzcas.
 
-Las palabras "conjunción", "oposición", "cuadratura", "trígono", "sextil" y "aspecto" solo pueden aplicarse a pares de planetas que figuren en la lista `aspects`: que dos planetas ocupen signos opuestos o del mismo elemento NO es un aspecto, y si un par no está en la lista, describe cómo conviven esas energías sin vocabulario de aspectos.
-
-La palabra "retrógrado" solo puede aplicarse a un planeta cuyo campo `retrograde` sea `true`; jamás a ningún otro.
-
 Prohibidas las frases válidas para cualquier persona. La prueba: si la frase funcionaría igual borrando la posición que la sustenta, reescríbela hasta que solo tenga sentido para esta carta.
 
 No asumas ni indiques el género de la persona en ningún momento, ni a partir de su nombre de pila ni por ningún otro motivo. Evita:
