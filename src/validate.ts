@@ -59,25 +59,64 @@ const CLICHES = [
 ];
 
 /**
+ * End-of-word assertion. JavaScript's `\b` is ASCII-only even under the /u
+ * flag: it treats "ñ" and accented vowels as non-word characters and so finds
+ * a boundary in the MIDDLE of a Spanish word. On the 2026-08-08 battery that
+ * made "te hace soñar" match as the non-word "te hace so" and burn a retry.
+ * Never use `\b` after a letter class in this file — use this.
+ */
+const WORD_END = "(?![\\p{L}\\p{N}])";
+/** The same, in front of a word. */
+const WORD_START = "(?<![\\p{L}\\p{N}])";
+
+/**
+ * Words that legitimately end in -o/-a after one of the verbs below without
+ * agreeing with the reader. Same device as NEUTRAL_NOUNS: narrow the rule by
+ * naming exceptions, never by weakening the pattern.
+ */
+const NEUTRAL_AFTER_VERB = "persona|gente|criatura|contigo|conmigo|consigo";
+/** Fixed idioms where the -o/-a word is the object, not a predicate. */
+const OBJECT_NOUNS = "daño|sombra|compa[ñn][íi]a|gracia|falta|caso|efecto|justicia";
+
+/**
  * Reader-directed constructions that force gender agreement. A false positive
  * costs one cheap retry; a false negative ships a gendered reading.
  */
 const GENDERED_READER = [
-  /\b(?:t[uú]|ti|s[ií])\s+mism[oa]\b/iu,
-  /\b(?:ser|estar|verte|sentirte|sentirse|saberte|mostrarte)\s+(?:\p{L}+(?:ad|id)|vist|hech|dich|puest|abiert|escrit|vuelt|satisfech)[oa]s?\b/iu,
+  new RegExp(`\\b(?:t[uú]|ti|s[ií])\\s+mism[oa]${WORD_END}`, "iu"),
+  new RegExp(
+    "\\b(?:ser|estar|verte|sentirte|sentirse|saberte|mostrarte)\\s+" +
+    `(?:\\p{L}+(?:ad|id)|vist|hech|dich|puest|abiert|escrit|vuelt|satisfech)[oa]s?${WORD_END}`,
+    "iu",
+  ),
   // Two exclusions, both measured against real model output on the battery:
   //  - gerunds: -ando/-iendo never carries gender, so "estás buscando" is fine;
-  //  - NEUTRAL_NOUNS: "persona"/"gente" are feminine in form but neutral in
-  //    reference, and are the very forms the rules fragment tells the model to
-  //    use. Without this, "no es que seas una persona fría" burns a retry.
+  //  - NEUTRAL_AFTER_VERB: "persona"/"gente" are feminine in form but neutral
+  //    in reference, and are the very forms the rules fragment tells the model
+  //    to use. Without this, "no es que seas una persona fría" burns a retry.
+  //    "contigo"/"conmigo"/"consigo" are pronouns that merely end in -o, and
+  //    "estás contigo" was rejected as a gendered adjective on the battery.
   // Mirrored in tests/copy.test.ts so hand-written copy meets the same standard.
-  /\b(?:eres|seas|fueras|ser[íi]as|est[áa]s|estabas|te\s+sientes|te\s+ves)\s+(?:m[áa]s\s+|muy\s+|tan\s+|un[ao]\s+|demasiado\s+)?(?!\p{L}*(?:ando|iendo)\b)(?!(?:persona|gente|criatura)\b)\p{L}{4,}[oa]\b/iu,
-  /\bte\s+(?:hace|vuelve|convierte)\s+(?:en\s+)?(?:m[áa]s\s+)?\p{L}+[oa]\b/iu,
+  new RegExp(
+    "\\b(?:eres|seas|fueras|ser[íi]as|est[áa]s|estabas|te\\s+sientes|te\\s+ves)\\s+" +
+    "(?:m[áa]s\\s+|muy\\s+|tan\\s+|un[ao]\\s+|demasiado\\s+)?" +
+    `(?!\\p{L}*(?:ando|iendo)${WORD_END})(?!(?:${NEUTRAL_AFTER_VERB})${WORD_END})` +
+    `\\p{L}{4,}[oa]${WORD_END}`,
+    "iu",
+  ),
+  new RegExp(
+    "\\bte\\s+(?:hace|vuelve|convierte)\\s+(?:en\\s+)?(?:m[áa]s\\s+)?" +
+    `(?!(?:${OBJECT_NOUNS})${WORD_END})\\p{L}+[oa]${WORD_END}`,
+    "iu",
+  ),
 ];
 
 const GENDERED_PARTNER = [
-  /\btu\s+(?:chico|chica|marido|mujer|novio|novia|pareja\s+\p{L}+[oa])\b/iu,
-  /\bquien\s+(?:se\s+)?\p{L}+\s+(?:envuelto|envuelta|comprendido|comprendida|amado|amada|perdido|perdida)\b/iu,
+  new RegExp(`\\btu\\s+(?:chico|chica|marido|mujer|novio|novia|pareja\\s+\\p{L}+[oa])${WORD_END}`, "iu"),
+  new RegExp(
+    `\\bquien\\s+(?:se\\s+)?\\p{L}+\\s+(?:envuelto|envuelta|comprendido|comprendida|amado|amada|perdido|perdida)${WORD_END}`,
+    "iu",
+  ),
 ];
 
 const PLANET_TO_BODY: Record<string, Body> = {
@@ -102,7 +141,9 @@ function planetsIn(fragment: string): string[] {
   const lower = fragment.toLowerCase();
   const found = new Set<string>();
   for (const [es, en] of Object.entries(PLANET_TO_BODY)) {
-    if (new RegExp(`\\b${es}\\b`, "u").test(lower)) found.add(en);
+    // Unicode boundaries, not \b: "solía" ends an ASCII word boundary right
+    // after "sol", which made an ordinary verb register as the Sun.
+    if (new RegExp(`${WORD_START}${es}${WORD_END}`, "u").test(lower)) found.add(en);
   }
   return [...found];
 }
@@ -112,21 +153,23 @@ function planetsIn(fragment: string): string[] {
  * the gate so a known slip costs no retry. Whitelist only: if a phrasing is
  * not on this list it goes to the gate untouched and gets rejected there.
  */
-const REPAIRS: Array<[RegExp, string]> = [
-  [/\bque\s+eres\s+[úu]nic[ao]\b/giu, "que no hay nadie como tú"],
-  [/\beres\s+[úu]nic[ao]\b/giu, "no hay nadie como tú"],
-  [/\bser\s+vist[ao]\b/giu, "que te miren"],
-  [/\bser\s+admirad[ao]\b/giu, "que te admiren"],
-  [/\bser\s+reconocid[ao]\b/giu, "que te reconozcan"],
-  [/\bsentirte\s+querid[ao]\b/giu, "que te quieran"],
-  [/\bsentirte\s+comprendid[ao]\b/giu, "que te entiendan"],
+const REPAIRS: Array<[RegExp, string]> = ([
+  ["que\\s+eres\\s+[úu]nic[ao]", "que no hay nadie como tú"],
+  ["eres\\s+[úu]nic[ao]", "no hay nadie como tú"],
+  ["ser\\s+vist[ao]", "que te miren"],
+  ["ser\\s+admirad[ao]", "que te admiren"],
+  ["ser\\s+reconocid[ao]", "que te reconozcan"],
+  ["sentirte\\s+querid[ao]", "que te quieran"],
+  ["sentirte\\s+comprendid[ao]", "que te entiendan"],
   // "tú mismo/a" and "ti mismo/a" are pure intensifiers: dropping the
   // agreement word costs nothing semantically and saves a ~5 s retry. These
   // were the single most frequent gender rejection on the live battery.
-  [/\bt[úu]\s+mism[ao]\b/giu, "tú"],
-  [/\bti\s+mism[ao]\b/giu, "ti"],
-  [/\beres\s+de\s+los\s+que\b/giu, "eres de quienes"],
-];
+  ["t[úu]\\s+mism[ao]", "tú"],
+  ["ti\\s+mism[ao]", "ti"],
+  ["eres\\s+de\\s+los\\s+que", "eres de quienes"],
+] as Array<[string, string]>).map(
+  ([src, to]) => [new RegExp(`${WORD_START}${src}${WORD_END}`, "giu"), to],
+);
 
 export function repair(text: string): string {
   let out = text;
@@ -215,7 +258,7 @@ export function validateProse(
   // real aspect of that type between them. Other counts are unattributable.
   for (const sentence of sentencesOf(trimmed)) {
     const types = Object.entries(ASPECT_ES)
-      .filter(([es]) => new RegExp(`\\b${es}\\b`, "iu").test(sentence))
+      .filter(([es]) => new RegExp(`${WORD_START}${es}${WORD_END}`, "iu").test(sentence))
       .map(([, en]) => en);
     if (types.length === 0) continue;
     const mentioned = planetsIn(sentence);

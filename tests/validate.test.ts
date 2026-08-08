@@ -49,6 +49,16 @@ describe("false placement claims", () => {
   it("accepts a correct sign claim", () => {
     expect(check("tu Júpiter en Géminis").ok).toBe(true);
   });
+
+  // Same ASCII-\b root cause: "solía" ends the boundary at "sol" because "í"
+  // is not an ASCII word character, so the Sun looked like it was named.
+  it("does not find a planet inside an ordinary Spanish word", () => {
+    const v = validateProse(
+      "Eso que solía estar retrógrado ya no te frena.",
+      bilbao, { ...RANGE, allowJargon: true },
+    );
+    expect(v.problems.join(" | ")).not.toContain("retrogradación inventada");
+  });
 });
 
 describe("gendered phrasing aimed at the reader", () => {
@@ -67,6 +77,42 @@ describe("gendered phrasing aimed at the reader", () => {
   it("accepts the neutral rewrite", () => {
     expect(check("necesitas que te miren y que te lo digan").ok).toBe(true);
     expect(check("eres alguien que se guarda las cosas").ok).toBe(true);
+  });
+
+  // JavaScript's \b is ASCII-only even under /u, so it reads "ñ" and accented
+  // vowels as non-word characters and finds a boundary inside a Spanish word.
+  // "te hace soñar" was rejected as the non-word "te hace so" on the live
+  // 2026-08-08 battery, burning a ~5 s retry for nothing.
+  it.each([
+    "te hace soñar con otra vida",
+    "eso te hace daño y lo sabes",
+    "te hace compañía cuando nadie más está",
+    "te hace sombra sin darse cuenta",
+    "te hace gracia que insistan",
+    "te hace falta que te lo recuerden",
+  ])("does not mistake a noun or infinitive for a gendered adjective: %s", (text) => {
+    expect(problems(text)).not.toContain("marca de género");
+  });
+
+  // "contigo" ends in -o and was read as a masculine adjective. Observed as
+  // `apertura: marca de género: "estás contigo"` on the same battery.
+  it.each([
+    "cuando estás contigo la cosa cambia",
+    "lo que no dices ni estando conmigo",
+    "quien no carga consigo esa historia",
+  ])("does not read a pronoun as a gendered adjective: %s", (text) => {
+    expect(problems(text)).not.toContain("marca de género");
+  });
+
+  // A false negative ships a gendered reading, which is worse than a retry:
+  // the fixes above must not blunt the rule they sit inside.
+  it.each([
+    "eso te hace más profundo de lo que pareces",
+    "te hace cauta con quien se acerca",
+    "cuando estás cansada se te nota",
+    "no es que seas directo, es que no filtras",
+  ])("still rejects real gendered phrasing: %s", (text) => {
+    expect(problems(text)).toContain("marca de género");
   });
 });
 
