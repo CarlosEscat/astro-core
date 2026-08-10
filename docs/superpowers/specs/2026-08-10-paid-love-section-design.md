@@ -1,7 +1,15 @@
 # La sección de amor del informe de pago adopta la forma de la lectura gratuita
 
 Fecha: 2026-08-10
-Estado: aprobado, pendiente de plan de implementación
+Estado: **SUSTITUIDO** el mismo día por
+`2026-08-10-paid-report-plain-language-design.md`.
+
+> Su decisión 1 descartaba la paridad de registro — prosa técnica en el
+> informe, prosa llana solo en la lectura gratuita. Esa decisión se
+> revocó: el informe entero pasa a registro llano y los datos se
+> muestran en una tira por sección. Las decisiones 2 a 9 de este
+> documento siguen vivas y están absorbidas en el que lo sustituye.
+> Se conserva por el registro de por qué se decidió lo contrario primero.
 
 ## Problema
 
