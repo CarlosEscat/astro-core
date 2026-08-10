@@ -278,6 +278,22 @@ export { validateTeaser, validateProse } from "./validate";
 export type { Validation, ProseOptions } from "./validate";
 
 /**
+ * Reassemble section bodies into the markdown parseReport understands.
+ * A model told not to emit a heading sometimes emits one anyway; stripping it
+ * here is cheaper than a retry, and a duplicated heading breaks the parser.
+ */
+export function composeReport(bodies: string[]): string {
+  if (bodies.length !== SECTION_TITLES.length) {
+    throw new RangeError(`Se esperaban ${SECTION_TITLES.length} secciones, llegaron ${bodies.length}`);
+  }
+  return SECTION_TITLES.map((title, i) => {
+    const escaped = title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const body = bodies[i].replace(new RegExp(`^#{1,3}[ \\t]*${escaped}[ \\t]*$`, "im"), "").trim();
+    return `## ${title}\n\n${body}`;
+  }).join("\n\n");
+}
+
+/**
  * A heading on its own line, at any level the model might emit. A literal
  * `indexOf("## " + title)` lost four otherwise-good reports in the bake-off to
  * a model that answered with `#` or `###`; regenerating a paid report over a
