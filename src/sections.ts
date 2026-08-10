@@ -1,4 +1,6 @@
-import { SECTION_TITLES, type Focus } from "./report";
+// Type-only: report.ts imports briefFor from here, so a value import would
+// close a runtime cycle. Nothing in this file needs the titles at runtime.
+import type { SECTION_TITLES, Focus } from "./report";
 
 /**
  * The eight section briefs, lifted from `# Estructura del informe` in

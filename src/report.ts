@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { NatalChart } from "./types";
+import type { AspectType, NatalChart } from "./types";
+import type { AspectRef, SectionAllocation } from "./allocate";
+import { briefFor } from "./sections";
 import { relationshipProfile, selectFeature } from "./profile";
 import { AREA_ES } from "./copy/areas.es";
 import { SIGN_ES } from "./copy/signs.es";
@@ -108,6 +110,66 @@ export function buildTeaserMessages(req: ReportRequest): ChatMessage[] {
 
   return [
     { role: "system", content: loadPrompt("system-teaser.md") },
+    { role: "user", content: parts.join("\n\n") },
+  ];
+}
+
+export interface SectionRequest {
+  chart: NatalChart;
+  /** 0-7 */
+  section: number;
+  allocation: SectionAllocation[];
+  firstName?: string;
+  focus?: Focus;
+  /** Section 7 only: the first sentence of each earlier section, in order. */
+  priorOpenings?: string[];
+}
+
+/** Plain-language rendering of an aspect for the brief. */
+function aspectLine(r: AspectRef): string {
+  const ES: Record<AspectType, string> = {
+    conjunction: "conjunción", opposition: "oposición", square: "cuadratura",
+    trine: "trígono", sextile: "sextil",
+  };
+  return `${r.a}-${r.b}: ${ES[r.type]} (orbe ${r.orb.toFixed(2)}°)`;
+}
+
+/**
+ * One call per section. The model is handed a single brief, one word range and
+ * the aspects it owns, so the things V4 Pro slipped on in the bake-off —
+ * structure and length — stop being its job at all.
+ */
+export function buildSectionMessages(req: SectionRequest): ChatMessage[] {
+  const brief = briefFor(req.section, req.focus);
+  const mine = req.allocation[req.section];
+
+  const parts = [
+    `Carta natal (JSON):\n${JSON.stringify(chartForLLM(req.chart))}`,
+    `Sección: ${brief.title}`,
+    `Extensión: entre ${brief.minWords} y ${brief.maxWords} palabras.`,
+    `Encargo:\n${brief.brief}`,
+  ];
+
+  if (mine.aspects.length) {
+    parts.push(`Aspectos que te pertenecen:\n${mine.aspects.map(aspectLine).join("\n")}`);
+  }
+  if (mine.reserved.length) {
+    parts.push(
+      "No uses estos aspectos, pertenecen a otras secciones:\n" +
+      mine.reserved.map(aspectLine).join("\n"),
+    );
+  }
+  if (req.priorOpenings?.length) {
+    parts.push(
+      "Primera frase de cada sección anterior, para que hiles sin repetir:\n" +
+      req.priorOpenings.map((s, i) => `${i + 1}. ${s}`).join("\n"),
+    );
+  }
+  if (req.firstName) parts.push(`Nombre de pila: ${sanitizeName(req.firstName)}`);
+  parts.push("Escribe ahora esa sección, sin encabezado.");
+
+  return [
+    { role: "system", content: loadPrompt("system-section.md") },
     { role: "user", content: parts.join("\n\n") },
   ];
 }
