@@ -24,7 +24,7 @@ and 4 cannot.
 
 ---
 
-## Plan 1 — Section generation core ✅ WRITTEN
+## Plan 1 — Section generation core ✅ EXECUTED 2026-08-10
 
 `docs/superpowers/plans/2026-08-08-per-section-report-generation.md`
 
@@ -35,7 +35,16 @@ back into parseable markdown, and the measuring battery. 169 → 205 tests.
 
 **Done when:** `scripts/battery-sections.ts` produces three complete
 reports and you have read them, with wall clock, cost, escalation rate
-and gender marks recorded in HANDOVER.
+and gender marks recorded in HANDOVER. — **Met.** 169 → 215 tests (not
+205: three fixes the battery forced). Two battery runs, results in
+Addendum 12.
+
+**One thing plan 2 and 3 must inherit:** `validateSection(text, brief,
+chart)` takes the chart now, and its `fatal` list (empty, truncated,
+ungrounded) is what drives retry and escalation. **Length is advisory and
+must never trigger a retry** — doing so made the first run slower and
+dearer than the architecture it replaced. Plan 3 task 5 should persist
+the advisory problems too, not just `fatal`.
 
 ---
 
@@ -173,11 +182,25 @@ shareable card, from a browser, without touching the terminal.
 
 ## Open questions these plans do not answer
 
-1. **Does DeepSeek V4 Pro hold quality per section?** Plan 1 task 7
-   measures it. Everything downstream assumes yes.
-2. **Real cost of eight calls.** Eight prompts each carry the chart and
-   rules (~3,400 tokens). Prefix caching should absorb it; unmeasured.
-3. **Reasoning effort.** Untested on Kimi, and now applies per section.
-   Addendum 5 proved the win on the teaser.
+1. ~~**Does DeepSeek V4 Pro hold quality per section?**~~ **ANSWERED
+   2026-08-10: yes.** Measured on a run with zero Kimi calls, so it
+   isolates V4 Pro. Grounding verified clean on all three reports.
+   HANDOVER Addendum 12.
+2. ~~**Real cost of eight calls.**~~ **ANSWERED: ~$0.042 and ~108 s per
+   report**, 24/24 sections first attempt, zero escalations. Cheaper and
+   ~3x faster than the single Kimi call. Addendum 12's confirming run.
+3. **Reasoning effort.** Still untested as a deliberate setting — but
+   note the 2026-08-10 runs show OpenRouter routing one slug across
+   nine hosts, some returning `reasoning=0` and some 5265 reasoning
+   tokens. Any measurement here must pin the provider or it measures
+   routing instead.
+5. **NEW: is a ~3,000-word report the product you want?** Length is now
+   advisory, and reports came in at 2877-3071 words with 12 of 24
+   sections over their brief ceiling. Affects plan 4's rendering and the
+   PDF spec. Addendum 12.
+6. **NEW: gender marks appear in 2 of 3 reports** (~9,000 words). The
+   paid tier logs rather than gates by design, and Addendum 10 set the
+   bar for acting: *"if the log shows it is frequent, the fix is a prompt
+   rule, not a regex."* That bar is met.
 4. **`acabas agotada`** and similar constructions escape the gender
    check entirely (Addendum 9). Matters more once reports ship at volume.
