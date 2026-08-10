@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { NatalChart } from "./types";
+import type { AspectType, NatalChart } from "./types";
+import type { AspectRef, SectionAllocation } from "./allocate";
+import { briefFor } from "./sections";
 import { relationshipProfile, selectFeature } from "./profile";
 import { AREA_ES } from "./copy/areas.es";
 import { SIGN_ES } from "./copy/signs.es";
@@ -112,6 +114,66 @@ export function buildTeaserMessages(req: ReportRequest): ChatMessage[] {
   ];
 }
 
+export interface SectionRequest {
+  chart: NatalChart;
+  /** 0-7 */
+  section: number;
+  allocation: SectionAllocation[];
+  firstName?: string;
+  focus?: Focus;
+  /** Section 7 only: the first sentence of each earlier section, in order. */
+  priorOpenings?: string[];
+}
+
+/** Plain-language rendering of an aspect for the brief. */
+function aspectLine(r: AspectRef): string {
+  const ES: Record<AspectType, string> = {
+    conjunction: "conjunción", opposition: "oposición", square: "cuadratura",
+    trine: "trígono", sextile: "sextil",
+  };
+  return `${r.a}-${r.b}: ${ES[r.type]} (orbe ${r.orb.toFixed(2)}°)`;
+}
+
+/**
+ * One call per section. The model is handed a single brief, one word range and
+ * the aspects it owns, so the things V4 Pro slipped on in the bake-off —
+ * structure and length — stop being its job at all.
+ */
+export function buildSectionMessages(req: SectionRequest): ChatMessage[] {
+  const brief = briefFor(req.section, req.focus);
+  const mine = req.allocation[req.section];
+
+  const parts = [
+    `Carta natal (JSON):\n${JSON.stringify(chartForLLM(req.chart))}`,
+    `Sección: ${brief.title}`,
+    `Extensión: entre ${brief.minWords} y ${brief.maxWords} palabras.`,
+    `Encargo:\n${brief.brief}`,
+  ];
+
+  if (mine.aspects.length) {
+    parts.push(`Aspectos que te pertenecen:\n${mine.aspects.map(aspectLine).join("\n")}`);
+  }
+  if (mine.reserved.length) {
+    parts.push(
+      "No uses estos aspectos, pertenecen a otras secciones:\n" +
+      mine.reserved.map(aspectLine).join("\n"),
+    );
+  }
+  if (req.priorOpenings?.length) {
+    parts.push(
+      "Primera frase de cada sección anterior, para que hiles sin repetir:\n" +
+      req.priorOpenings.map((s, i) => `${i + 1}. ${s}`).join("\n"),
+    );
+  }
+  if (req.firstName) parts.push(`Nombre de pila: ${sanitizeName(req.firstName)}`);
+  parts.push("Escribe ahora esa sección, sin encabezado.");
+
+  return [
+    { role: "system", content: loadPrompt("system-section.md") },
+    { role: "user", content: parts.join("\n\n") },
+  ];
+}
+
 export interface FreeReading {
   apertura: string;
   amor: string;
@@ -215,21 +277,51 @@ export interface ParsedReport {
 export { validateTeaser, validateProse } from "./validate";
 export type { Validation, ProseOptions } from "./validate";
 
+/**
+ * Reassemble section bodies into the markdown parseReport understands.
+ * A model told not to emit a heading sometimes emits one anyway; stripping it
+ * here is cheaper than a retry, and a duplicated heading breaks the parser.
+ */
+export function composeReport(bodies: string[]): string {
+  if (bodies.length !== SECTION_TITLES.length) {
+    throw new RangeError(`Se esperaban ${SECTION_TITLES.length} secciones, llegaron ${bodies.length}`);
+  }
+  return SECTION_TITLES.map((title, i) => {
+    const escaped = title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const body = bodies[i].replace(new RegExp(`^#{1,3}[ \\t]*${escaped}[ \\t]*$`, "im"), "").trim();
+    return `## ${title}\n\n${body}`;
+  }).join("\n\n");
+}
+
+/**
+ * A heading on its own line, at any level the model might emit. A literal
+ * `indexOf("## " + title)` lost four otherwise-good reports in the bake-off to
+ * a model that answered with `#` or `###`; regenerating a paid report over a
+ * hash count is not a defensible cost. Requiring the whole line keeps the
+ * parser from mistaking a title quoted mid-sentence for a section start.
+ */
+function headingAt(markdown: string, title: string, from: number) {
+  const escaped = title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp(`^#{1,3}[ \\t]*${escaped}[ \\t]*$`, "im");
+  const m = re.exec(markdown.slice(from));
+  return m ? { start: from + m.index, end: from + m.index + m[0].length } : null;
+}
+
 export function parseReport(markdown: string): ParsedReport | null {
   const sections: Array<{ title: string; body: string }> = [];
+  let cursor = 0;
   for (let i = 0; i < SECTION_TITLES.length; i++) {
-    const title = SECTION_TITLES[i];
-    const start = markdown.indexOf(`## ${title}`);
-    if (start === -1) return null;
-    const from = start + title.length + 3;
+    const here = headingAt(markdown, SECTION_TITLES[i], cursor);
+    if (!here) return null;
     const next =
       i + 1 < SECTION_TITLES.length
-        ? markdown.indexOf(`## ${SECTION_TITLES[i + 1]}`, from)
-        : markdown.length;
-    if (next === -1) return null;
-    const body = markdown.slice(from, next).trim();
+        ? headingAt(markdown, SECTION_TITLES[i + 1], here.end)
+        : null;
+    if (i + 1 < SECTION_TITLES.length && !next) return null;
+    const body = markdown.slice(here.end, next ? next.start : markdown.length).trim();
     if (body.length < 200) return null; // suspiciously short section
-    sections.push({ title, body });
+    sections.push({ title: SECTION_TITLES[i], body });
+    cursor = here.end;
   }
   const wordCount = markdown.split(/\s+/).filter(Boolean).length;
   return { sections, wordCount };

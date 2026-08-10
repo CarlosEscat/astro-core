@@ -227,4 +227,26 @@ describe("parseReport", () => {
     const short = good.replace(fakeBody, "demasiado corto");
     expect(parseReport(short)).toBeNull();
   });
+
+  it("accepts any heading level the model emits", () => {
+    for (const hashes of ["#", "##", "###"]) {
+      const md = SECTION_TITLES.map((t) => `${hashes} ${t}\n\n${fakeBody}`).join("\n\n");
+      const parsed = parseReport(md);
+      expect(parsed, `heading level ${hashes}`).not.toBeNull();
+      expect(parsed!.sections).toHaveLength(8);
+      expect(parsed!.sections[0].title).toBe("Tu retrato esencial");
+    }
+  });
+
+  it("tolerates trailing spaces after a heading", () => {
+    const md = SECTION_TITLES.map((t) => `##  ${t}  \n\n${fakeBody}`).join("\n\n");
+    expect(parseReport(md)).not.toBeNull();
+  });
+
+  it("still rejects a heading that is only part of a line", () => {
+    const md = SECTION_TITLES
+      .map((t, i) => (i === 0 ? `Hablemos de ## ${t} ahora\n\n${fakeBody}` : `## ${t}\n\n${fakeBody}`))
+      .join("\n\n");
+    expect(parseReport(md)).toBeNull();
+  });
 });

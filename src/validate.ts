@@ -1,5 +1,6 @@
 import type { Body, NatalChart } from "./types";
 import type { FreeReading } from "./report";
+import type { SectionBrief } from "./sections";
 import { SIGN_ES } from "./copy/signs.es";
 
 /**
@@ -291,6 +292,66 @@ const APERTURA_RANGE: ProseOptions = {
 const AMOR_RANGE: ProseOptions = {
   minWords: 70, maxWords: 135, requireTerminalPunctuation: true,
 };
+
+export interface SectionCheck {
+  /** No problems at all. Length alone failing this does NOT justify a retry. */
+  ok: boolean;
+  problems: string[];
+  /**
+   * The subset of `problems` worth spending another call on: the section came
+   * back empty or cut off mid-sentence. Length is deliberately excluded.
+   *
+   * Measured on the 2026-08-10 battery: all 16 rejections across 39 live calls
+   * were word count, every one escalated to Kimi, and the escalation cost
+   * 5-10x the latency and ~50x the price to fix prose that was only long — on
+   * one chart the escalation overshot too and the report was lost entirely. A
+   * long section costs the reader nothing; an empty one costs them the report.
+   */
+  fatal: string[];
+  /** Reported, never a rejection reason on the paid tier. */
+  genderMarks: string[];
+}
+
+/** Every reader-directed gender mark in the text, for logging only. */
+export function countGenderMarks(text: string): string[] {
+  const found: string[] = [];
+  for (const re of GENDERED_READER) {
+    const m = text.match(new RegExp(re.source, "giu"));
+    if (m) found.push(...m);
+  }
+  return found;
+}
+
+/**
+ * Structure only: non-empty, inside the brief's word range with a margin, and
+ * finished rather than cut off. No gender, jargon or cliché check — the free
+ * tier's gate works because a rejection there costs $0.000375 and can rotate to
+ * a different chart feature on retry. Neither is true of a paid section, and
+ * extrapolating the free tier's per-block rate across 2,400 words leaves ~5% of
+ * reports passing. Marks are counted and logged instead; if the log shows the
+ * problem is frequent, the fix is a prompt rule, not a regex.
+ */
+export function validateSection(text: string, brief: SectionBrief): SectionCheck {
+  const problems: string[] = [];
+  const fatal: string[] = [];
+  const trimmed = text.trim();
+  const words = trimmed.split(/\s+/).filter(Boolean).length;
+  // The free tier measured that models overshoot word budgets consistently;
+  // a 15% margin stops a merely-long section costing a paid retry.
+  const floor = Math.round(brief.minWords * 0.85);
+  const ceiling = Math.round(brief.maxWords * 1.15);
+
+  if (!trimmed) fatal.push("sección vacía");
+  else {
+    if (words < floor || words > ceiling) {
+      problems.push(`${words} palabras (rango ${floor}-${ceiling})`);
+    }
+    if (!/[.!?…]["»)]?$/.test(trimmed)) fatal.push("texto truncado: no termina en puntuación final");
+  }
+
+  problems.push(...fatal);
+  return { ok: problems.length === 0, problems, fatal, genderMarks: countGenderMarks(trimmed) };
+}
 
 export function validateFree(reading: FreeReading, chart: NatalChart): Validation {
   const a = validateProse(reading.apertura, chart, APERTURA_RANGE);

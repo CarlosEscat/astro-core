@@ -2,9 +2,10 @@
 
 ## Estado actual (keep this section updated — it is the first thing read)
 
-Last updated: 2026-08-08 — prompt fragments split (Addendum 8), gate word
-boundaries fixed (Addendum 9), paid report re-modelled and flow designed
-(Addenda 10-11, spec + four plans).
+Last updated: 2026-08-10 — plan 1 (per-section generation core) built and
+measured. 210 tests. The battery found the gate, not the model, is the
+problem; two fixes applied but NOT yet re-measured. Read Addendum 12
+before touching `validateSection` or `src/sections.ts`.
 
 ### Done
 - [x] Chart computation engine (Placidus + whole-sign fallback), 25 tests
@@ -58,13 +59,23 @@ boundaries fixed (Addendum 9), paid report re-modelled and flow designed
       Addendum 10: the paid report moves off Kimi to DeepSeek V4 Pro
       per section, and the paid tier gets no gender gate.
 
-The paid report is now four sequential plans. Nothing below is built.
+The paid report is now four sequential plans. Plan 1 is built; plans 2-4
+are not.
 
-- [ ] **Plan 1 — section generation core** (WRITTEN, not executed):
-      `docs/superpowers/plans/2026-08-08-per-section-report-generation.md`.
-      Pure TypeScript in astro-core, no vendor accounts, 169 → 205 tests.
-      Ends with `scripts/battery-sections.ts`, which **measures the risk
-      accepted in Addendum 10**. Run it before building anything on top.
+- [x] **Plan 1 — section generation core** — BUILT AND MEASURED
+      (2026-08-10). `src/sections.ts`, `src/allocate.ts`,
+      `prompts/system-section.md`, `buildSectionMessages`,
+      `validateSection`, `composeReport`, `scripts/battery-sections.ts`.
+      169 → 205 tests, 210 after the fixes below. Battery run once
+      (against the 205-test state); results and the three
+      recommended fixes are in **Addendum 12**. The Addendum 10 quality
+      risk did NOT materialise — V4 Pro holds up. What did materialise is
+      that `validateSection`'s length gate rejects good prose and
+      escalates to Kimi for it, which is slower and dearer than the
+      single call it replaced. **Do the Addendum 12 fixes before
+      plan 3 wires this to a queue.** Two of the three are DONE (escalation
+      no longer fires on length; the Amor brief is 350-480), but have NOT
+      been re-measured — no battery run exists against them.
 - [ ] **Plan 2 — orders, payment, persistence.** Supabase schema
       (`orders`, `report_sections`, `entitlements`), `/api/checkout`,
       Stripe with Bizum, webhook with signature verification and
@@ -83,9 +94,8 @@ The paid report is now four sequential plans. Nothing below is built.
 - [ ] Oracle chat (post-MVP): system-oracle.md, rolling window, quotas
 
 ### Small pending fixes
-- [ ] `parseReport` tolerant of `#` vs `##` — **scheduled as plan 1
-      task 3**, no longer loose. Saves paid retries; the bake-off lost 4
-      good reports to this.
+- [x] `parseReport` tolerant of `#` vs `##` — DONE in plan 1 task 3
+      (2026-08-10). Any heading level, whole-line match only.
 - [ ] Compiled `dist/` can't find `prompts/` (only matters when the
       package is consumed from build output)
 - [ ] Re-verify Kimi K3 on its pinned production host before launch.
@@ -941,3 +951,141 @@ escalation need durable state; and the buyer can close the tab.
 
 What changed is that **email stops being the primary delivery and becomes
 a safety net** — the holding page fills in progressively instead.
+
+---
+
+## Addendum 12: the per-section battery measured the gate, not the model (2026-08-10)
+
+Plan 1 is built (tasks 1-6, 169 → 205 tests) and
+`scripts/battery-sections.ts` has been run once against live models.
+Raw output in `bakeoff-out/sections/`. Read this before touching
+`validateSection` or re-running the battery.
+
+**The Addendum 10 risk did not materialise. A different one did.**
+
+### What was measured
+
+| Chart | Wall clock | Cost | Escalations | Words | parseReport | Marcas de género |
+|---|---|---|---|---|---|---|
+| madrid-1992 | 799.5 s | $0.5595 | 3/8 | 2506 | OK | 2 |
+| buenosaires-1985 | 244.2 s | $0.1357 | 0/8 | — | **informe incompleto** | — |
+| bilbao-2000 (canary) | 648.0 s | $0.3386 | 1/8 | 2584 | OK | 0 |
+
+39 attempts for 24 sections (1.63 per section); 14/24 passed first
+attempt (58%). Two of three reports delivered.
+
+### The finding: all 16 rejections were word count. Zero were empty or truncated.
+
+Not one rejection in 39 live calls was for the failure modes
+`validateSection` exists to catch. DeepSeek V4 Pro overshoots every
+brief, exactly as Addendum 7 measured for Flash on the free tier
+(*"word budgets are ignored; sentence counts are obeyed"*). The ±15%
+margin in `validateSection` is not enough, and one section was rejected
+at **348 words against a 345 ceiling** — three words.
+
+**`Amor y vínculos` is the acute case and it was already documented.**
+It overshot on all three charts and on both models: 563/461 (madrid),
+557/510/425 (buenosaires, the 425 is Kimi), 461/495 (bilbao). Addendum 7
+recorded this same section at 394-431 words and Addendum 8 at 367-454,
+both against the same 300-350 brief, under the *old single-call* Kimi
+architecture — and Addendum 7 explicitly said *"Nothing enforces it...
+Add a length check if it matters."* Plan 1 added that length check, and
+it turned a known, harmless overshoot into the thing that destroyed the
+buenosaires report entirely. No model can write that brief's four
+required beats in 350 words; Kimi never could either.
+
+### Consequence: escalation fires for the wrong reason, and it is brutally expensive
+
+A length rejection escalates to Kimi at 40000 tokens. Measured Kimi
+escalation latencies: **317 s, 603 s, 196 s, 466 s.** Madrid's 13.3
+minutes is three Kimi calls; single DeepSeek attempts run 12-138 s
+(typically 30-70 s). So the architecture came out **slower and dearer
+than the 5-minute single Kimi call it was meant to replace** — for the
+sole reason that a section wrote too much.
+
+**Escalating to a better model because the current one was too long is
+backwards.** Length is not a quality defect, and the escalation model
+overshoots too (Kimi's 425 on buenosaires was rejected as well, which is
+why that report has no section 4 at all).
+
+### What the architecture actually delivers when the gate does not fire
+
+buenosaires passed 7/8 sections on the first DeepSeek attempt. Ignoring
+the one miscalibrated section, that run is the measurement Addendum 10
+hoped for:
+
+| | Kimi single call (Add. 8) | Per-section, clean |
+|---|---|---|
+| Wall clock | ~5 min | **~2.4 min** |
+| Cost | $0.218-0.481 | **~$0.045** |
+
+Faster and ~5-10x cheaper, no escalation. **Addendum 10's speed argument
+is confirmed, not refuted** — it was buried under a gate misfire.
+
+### Quality: V4 Pro holds up under per-section briefing
+
+Read, not inferred from regexes (Addendum 7's warning about
+`FREE_TIER_ECHO` applies here too).
+
+- **Grounding is intact.** Every claim names its datum, degrees and all
+  ("tu Luna en Libra en la casa cinco, recién estrenada a un grado
+  escaso"). No invented placements found in either delivered report.
+- **The deterministic allocation works.** On madrid, the eight sections
+  develop eight *different* aspect pairs — Sol-Neptuno in section 1,
+  Luna-Venus in 2, Marte-Urano in 4, Saturno-Plutón in 5, Urano-Neptuno
+  in 6, and none in 0/3/7 as designed. Zero collisions, which is the
+  entire reason `src/allocate.ts` exists.
+- **The synthesis genuinely synthesises.** Madrid's section 8 names
+  Ascendente, Mercurio, Sol, Luna, MC, Marte and Saturno, ties three
+  named threads and closes on an image from that chart.
+- **The canary produced zero gender marks** across 2584 words. bilbao is
+  the chart that breaks gender rules across all models on the free tier.
+
+### Three smaller things worth keeping
+
+- **The raised token budget was right.** Zero empty completions in 39
+  calls at 16000 (V4 Pro) / 40000 (Kimi). The plan specified 4000, which
+  on this evidence would have produced empties; several calls spent
+  1900-5300 tokens on reasoning alone before emitting a word.
+- **Provider routing is confirmed as the cost-variance source.** One slug
+  was served by CoreWeave, GMICloud, DigitalOcean, Ionstream, Baidu,
+  DeepInfra, AtlasCloud, Novita and StreamLake in a single run, some
+  returning `reasoning=0` and some 5265. Addendum 8 suspected this behind
+  Kimi's 2.2x cost spread; it is now observed directly on V4 Pro.
+- **`countGenderMarks` has a false positive**: it flagged `estar
+  retrógrado` on madrid, which describes a planet, not the reader. Only
+  1 of 2 madrid marks was real (`sentirte legitimado`). Harmless because
+  the paid tier logs rather than gates — which is itself a vindication of
+  that decision (spec decision 6). Also note the paid prose used
+  "coraza", which is on the *free* tier's cliché blocklist; the paid tier
+  deliberately does not check clichés.
+
+### Two fixes applied on the strength of this run (2026-08-10)
+
+Both landed after the measurement above, so **the numbers in the table
+predate them**. 205 → 210 tests.
+
+1. **Escalation no longer fires on length.** `SectionCheck` now carries a
+   `fatal` list — empty or truncated only — alongside `problems`. The
+   caller retries and escalates on `fatal`, and *accepts and logs* a
+   section that is merely long. `ok` is unchanged, so a length overrun is
+   still visible; it just no longer buys a $0.08 five-minute Kimi call.
+   This is the change that should recover the ~2.4 min / $0.045 profile.
+2. **`Amor y vínculos` is now 350-480 words** (600 under the `amor`
+   focus), replacing a 300-350 that no model ever hit in either
+   architecture. `src/sections.ts` carries the evidence in a comment so
+   nobody "corrects" it back.
+
+### Still open
+
+3. **Consider briefing in sentences or paragraphs, not words.**
+   Addendum 7 measured that models obey sentence counts and ignore word
+   counts; nothing here contradicts it. Not attempted — it rewrites all
+   eight briefs and needs its own battery run.
+4. **Re-run the battery to confirm the two fixes.** The run above cost
+   $1.03 and ~28 min; the prediction is that it should now come in far
+   cheaper and faster, with escalations near zero. **That prediction is
+   unverified — no battery has been run since the fixes landed.**
+5. The `countGenderMarks` false positive on `estar retrógrado` is
+   untouched. Harmless while the paid tier only logs, but it would
+   matter if anything ever gates on it.

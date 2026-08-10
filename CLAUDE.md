@@ -23,7 +23,7 @@ dated addenda in the same file.
 
 ## Working notes
 
-- `npm test` must stay green (169 tests). `npm run example` smoke-tests
+- `npm test` must stay green (210 tests). `npm run example` smoke-tests
   the tsx path — vitest passing does NOT prove tsx works (ESM interop).
 - Prompts are composed from fragments, never copy-pasted. `{{RULES}}` is
   universal; `{{RULES_CHART}}` holds the technical vocabulary and may
@@ -35,7 +35,12 @@ dated addenda in the same file.
   too low (Kimi ≈24000, Flash ≈8000). Always check for empty output.
 - Multi-chart test batteries for any prompt change; bilbao-2000 is the
   canary chart (breaks gender rules across all models). Run
-  `scripts/battery-free.ts` for the free reading and
-  `scripts/battery-report.ts` for the paid one — both cost money and
-  need the network, so they are not in `npm test`. Measured baselines
-  live in HANDOVER Addendum 7.
+  `scripts/battery-free.ts` for the free reading,
+  `scripts/battery-report.ts` for the paid single-call one and
+  `scripts/battery-sections.ts` for the paid per-section one — all cost
+  money and need the network, so they are not in `npm test`. Measured
+  baselines live in HANDOVER Addenda 7 (free) and 12 (per-section).
+- **Length is not a rejection reason on the paid tier.** `SectionCheck`
+  splits `fatal` (empty, truncated) from advisory length; escalating to
+  Kimi over a word count made the run slower and dearer than the single
+  call it replaced. Addendum 12.
