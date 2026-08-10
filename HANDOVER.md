@@ -80,12 +80,20 @@ are not.
       longer fires on length; the Amor brief is 350-480; grounding is
       gated after an invented retrogradation shipped), and CONFIRMED by
       a second battery run — Addendum 12's confirming-run table.
-- [ ] **Plan 2 — orders, payment, persistence.** Supabase schema
-      (`orders`, `report_sections`, `entitlements`), `/api/checkout`,
-      Stripe with Bizum, webhook with signature verification and
-      idempotency, 24h expiry sweep that deletes unpaid birth data.
-      Can be built in parallel with plan 1: the schema does not depend
-      on which model wins.
+- [ ] **Plan 2 — orders, payment, persistence** — PLAN WRITTEN
+      2026-08-10, not executed:
+      `docs/superpowers/plans/2026-08-10-orders-payment-persistence.md`.
+      Eight tasks, 215 → ~264 tests. Supabase schema (`orders`,
+      `report_sections`, `entitlements`) behind RLS that denies
+      everything, `/api/checkout`, Stripe webhook with signature
+      verification and a conditional `paid` claim, 24h sweep that
+      deletes unpaid birth data. **First plan that needs your
+      credentials** (Stripe + Supabase), so it cannot run unattended.
+      Two roadmap instructions were corrected against current vendor
+      docs — the App Router has no body parser to disable, and
+      `payment_method_types` must NOT be set or Bizum can never appear.
+      **Bizum is behind a Stripe early-access request**; the plan
+      deliberately does not block on it.
 - [ ] **Plan 3 — queued generation pipeline.** Inngest two-wave fan-out,
       conditional `paid → generating` claim, per-section retry and Kimi
       escalation, Resend email.

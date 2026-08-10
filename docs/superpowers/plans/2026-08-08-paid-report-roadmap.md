@@ -48,7 +48,18 @@ the advisory problems too, not just `fatal`.
 
 ---
 
-## Plan 2 — Orders, payment and persistence
+## Plan 2 — Orders, payment and persistence ✅ WRITTEN 2026-08-10
+
+`docs/superpowers/plans/2026-08-10-orders-payment-persistence.md`
+
+Eight tasks, 215 → ~264 tests. **Two corrections to the task list below
+were found while writing it, both from current vendor docs:** the App
+Router has no body parser to disable (`req.text()` is already raw), and
+Stripe now says *not* to set `payment_method_types` — enable Bizum in the
+Dashboard and let dynamic payment methods apply, because hard-coding the
+list is what would stop Bizum appearing. Also: **Bizum is currently
+behind a Stripe early-access request**, so it may not be available on the
+account immediately; the plan says not to block on it.
 
 **Delivers:** a buyer can pay, and an order reaches `paid` with its birth
 data stored. Nothing generates yet — that is plan 3. Verifiable end to
