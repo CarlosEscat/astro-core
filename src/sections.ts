@@ -49,8 +49,13 @@ export const SECTION_BRIEFS: SectionBrief[] = [
       "impresión que causas y el papel que la vida te invita a ensayar.",
   },
   {
-    index: 4, title: "Amor y vínculos", minWords: 300, maxWords: 350,
-    growsOn: "amor", grownMax: 450,
+    // 350-480, not the 300-350 the prompt file carried. That range was never
+    // achievable: this brief asks for four distinct beats, and the section
+    // overshot it on every chart and every model — 348-563 on the 2026-08-10
+    // per-section battery, 367-454 and 394-431 under the old single-call
+    // architecture (Addenda 7 and 8). The range now says what four beats cost.
+    index: 4, title: "Amor y vínculos", minWords: 350, maxWords: 480,
+    growsOn: "amor", grownMax: 600,
     brief:
       "La lectura gratuita ya le ha dado tres cosas: su Venus por signo y por " +
       "zona de la vida, su Descendente, y los signos con los que mejor encaja. " +

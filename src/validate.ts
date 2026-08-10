@@ -294,8 +294,20 @@ const AMOR_RANGE: ProseOptions = {
 };
 
 export interface SectionCheck {
+  /** No problems at all. Length alone failing this does NOT justify a retry. */
   ok: boolean;
   problems: string[];
+  /**
+   * The subset of `problems` worth spending another call on: the section came
+   * back empty or cut off mid-sentence. Length is deliberately excluded.
+   *
+   * Measured on the 2026-08-10 battery: all 16 rejections across 39 live calls
+   * were word count, every one escalated to Kimi, and the escalation cost
+   * 5-10x the latency and ~50x the price to fix prose that was only long — on
+   * one chart the escalation overshot too and the report was lost entirely. A
+   * long section costs the reader nothing; an empty one costs them the report.
+   */
+  fatal: string[];
   /** Reported, never a rejection reason on the paid tier. */
   genderMarks: string[];
 }
@@ -321,6 +333,7 @@ export function countGenderMarks(text: string): string[] {
  */
 export function validateSection(text: string, brief: SectionBrief): SectionCheck {
   const problems: string[] = [];
+  const fatal: string[] = [];
   const trimmed = text.trim();
   const words = trimmed.split(/\s+/).filter(Boolean).length;
   // The free tier measured that models overshoot word budgets consistently;
@@ -328,15 +341,16 @@ export function validateSection(text: string, brief: SectionBrief): SectionCheck
   const floor = Math.round(brief.minWords * 0.85);
   const ceiling = Math.round(brief.maxWords * 1.15);
 
-  if (!trimmed) problems.push("sección vacía");
+  if (!trimmed) fatal.push("sección vacía");
   else {
     if (words < floor || words > ceiling) {
       problems.push(`${words} palabras (rango ${floor}-${ceiling})`);
     }
-    if (!/[.!?…]["»)]?$/.test(trimmed)) problems.push("texto truncado: no termina en puntuación final");
+    if (!/[.!?…]["»)]?$/.test(trimmed)) fatal.push("texto truncado: no termina en puntuación final");
   }
 
-  return { ok: problems.length === 0, problems, genderMarks: countGenderMarks(trimmed) };
+  problems.push(...fatal);
+  return { ok: problems.length === 0, problems, fatal, genderMarks: countGenderMarks(trimmed) };
 }
 
 export function validateFree(reading: FreeReading, chart: NatalChart): Validation {

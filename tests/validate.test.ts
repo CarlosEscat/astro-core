@@ -220,4 +220,36 @@ describe("per-section validation", () => {
     expect(countGenderMarks("cuando estás cansada se te nota")).toHaveLength(1);
     expect(countGenderMarks("eres alguien que se guarda las cosas")).toHaveLength(0);
   });
+
+  // Measured on the 2026-08-10 battery: all 16 rejections in 39 live calls
+  // were word count, and each one escalated to Kimi — 5-10x the latency and
+  // ~50x the cost to fix prose that was merely long. Length is advisory; only
+  // empty and truncated output is worth spending another call on.
+  describe("fatal vs advisory", () => {
+    it("treats a long section as a problem but not a fatal one", () => {
+      const v = validateSection(words(900), brief);
+      expect(v.ok).toBe(false);
+      expect(v.problems.join(" ")).toMatch(/palabras/);
+      expect(v.fatal).toHaveLength(0);
+    });
+
+    it("treats a short section as advisory too", () => {
+      expect(validateSection(words(80), brief).fatal).toHaveLength(0);
+    });
+
+    it("treats an empty section as fatal", () => {
+      expect(validateSection("   ", brief).fatal).not.toHaveLength(0);
+    });
+
+    it("treats a truncated section as fatal", () => {
+      const truncated = Array.from({ length: 220 }, () => "palabra").join(" ");
+      expect(validateSection(truncated, brief).fatal.join(" ")).toMatch(/truncad/i);
+    });
+
+    it("leaves a clean section with nothing fatal and nothing to report", () => {
+      const v = validateSection(words(220), brief);
+      expect(v.ok).toBe(true);
+      expect(v.fatal).toHaveLength(0);
+    });
+  });
 });

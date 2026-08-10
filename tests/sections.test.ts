@@ -17,10 +17,15 @@ describe("section briefs", () => {
     }
   });
 
+  // The 300-350 this section used to carry was never achievable: it asks for
+  // four distinct beats, and it overshot on every chart and every model both
+  // here (348-563 on the 2026-08-10 battery) and under the old single-call
+  // architecture (367-454, Addendum 8). The range now says what four beats
+  // actually cost.
   it("grows the love section under the amor focus", () => {
-    expect(briefFor(4).maxWords).toBe(350);
-    expect(briefFor(4, "amor").maxWords).toBe(450);
-    expect(briefFor(4, "trabajo").maxWords).toBe(350);
+    expect(briefFor(4).maxWords).toBe(480);
+    expect(briefFor(4, "amor").maxWords).toBe(600);
+    expect(briefFor(4, "trabajo").maxWords).toBe(480);
   });
 
   it("grows the vocation section under the trabajo focus", () => {

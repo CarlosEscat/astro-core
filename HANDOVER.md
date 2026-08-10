@@ -3,8 +3,9 @@
 ## Estado actual (keep this section updated — it is the first thing read)
 
 Last updated: 2026-08-10 — plan 1 (per-section generation core) built and
-measured. 205 tests. The battery found the gate, not the model, is the
-problem: read Addendum 12 before touching `validateSection`.
+measured. 210 tests. The battery found the gate, not the model, is the
+problem; two fixes applied but NOT yet re-measured. Read Addendum 12
+before touching `validateSection` or `src/sections.ts`.
 
 ### Done
 - [x] Chart computation engine (Placidus + whole-sign fallback), 25 tests
@@ -58,19 +59,23 @@ problem: read Addendum 12 before touching `validateSection`.
       Addendum 10: the paid report moves off Kimi to DeepSeek V4 Pro
       per section, and the paid tier gets no gender gate.
 
-The paid report is now four sequential plans. Nothing below is built.
+The paid report is now four sequential plans. Plan 1 is built; plans 2-4
+are not.
 
 - [x] **Plan 1 — section generation core** — BUILT AND MEASURED
       (2026-08-10). `src/sections.ts`, `src/allocate.ts`,
       `prompts/system-section.md`, `buildSectionMessages`,
       `validateSection`, `composeReport`, `scripts/battery-sections.ts`.
-      169 → 205 tests. Battery run once; results and the three
+      169 → 205 tests, 210 after the fixes below. Battery run once
+      (against the 205-test state); results and the three
       recommended fixes are in **Addendum 12**. The Addendum 10 quality
       risk did NOT materialise — V4 Pro holds up. What did materialise is
       that `validateSection`'s length gate rejects good prose and
       escalates to Kimi for it, which is slower and dearer than the
       single call it replaced. **Do the Addendum 12 fixes before
-      plan 3 wires this to a queue.**
+      plan 3 wires this to a queue.** Two of the three are DONE (escalation
+      no longer fires on length; the Amor brief is 350-480), but have NOT
+      been re-measured — no battery run exists against them.
 - [ ] **Plan 2 — orders, payment, persistence.** Supabase schema
       (`orders`, `report_sections`, `entitlements`), `/api/checkout`,
       Stripe with Bizum, webhook with signature verification and
@@ -1055,16 +1060,32 @@ Read, not inferred from regexes (Addendum 7's warning about
   "coraza", which is on the *free* tier's cliché blocklist; the paid tier
   deliberately does not check clichés.
 
-### Recommended before anything is built on top (NOT yet done)
+### Two fixes applied on the strength of this run (2026-08-10)
 
-1. **Stop escalating on length.** Reserve Kimi for empty or truncated
-   output — the failures it actually fixes. This is the single change
-   that recovers the ~2.4 min / $0.045 profile.
-2. **Fix the `Amor y vínculos` brief rather than the gate alone.** Its
-   word range has been wrong since before this plan. Either raise it to
-   ~350-480 to match what four beats actually cost, or cut a beat.
+Both landed after the measurement above, so **the numbers in the table
+predate them**. 205 → 210 tests.
+
+1. **Escalation no longer fires on length.** `SectionCheck` now carries a
+   `fatal` list — empty or truncated only — alongside `problems`. The
+   caller retries and escalates on `fatal`, and *accepts and logs* a
+   section that is merely long. `ok` is unchanged, so a length overrun is
+   still visible; it just no longer buys a $0.08 five-minute Kimi call.
+   This is the change that should recover the ~2.4 min / $0.045 profile.
+2. **`Amor y vínculos` is now 350-480 words** (600 under the `amor`
+   focus), replacing a 300-350 that no model ever hit in either
+   architecture. `src/sections.ts` carries the evidence in a comment so
+   nobody "corrects" it back.
+
+### Still open
+
 3. **Consider briefing in sentences or paragraphs, not words.**
    Addendum 7 measured that models obey sentence counts and ignore word
-   counts; nothing here contradicts it.
-4. Re-run the battery after any of the above. One full run is ~$1.03 and
-   ~28 minutes at present; it should get much cheaper and faster.
+   counts; nothing here contradicts it. Not attempted — it rewrites all
+   eight briefs and needs its own battery run.
+4. **Re-run the battery to confirm the two fixes.** The run above cost
+   $1.03 and ~28 min; the prediction is that it should now come in far
+   cheaper and faster, with escalations near zero. **That prediction is
+   unverified — no battery has been run since the fixes landed.**
+5. The `countGenderMarks` false positive on `estar retrógrado` is
+   untouched. Harmless while the paid tier only logs, but it would
+   matter if anything ever gates on it.

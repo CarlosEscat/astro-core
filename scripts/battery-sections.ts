@@ -120,11 +120,16 @@ async function generateSection(
 
     const body = repair(text.trim());
     const verdict = validateSection(body, brief);
-    if (verdict.ok) {
+    // Only empty or truncated output justifies another call. A long section is
+    // accepted and logged: escalating over word count is what made the
+    // 2026-08-10 run slower and dearer than the single call it replaced, and
+    // on buenosaires it lost the report outright when Kimi overshot as well.
+    if (verdict.fatal.length === 0) {
+      if (!verdict.ok) console.log(`    ${brief.title} aceptada con aviso: ${verdict.problems.join("; ")}`);
       return { body, model, attempts: attempt, cost, seconds, genderMarks: verdict.genderMarks };
     }
     console.log(
-      `    ${brief.title} intento ${attempt} (${model}) rechazado: ${verdict.problems.join("; ")} · ${diagnostics}`,
+      `    ${brief.title} intento ${attempt} (${model}) rechazado: ${verdict.fatal.join("; ")} · ${diagnostics}`,
     );
   }
   return {

@@ -18,15 +18,16 @@ describe("section message builder", () => {
     expect(msgs[1].role).toBe("user");
   });
 
+  // Asserted as the whole sentence, not as bare numbers: the chart JSON is in
+  // the same message and a loose "350" can match a degree or an orb.
   it("names the section and its word range in the user message", () => {
     const user = build(4)[1].content;
     expect(user).toContain("Amor y vínculos");
-    expect(user).toContain("300");
-    expect(user).toContain("350");
+    expect(user).toContain("Extensión: entre 350 y 480 palabras.");
   });
 
   it("grows the range under a matching focus", () => {
-    expect(build(4, { focus: "amor" })[1].content).toContain("450");
+    expect(build(4, { focus: "amor" })[1].content).toContain("Extensión: entre 350 y 600 palabras.");
   });
 
   it("hands the section its allocated aspects and names what is reserved", () => {
