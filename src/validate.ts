@@ -226,6 +226,27 @@ export function validateProse(
     problems.push("encabezado emitido: la interfaz ya pone el título");
   }
 
+  problems.push(...groundingProblems(trimmed, chart));
+
+  return { ok: problems.length === 0, problems };
+}
+
+/**
+ * The checks that are verifiable against the chart JSON rather than against
+ * taste: a named sign, a claimed retrogradation, a claimed aspect. Split out of
+ * validateProse so the paid tier can enforce these WITHOUT inheriting the
+ * gender, jargon and cliché rules, which the spec's decision 6 deliberately
+ * keeps off that tier.
+ *
+ * This is the distinction that matters: everything else in validateProse is a
+ * style judgement, while these three are facts the reader can check against
+ * their own chart. Grounding is the eliminatory criterion in prompts/rubric.md
+ * for exactly that reason.
+ */
+export function groundingProblems(text: string, chart: NatalChart): string[] {
+  const problems: string[] = [];
+  const trimmed = text.trim();
+
   // A named sign must be the sign that planet actually occupies.
   const signClaim = /\b(?:tu\s+)?(Sol|Luna|Mercurio|Venus|Marte|J[úu]piter|Saturno|Urano|Neptuno|Plut[óo]n)\s+en\s+(\p{Lu}\p{L}+)/giu;
   for (const m of trimmed.matchAll(signClaim)) {
@@ -275,7 +296,7 @@ export function validateProse(
     }
   }
 
-  return { ok: problems.length === 0, problems };
+  return problems;
 }
 
 const APERTURA_RANGE: ProseOptions = {
@@ -299,13 +320,15 @@ export interface SectionCheck {
   problems: string[];
   /**
    * The subset of `problems` worth spending another call on: the section came
-   * back empty or cut off mid-sentence. Length is deliberately excluded.
+   * back empty, cut off mid-sentence, or made a claim the chart contradicts.
+   * Length is deliberately excluded.
    *
    * Measured on the 2026-08-10 battery: all 16 rejections across 39 live calls
    * were word count, every one escalated to Kimi, and the escalation cost
    * 5-10x the latency and ~50x the price to fix prose that was only long — on
    * one chart the escalation overshot too and the report was lost entirely. A
-   * long section costs the reader nothing; an empty one costs them the report.
+   * long section costs the reader nothing; an empty or ungrounded one costs
+   * them the report, or the one claim the product is built on.
    */
   fatal: string[];
   /** Reported, never a rejection reason on the paid tier. */
@@ -323,15 +346,25 @@ export function countGenderMarks(text: string): string[] {
 }
 
 /**
- * Structure only: non-empty, inside the brief's word range with a margin, and
- * finished rather than cut off. No gender, jargon or cliché check — the free
- * tier's gate works because a rejection there costs $0.000375 and can rotate to
- * a different chart feature on retry. Neither is true of a paid section, and
+ * Structure and grounding. No gender, jargon or cliché check — the free tier's
+ * gate works because a rejection there costs $0.000375 and can rotate to a
+ * different chart feature on retry. Neither is true of a paid section, and
  * extrapolating the free tier's per-block rate across 2,400 words leaves ~5% of
- * reports passing. Marks are counted and logged instead; if the log shows the
- * problem is frequent, the fix is a prompt rule, not a regex.
+ * reports passing. Gender marks are counted and logged instead; if the log
+ * shows the problem is frequent, the fix is a prompt rule, not a regex.
+ *
+ * Grounding is the exception, and it is fatal. Decision 6 of the spec rules out
+ * a *gender* gate on this tier; it never ruled out a grounding one. An invented
+ * retrogradation shipped in a delivered report while this function checked only
+ * length and truncation — see HANDOVER Addendum 12. Those claims are checkable
+ * against the JSON, they are what the reader is paying to be able to verify,
+ * and unlike length a retry can genuinely fix them.
  */
-export function validateSection(text: string, brief: SectionBrief): SectionCheck {
+export function validateSection(
+  text: string,
+  brief: SectionBrief,
+  chart: NatalChart,
+): SectionCheck {
   const problems: string[] = [];
   const fatal: string[] = [];
   const trimmed = text.trim();
@@ -347,6 +380,7 @@ export function validateSection(text: string, brief: SectionBrief): SectionCheck
       problems.push(`${words} palabras (rango ${floor}-${ceiling})`);
     }
     if (!/[.!?…]["»)]?$/.test(trimmed)) fatal.push("texto truncado: no termina en puntuación final");
+    fatal.push(...groundingProblems(trimmed, chart));
   }
 
   problems.push(...fatal);

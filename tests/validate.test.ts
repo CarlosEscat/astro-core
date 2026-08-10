@@ -184,21 +184,21 @@ describe("per-section validation", () => {
   const words = (n: number) => Array.from({ length: n }, () => "palabra").join(" ") + ".";
 
   it("accepts a section inside its range", () => {
-    expect(validateSection(words(220), brief).ok).toBe(true);
+    expect(validateSection(words(220), brief, bilbao).ok).toBe(true);
   });
 
   it("rejects a section that is empty", () => {
-    expect(validateSection("   ", brief).ok).toBe(false);
+    expect(validateSection("   ", brief, bilbao).ok).toBe(false);
   });
 
   it("rejects a section outside its word range", () => {
-    expect(validateSection(words(80), brief).ok).toBe(false);
-    expect(validateSection(words(900), brief).ok).toBe(false);
+    expect(validateSection(words(80), brief, bilbao).ok).toBe(false);
+    expect(validateSection(words(900), brief, bilbao).ok).toBe(false);
   });
 
   it("rejects a section cut off mid-sentence", () => {
     const truncated = Array.from({ length: 220 }, () => "palabra").join(" ");
-    const v = validateSection(truncated, brief);
+    const v = validateSection(truncated, brief, bilbao);
     expect(v.ok).toBe(false);
     expect(v.problems.join(" ")).toMatch(/truncad/i);
   });
@@ -206,14 +206,14 @@ describe("per-section validation", () => {
   // The paid tier reports gender marks, it does not reject on them.
   it("counts gender marks without rejecting", () => {
     const text = words(210).replace("palabra.", "estás cansada.");
-    const v = validateSection(text, brief);
+    const v = validateSection(text, brief, bilbao);
     expect(v.ok).toBe(true);
     expect(v.genderMarks.length).toBeGreaterThan(0);
   });
 
   it("does not reject jargon, which the paid tier is allowed to use", () => {
-    const text = words(210).replace("palabra.", "una conjunción exacta con Saturno retrógrado.");
-    expect(validateSection(text, brief).ok).toBe(true);
+    const text = words(210).replace("palabra.", "una conjunción de manual y un orbe estrechísimo.");
+    expect(validateSection(text, brief, bilbao).ok).toBe(true);
   });
 
   it("countGenderMarks finds real marks and ignores clean prose", () => {
@@ -227,29 +227,81 @@ describe("per-section validation", () => {
   // empty and truncated output is worth spending another call on.
   describe("fatal vs advisory", () => {
     it("treats a long section as a problem but not a fatal one", () => {
-      const v = validateSection(words(900), brief);
+      const v = validateSection(words(900), brief, bilbao);
       expect(v.ok).toBe(false);
       expect(v.problems.join(" ")).toMatch(/palabras/);
       expect(v.fatal).toHaveLength(0);
     });
 
     it("treats a short section as advisory too", () => {
-      expect(validateSection(words(80), brief).fatal).toHaveLength(0);
+      expect(validateSection(words(80), brief, bilbao).fatal).toHaveLength(0);
     });
 
     it("treats an empty section as fatal", () => {
-      expect(validateSection("   ", brief).fatal).not.toHaveLength(0);
+      expect(validateSection("   ", brief, bilbao).fatal).not.toHaveLength(0);
     });
 
     it("treats a truncated section as fatal", () => {
       const truncated = Array.from({ length: 220 }, () => "palabra").join(" ");
-      expect(validateSection(truncated, brief).fatal.join(" ")).toMatch(/truncad/i);
+      expect(validateSection(truncated, brief, bilbao).fatal.join(" ")).toMatch(/truncad/i);
     });
 
     it("leaves a clean section with nothing fatal and nothing to report", () => {
-      const v = validateSection(words(220), brief);
+      const v = validateSection(words(220), brief, bilbao);
       expect(v.ok).toBe(true);
       expect(v.fatal).toHaveLength(0);
+    });
+  });
+
+  /**
+   * An invented retrogradation shipped in bakeoff-out/sections/madrid-1992.md
+   * because validateSection checked length and truncation but never grounding
+   * — while validateProse had caught exactly this class on the free tier all
+   * along. Grounding is the rubric's eliminatory criterion and the only error
+   * class the buyer can personally verify against their own chart, so it is
+   * fatal: unlike length, another call can genuinely fix it.
+   */
+  describe("grounding is fatal", () => {
+    const body = (claim: string) => words(210).replace("palabra.", claim);
+
+    it("rejects an invented retrogradation", () => {
+      // bilbao's retrogrades are Uranus, Neptune and Pluto — not Saturn.
+      const v = validateSection(body("tu Saturno retrógrado en Tauro."), brief, bilbao);
+      expect(v.ok).toBe(false);
+      expect(v.fatal.join(" ")).toMatch(/retrogradación inventada/);
+    });
+
+    it("rejects a planet placed in the wrong sign", () => {
+      const v = validateSection(body("tu Júpiter en Tauro te frena."), brief, bilbao);
+      expect(v.fatal.join(" ")).toMatch(/signo falso/);
+    });
+
+    it("rejects an aspect the chart does not contain", () => {
+      const v = validateSection(body("la cuadratura entre tu Luna y tu Saturno pesa."), brief, bilbao);
+      expect(v.fatal.join(" ")).toMatch(/aspecto no presente/);
+    });
+
+    it("accepts claims that are true of the chart", () => {
+      for (const claim of [
+        "tu Júpiter en Géminis abre puertas.",          // real sign
+        "tu Neptuno retrógrado en Acuario lo difumina.", // really retrograde
+        "el trígono entre tu Júpiter y Neptuno sostiene.", // real aspect
+      ]) {
+        const v = validateSection(body(claim), brief, bilbao);
+        expect(v.fatal, claim).toHaveLength(0);
+      }
+    });
+
+    // This is the exact line that shipped, on the chart it shipped against.
+    it("would have caught the madrid Mercury line", () => {
+      const madrid = computeNatalChart({
+        ...resolveBirthUtc({ year: 1992, month: 4, day: 15, hour: 10, minute: 30 }, 40.4168, -3.7038),
+        latitude: 40.4168, longitude: -3.7038,
+      });
+      const v = validateSection(
+        body("el hecho de que Mercurio esté retrógrado lo matiza."), briefFor(3), madrid,
+      );
+      expect(v.fatal.join(" ")).toMatch(/Mercury/);
     });
   });
 });

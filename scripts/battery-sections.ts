@@ -119,7 +119,7 @@ async function generateSection(
     }
 
     const body = repair(text.trim());
-    const verdict = validateSection(body, brief);
+    const verdict = validateSection(body, brief, chart);
     // Only empty or truncated output justifies another call. A long section is
     // accepted and logged: escalating over word count is what made the
     // 2026-08-10 run slower and dearer than the single call it replaced, and
