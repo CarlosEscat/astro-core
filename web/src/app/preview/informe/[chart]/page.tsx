@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { parseReport } from "@core/report";
 import { ReportView } from "@/components/ReportView";
 import { ReportIndex } from "@/components/ReportIndex";
+import { ShareCard } from "@/components/ShareCard";
 import { readingMinutes } from "@/lib/report-format";
 
 // No `runtime` export: 'nodejs' is the default in Next 16 and the docs tell you
@@ -53,6 +54,9 @@ export default async function PreviewReport(
         {chart} · {parsed.wordCount.toLocaleString("es-ES")} palabras ·
         {" "}{readingMinutes(parsed.wordCount)} min de lectura
       </p>
+      {/* A fixed signature: the preview reads a markdown file, not a chart.
+          Phase B replaces this with the order's snapshotted signature. */}
+      <ShareCard sig={{ sun: "Leo", moon: "Cancer", ascendant: "Cancer", oneIn: 1728 }} />
       <ReportIndex sections={parsed.sections} />
       <ReportView sections={parsed.sections} firstName="Lucía" />
     </main>

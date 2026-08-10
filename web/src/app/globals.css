@@ -656,6 +656,17 @@ body {
   color: var(--slate);
 }
 
+.share { max-width: var(--measure); margin: 0 auto 3rem; text-align: center; }
+
+.share__card {
+  display: block;
+  width: min(280px, 70vw);
+  height: auto;
+  margin: 0 auto 1rem;
+  border: 1px solid var(--ink-line);
+  border-radius: 4px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
