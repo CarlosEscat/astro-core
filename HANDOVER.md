@@ -2,8 +2,14 @@
 
 ## Estado actual (keep this section updated — it is the first thing read)
 
-Last updated: 2026-08-10 — plan 1 (per-section generation core) built and
-measured. 215 tests. The battery found the gate, not the model, is the
+Last updated: 2026-08-10 — **plan 4 phase A built** (report component,
+section index, 9:16 share card, preview route). 241 tests. The three
+battery reports now render at `/preview/informe/<chart>`, which answered
+Addendum 12's open ~3,000-word question: the length is fine, the
+paragraphs are not. See **Addendum 13**.
+
+Before that, same day: plan 1 (per-section generation core) built and
+measured. The battery found the gate, not the model, is the
 problem, and that an invented retrogradation shipped because nothing
 gated grounding on the paid tier. Three fixes applied AND confirmed by a
 second battery run: 28.2 min/$1.03/2-of-3 → 5.4 min/$0.12/3-of-3, zero
@@ -97,16 +103,16 @@ are not.
 - [ ] **Plan 3 — queued generation pipeline.** Inngest two-wave fan-out,
       conditional `paid → generating` claim, per-section retry and Kimi
       escalation, Resend email.
-- [ ] **Plan 4 — delivery UI** — PLAN WRITTEN 2026-08-10, not executed:
-      `docs/superpowers/plans/2026-08-10-delivery-ui.md`. **Split into
-      two phases.** Phase A (report component, section index, 9:16 share
-      card, +27 tests) needs NO vendors and can be executed NOW — it
-      renders the battery reports in `bakeoff-out/sections/` at
-      `/preview/informe/<chart>`. Phase B (`/informe/<token>`, 2 s
-      polling, progressive rendering, wiring the CTA at
-      `BirthForm.tsx:287`) needs plans 2 and 3.
-      Phase A also answers the open ~3,000-word question in Addendum 12,
-      which is why it is worth doing before plans 2-3 rather than after.
+- [~] **Plan 4 — delivery UI** — `docs/superpowers/plans/2026-08-10-delivery-ui.md`.
+      **Phase A BUILT 2026-08-10** (215 → 241 tests): `ReportView`,
+      `ReportIndex`, `ShareCard`, `web/src/lib/report-format.ts` and the
+      dev-only `/preview/informe/<chart>` route over the battery reports.
+      It answered the ~3,000-word question — **Addendum 13**. Three
+      places where the plan was written against APIs this repo does not
+      have are recorded there too; read it before executing phase B.
+      **Phase B NOT started** (`/informe/<token>`, 2 s polling,
+      progressive rendering, wiring the CTA at `BirthForm.tsx:287`) —
+      it needs plans 2 and 3.
 - [ ] PDF rendering (Puppeteer over the same report component) — own spec
 - [ ] Daily cron: transits once/day → 12 horoscopes → Supabase cache
 - [ ] Oracle chat (post-MVP): system-oracle.md, rolling window, quotas
@@ -1206,3 +1212,114 @@ agency.
 5. The `countGenderMarks` false positive on `estar retrógrado` is
    untouched. Harmless while the paid tier only logs, but it would
    matter if anything ever gates on it.
+
+---
+
+## Addendum 13: the report is not too long; five of its paragraphs are (2026-08-10)
+
+Plan 4 phase A is built, so the three battery reports can be read as a
+buyer would read them at `/preview/informe/<chart>` (dev only — the route
+404s in production, since battery output is nobody's report). 215 → 241
+tests.
+
+### The ~3,000-word question, answered by looking at one
+
+Addendum 12 asked whether a ~3,000-word report is the product we want, and
+said to decide it before rendering. Rendered, **the length is right and
+the answer is "generous", not "a wall"** — but only because the section is
+the unit the reader meets, not the report.
+
+| Chart | Words | Sections | Shortest / longest section |
+|---|---|---|---|
+| madrid-1992 | 3063 | 8 | 315 / 454 |
+| buenosaires-1985 | 2877 | 8 | 283 / 463 |
+| bilbao-2000 | 3071 | 8 | 272 / 547 |
+
+A section is 272-547 words — a 1.5-3 minute read with its own title, its
+own brass rule and an index entry to get back to it. Nobody reads 3,000
+words; they read `Amor y vínculos`. **Do not cut the word ranges in
+`src/sections.ts` on length grounds.** The 16-minute figure the meta line
+shows is a shelf-appeal number against a €9.90 price, not a burden.
+
+### What is actually wrong: paragraph granularity
+
+The defect the render exposes is one level down. Across 70 paragraphs the
+median is ~120 words, which reads well — but the tail does not:
+
+- **5 paragraphs of 200+ words** (237, 228, 217 on madrid; 286, 211 on
+  buenosaires). bilbao's longest is 192 and it is noticeably easier.
+- **The worst is 286 words rendered as 38 lines — 1.31 phone screens with
+  no break.** That is buenosaires' `Claves para tu camino`, which is the
+  whole section in **one single paragraph**. Measured in the browser at
+  375px, not estimated.
+- **`Tus luces y tus sombras` is the repeat offender**: 441-454 words in
+  only 2-3 paragraphs on all three charts (madrid is 217 + 237).
+
+So the wall is real but local. It is not fixed by typography here, and
+per the plan that fix belongs upstream — though **not** in the word
+ranges. The brief needs to ask for paragraphs.
+
+**This is the same lever as Addendum 12's still-open item 3** (brief in
+sentences or paragraphs, not words), and it is more evidence for it:
+Addendum 7 established that models obey structural counts and ignore word
+counts, and a section that was handed no paragraph instruction came back
+as one 286-word block. Asking each brief for 3-4 paragraphs would fix the
+tail and cost nothing, but it rewrites all eight briefs and needs its own
+battery run — so it stays open, now with a measurement behind it.
+
+### The plan was written against three APIs this repo does not have
+
+All three would have failed at the first `npm test`, so they are recorded
+rather than left for the next session to rediscover:
+
+- **`environmentMatchGlobs` was removed in Vitest 4** (this repo is on
+  4.1.10). The `.tsx` tests opt into a DOM with a
+  `// @vitest-environment jsdom` docblock instead. Same intent — only the
+  component tests pay for a DOM.
+- **Vite 7 transforms with oxc, not esbuild**, so the plan's
+  `esbuild: { jsx: "automatic" }` was ignored with a warning. No JSX
+  config is needed at all.
+- **`jsdom` must be a ROOT devDependency, not a `web/` one.** Vitest
+  resolves the environment package from the project root, not from the
+  test file, so the plan's `cd web && npm i -D jsdom` puts it where the
+  runner cannot see it. `@testing-library/*` does resolve from `web/`
+  (the test file imports it), and belongs there with React.
+
+Two smaller corrections, both cases of the plan's own test being wrong
+rather than its component:
+
+- **`ShareCard`'s rarity is "1728", not "1.728".** es-ES does not group
+  four-digit numbers (CLDR `minimumGroupingDigits: 2`). The shipped
+  `Signature.tsx` already behaved this way; the plan's expectation did
+  not. The test now asserts both that and a five-digit case that actually
+  exercises grouping.
+- **`ReportIndex`'s ordinal is `aria-hidden`.** Left exposed it lands
+  inside the link's accessible name ("03Amor y vínculos"). The `<ol>`
+  already conveys the ordering.
+
+Also: Next 16 makes `runtime = "nodejs"` the default and the docs say to
+drop the export, so the preview route declares only `dynamic`.
+
+### The share card exports for real — but its fonts do not travel
+
+Verified in the browser, not assumed: the button produces a **1080x1920
+PNG**, ink background, glyphs and names rasterised (~6.8k brass and ~8.3k
+bone pixels in the glyph band), canvas untainted.
+
+**The plan's stated reason it works is wrong, though**, and the next
+person should not trust it: it claims the browser inlines computed fonts
+when the SVG is serialised from the live DOM. It does not. `XMLSerializer`
+copies the DOM as-is, and a detached SVG loaded through a blob URL can see
+neither the page's CSS custom properties nor its next/font faces. The card
+therefore declares its fonts in a `<style>` **inside** the SVG, which does
+serialise with it — but the `var()` fallbacks (Georgia, ui-monospace) are
+what the exported PNG actually renders with. **The PNG is not in Fraunces
+and Plex Mono.** Closing that needs the faces embedded as base64
+`@font-face` in the card, which is a real decision (weight vs fidelity) and
+was out of scope here.
+
+### Phase B is untouched and still blocked
+
+`/informe/<token>`, the polling status endpoint, the holding page and the
+buy CTA all read an order or its sections, so they need plans 2 and 3.
+Phase A stands on its own.
