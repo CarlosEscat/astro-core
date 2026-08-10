@@ -1,5 +1,6 @@
 import type { Body, NatalChart } from "./types";
 import type { FreeReading } from "./report";
+import type { SectionBrief } from "./sections";
 import { SIGN_ES } from "./copy/signs.es";
 
 /**
@@ -291,6 +292,52 @@ const APERTURA_RANGE: ProseOptions = {
 const AMOR_RANGE: ProseOptions = {
   minWords: 70, maxWords: 135, requireTerminalPunctuation: true,
 };
+
+export interface SectionCheck {
+  ok: boolean;
+  problems: string[];
+  /** Reported, never a rejection reason on the paid tier. */
+  genderMarks: string[];
+}
+
+/** Every reader-directed gender mark in the text, for logging only. */
+export function countGenderMarks(text: string): string[] {
+  const found: string[] = [];
+  for (const re of GENDERED_READER) {
+    const m = text.match(new RegExp(re.source, "giu"));
+    if (m) found.push(...m);
+  }
+  return found;
+}
+
+/**
+ * Structure only: non-empty, inside the brief's word range with a margin, and
+ * finished rather than cut off. No gender, jargon or cliché check — the free
+ * tier's gate works because a rejection there costs $0.000375 and can rotate to
+ * a different chart feature on retry. Neither is true of a paid section, and
+ * extrapolating the free tier's per-block rate across 2,400 words leaves ~5% of
+ * reports passing. Marks are counted and logged instead; if the log shows the
+ * problem is frequent, the fix is a prompt rule, not a regex.
+ */
+export function validateSection(text: string, brief: SectionBrief): SectionCheck {
+  const problems: string[] = [];
+  const trimmed = text.trim();
+  const words = trimmed.split(/\s+/).filter(Boolean).length;
+  // The free tier measured that models overshoot word budgets consistently;
+  // a 15% margin stops a merely-long section costing a paid retry.
+  const floor = Math.round(brief.minWords * 0.85);
+  const ceiling = Math.round(brief.maxWords * 1.15);
+
+  if (!trimmed) problems.push("sección vacía");
+  else {
+    if (words < floor || words > ceiling) {
+      problems.push(`${words} palabras (rango ${floor}-${ceiling})`);
+    }
+    if (!/[.!?…]["»)]?$/.test(trimmed)) problems.push("texto truncado: no termina en puntuación final");
+  }
+
+  return { ok: problems.length === 0, problems, genderMarks: countGenderMarks(trimmed) };
+}
 
 export function validateFree(reading: FreeReading, chart: NatalChart): Validation {
   const a = validateProse(reading.apertura, chart, APERTURA_RANGE);
