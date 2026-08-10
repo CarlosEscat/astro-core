@@ -5,9 +5,10 @@
 Last updated: 2026-08-10 — plan 1 (per-section generation core) built and
 measured. 215 tests. The battery found the gate, not the model, is the
 problem, and that an invented retrogradation shipped because nothing
-gated grounding on the paid tier. Three fixes applied (incl. the
-grounding gate), none re-measured against a live battery. Read
-Addendum 12 before touching `validateSection` or `src/sections.ts`.
+gated grounding on the paid tier. Three fixes applied AND confirmed by a
+second battery run: 28.2 min/$1.03/2-of-3 → 5.4 min/$0.12/3-of-3, zero
+escalations, zero grounding failures. Read Addendum 12 before touching
+`validateSection` or `src/sections.ts`.
 
 ### Done
 - [x] Chart computation engine (Placidus + whole-sign fallback), 25 tests
@@ -77,8 +78,8 @@ are not.
       single call it replaced. **Do the Addendum 12 fixes before
       plan 3 wires this to a queue.** Three are DONE (escalation no
       longer fires on length; the Amor brief is 350-480; grounding is
-      gated after an invented retrogradation shipped), but NOT
-      re-measured — no battery run exists against them.
+      gated after an invented retrogradation shipped), and CONFIRMED by
+      a second battery run — Addendum 12's confirming-run table.
 - [ ] **Plan 2 — orders, payment, persistence.** Supabase schema
       (`orders`, `report_sections`, `entitlements`), `/api/checkout`,
       Stripe with Bizum, webhook with signature verification and
@@ -1122,16 +1123,72 @@ described in the DEFECT section.
    architecture. `src/sections.ts` carries the evidence in a comment so
    nobody "corrects" it back.
 
+### CONFIRMING RUN, after all three fixes (2026-08-10)
+
+Second battery run, same three charts, against the fixed code. Outputs in
+`bakeoff-out/sections/`; the pre-fix run is archived in
+`bakeoff-out/sections-pre-fixes/`.
+
+| | Run 1 (pre-fix) | Run 2 (post-fix) |
+|---|---|---|
+| Wall clock, 3 charts | 1691.7 s (28.2 min) | **322.9 s (5.4 min)** |
+| Cost, 3 charts | $1.0338 | **$0.1247** |
+| Reports delivered | 2/3 | **3/3** |
+| Sections passing first attempt | 14/24 (58%) | **24/24 (100%)** |
+| Kimi escalations | 4 | **0** |
+| Grounding failures | 1, shipped undetected | **0** |
+
+Per report: **~108 s and ~$0.042**. Against the Kimi single-call baseline
+of ~5 min and $0.218-0.481, that is **~3x faster and 5-11x cheaper** —
+and now measured rather than predicted. Addendum 10's speed argument is
+fully vindicated.
+
+**This run is a pure DeepSeek V4 Pro sample.** Zero Kimi calls anywhere,
+so unlike run 1 (whose best sections were escalations) it isolates
+exactly the risk Addendum 10 accepted. Grounding verified independently
+by replaying all three reports through `validateSection`: **0 fatal
+problems**. Prose quality holds — the canary's 547-word `Amor y vínculos`
+covers all four beats, names every datum with degrees, and closes on
+agency.
+
+### What run 2 exposed in turn
+
+- **Reports are now ~3,000 words** (2877-3071), against Kimi's 2297-2630
+  and the 2000-2500 that `system-report.md`'s "Registro final" still
+  asks for. **12 of 24 sections exceeded their brief ceiling** and were
+  accepted with a warning. That is the intended consequence of making
+  length advisory, but it means the briefs' word ranges are now roughly
+  decorative — the model overshoots them by 20-30% as a matter of course.
+  Decide whether a 3,000-word report is the product you want before
+  plan 4 renders it.
+- **`Amor y vínculos` at 350-480 is right but not generous.** bilbao came
+  in at 547 against a 552 ceiling — five words of headroom.
+- **Gender marks: 2 real in ~9,000 words, in 2 of 3 reports**
+  (`sentirte invadida`, `estás lista`). The third, `te vuelve narrativa`,
+  is a false positive — "la memoria se te vuelve narrativa" is a noun,
+  not a participle agreeing with the reader. Addendum 10 set the
+  criterion itself: *"If the log shows it is frequent, the fix is a
+  prompt rule, not a regex."* Two of three reports meets that bar. Note
+  both real marks are stock phrasings that `repair()` could absorb, but
+  extending that whitelist is whack-a-mole; the prompt rule is the fix.
+- **One orb overclaim:** bilbao calls a 1.29° Venus-Urano opposition
+  "exacta". Mild — the other two exactness claims in the run are accurate
+  and one quantifies itself correctly ("apenas un grado" for a 0.95°
+  orb) — but the model *is* handed the orb in its brief, so a rule
+  reserving "exacto" for <1° is cheap if it recurs.
+- **The cliché "montaña rusa" appeared**, which is on the free tier's
+  blocklist. Not gated here by design; noted so it is not mistaken for a
+  regression later.
+
 ### Still open
 
 3. **Consider briefing in sentences or paragraphs, not words.**
    Addendum 7 measured that models obey sentence counts and ignore word
    counts; nothing here contradicts it. Not attempted — it rewrites all
    eight briefs and needs its own battery run.
-4. **Re-run the battery to confirm the two fixes.** The run above cost
-   $1.03 and ~28 min; the prediction is that it should now come in far
-   cheaper and faster, with escalations near zero. **That prediction is
-   unverified — no battery has been run since the fixes landed.**
+4. ~~Re-run the battery to confirm the fixes.~~ **DONE** — see the
+   confirming run above. Prediction held: 5.4 min, $0.1247, zero
+   escalations, 3/3 delivered.
 5. The `countGenderMarks` false positive on `estar retrógrado` is
    untouched. Harmless while the paid tier only logs, but it would
    matter if anything ever gates on it.
