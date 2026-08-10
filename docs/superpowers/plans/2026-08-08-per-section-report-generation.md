@@ -1,5 +1,25 @@
 # Per-Section Report Generation Implementation Plan
 
+> **STATUS: EXECUTED 2026-08-10.** All seven tasks are built, committed and
+> merged to main (169 → 210 tests). The checkboxes below were left unticked;
+> treat the whole document as done and read **HANDOVER Addendum 12** for what
+> the battery actually measured — it contradicts this plan in two places.
+>
+> Deviations from the text below, all deliberate:
+> - `src/sections.ts` imports `report.ts` **type-only**. Task 4 makes
+>   `report.ts` import `briefFor` as a value, so Task 1's literal import would
+>   close a runtime cycle.
+> - Task 7's `max_tokens` is **16000, not 4000**. Reasoning models return HTTP
+>   200 with empty content on a short budget; several live calls spent
+>   1900-5300 tokens reasoning before emitting a word. Zero empties resulted.
+> - Task 7's `call()` **logs** `finish_reason`, `provider`, reasoning tokens and
+>   cost. The version below computed `finish_reason` and discarded it, undoing
+>   the instrumentation Addendum 8 asked to keep.
+> - Task 5's `validateSection` now splits **`fatal`** (empty, truncated) from
+>   advisory length, and Task 1's `Amor y vínculos` range is **350-480**, not
+>   300-350. Both are consequences of the battery, applied after it ran — see
+>   Addendum 12. The measurements there predate both fixes.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Turn the paid report from one 5-minute Kimi call into eight briefed, independently generated and independently retryable sections, and measure whether DeepSeek V4 Pro holds quality under that briefing.
