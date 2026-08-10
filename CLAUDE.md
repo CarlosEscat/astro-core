@@ -23,7 +23,7 @@ dated addenda in the same file.
 
 ## Working notes
 
-- `npm test` must stay green (210 tests). `npm run example` smoke-tests
+- `npm test` must stay green (215 tests). `npm run example` smoke-tests
   the tsx path — vitest passing does NOT prove tsx works (ESM interop).
 - Prompts are composed from fragments, never copy-pasted. `{{RULES}}` is
   universal; `{{RULES_CHART}}` holds the technical vocabulary and may
@@ -40,7 +40,9 @@ dated addenda in the same file.
   `scripts/battery-sections.ts` for the paid per-section one — all cost
   money and need the network, so they are not in `npm test`. Measured
   baselines live in HANDOVER Addenda 7 (free) and 12 (per-section).
-- **Length is not a rejection reason on the paid tier.** `SectionCheck`
+- **Grounding IS gated on the paid tier; length is not.** `groundingProblems()`
+  (invented retrogradation, false sign, absent aspect) is fatal — an invented
+  retrogradation shipped once because nothing checked it. `SectionCheck`
   splits `fatal` (empty, truncated) from advisory length; escalating to
   Kimi over a word count made the run slower and dearer than the single
   call it replaced. Addendum 12.

@@ -3,11 +3,11 @@
 ## Estado actual (keep this section updated — it is the first thing read)
 
 Last updated: 2026-08-10 — plan 1 (per-section generation core) built and
-measured. 210 tests. The battery found the gate, not the model, is the
+measured. 215 tests. The battery found the gate, not the model, is the
 problem, and that an invented retrogradation shipped because nothing
-gates grounding on the paid tier. Two fixes applied, not re-measured;
-the grounding gate is NOT built. Read Addendum 12
-before touching `validateSection` or `src/sections.ts`.
+gated grounding on the paid tier. Three fixes applied (incl. the
+grounding gate), none re-measured against a live battery. Read
+Addendum 12 before touching `validateSection` or `src/sections.ts`.
 
 ### Done
 - [x] Chart computation engine (Placidus + whole-sign fallback), 25 tests
@@ -68,16 +68,17 @@ are not.
       (2026-08-10). `src/sections.ts`, `src/allocate.ts`,
       `prompts/system-section.md`, `buildSectionMessages`,
       `validateSection`, `composeReport`, `scripts/battery-sections.ts`.
-      169 → 205 tests, 210 after the fixes below. Battery run once
+      169 → 205 tests, 215 after the fixes below. Battery run once
       (against the 205-test state); results and the three
       recommended fixes are in **Addendum 12**. The Addendum 10 quality
       risk did NOT materialise — V4 Pro holds up. What did materialise is
       that `validateSection`'s length gate rejects good prose and
       escalates to Kimi for it, which is slower and dearer than the
       single call it replaced. **Do the Addendum 12 fixes before
-      plan 3 wires this to a queue.** Two of the three are DONE (escalation
-      no longer fires on length; the Amor brief is 350-480), but have NOT
-      been re-measured — no battery run exists against them.
+      plan 3 wires this to a queue.** Three are DONE (escalation no
+      longer fires on length; the Amor brief is 350-480; grounding is
+      gated after an invented retrogradation shipped), but NOT
+      re-measured — no battery run exists against them.
 - [ ] **Plan 2 — orders, payment, persistence.** Supabase schema
       (`orders`, `report_sections`, `entitlements`), `/api/checkout`,
       Stripe with Bizum, webhook with signature verification and
@@ -1068,14 +1069,21 @@ eliminatory criterion in `prompts/rubric.md` — one invented placement
 disqualifies a model regardless of prose quality — and "every sentence
 names its placement, and you can check it" is the product's whole claim.
 
-**The fix is not to reuse `validateProse` wholesale**, which would drag
-in the gender, jargon and cliché rules that spec decision 6 deliberately
-excludes from the paid tier. Split out its three *chart-verifiable*
-checks — invented retrogradation, false sign, absent aspect — and make
-them **fatal** for a section. They are mechanical, cheap, and they are
-the only checks whose failure the buyer can personally detect. Note that
-decision 6 said no *gender* gate on the paid tier; it never said no
-grounding gate.
+**FIXED 2026-08-10** (210 → 215 tests). `groundingProblems(text, chart)`
+now holds the three *chart-verifiable* checks — invented retrogradation,
+false sign, absent aspect — split out of `validateProse` so the paid tier
+enforces facts without inheriting the gender, jargon and cliché rules
+that spec decision 6 deliberately excludes. Decision 6 ruled out a
+*gender* gate; it never ruled out a grounding one.
+
+`validateSection(text, brief, chart)` now takes the chart and puts
+grounding failures in **`fatal`**, not in advisory `problems`: unlike
+length, a retry can genuinely fix a false claim, and this is the one
+error class the buyer can check against their own chart.
+
+Verified end-to-end, not just in unit tests: replaying the two delivered
+reports through the new gate flags exactly the madrid Mercury section and
+nothing else, and passes bilbao clean.
 
 ### Three smaller things worth keeping
 
@@ -1096,10 +1104,11 @@ grounding gate.
   "coraza", which is on the *free* tier's cliché blocklist; the paid tier
   deliberately does not check clichés.
 
-### Two fixes applied on the strength of this run (2026-08-10)
+### Three fixes applied on the strength of this run (2026-08-10)
 
-Both landed after the measurement above, so **the numbers in the table
-predate them**. 205 → 210 tests.
+All landed after the measurement above, so **the numbers in the table
+predate them**. 205 → 215 tests. The third is the grounding gate
+described in the DEFECT section.
 
 1. **Escalation no longer fires on length.** `SectionCheck` now carries a
    `fatal` list — empty or truncated only — alongside `problems`. The
@@ -1114,10 +1123,6 @@ predate them**. 205 → 210 tests.
 
 ### Still open
 
-0. **Gate grounding on the paid tier — highest priority of anything here.**
-   An invented retrogradation shipped in a delivered report because
-   nothing checks it (see the DEFECT section above). Make the three
-   chart-verifiable checks fatal for a section.
 3. **Consider briefing in sentences or paragraphs, not words.**
    Addendum 7 measured that models obey sentence counts and ignore word
    counts; nothing here contradicts it. Not attempted — it rewrites all
