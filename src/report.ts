@@ -215,21 +215,35 @@ export interface ParsedReport {
 export { validateTeaser, validateProse } from "./validate";
 export type { Validation, ProseOptions } from "./validate";
 
+/**
+ * A heading on its own line, at any level the model might emit. A literal
+ * `indexOf("## " + title)` lost four otherwise-good reports in the bake-off to
+ * a model that answered with `#` or `###`; regenerating a paid report over a
+ * hash count is not a defensible cost. Requiring the whole line keeps the
+ * parser from mistaking a title quoted mid-sentence for a section start.
+ */
+function headingAt(markdown: string, title: string, from: number) {
+  const escaped = title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp(`^#{1,3}[ \\t]*${escaped}[ \\t]*$`, "im");
+  const m = re.exec(markdown.slice(from));
+  return m ? { start: from + m.index, end: from + m.index + m[0].length } : null;
+}
+
 export function parseReport(markdown: string): ParsedReport | null {
   const sections: Array<{ title: string; body: string }> = [];
+  let cursor = 0;
   for (let i = 0; i < SECTION_TITLES.length; i++) {
-    const title = SECTION_TITLES[i];
-    const start = markdown.indexOf(`## ${title}`);
-    if (start === -1) return null;
-    const from = start + title.length + 3;
+    const here = headingAt(markdown, SECTION_TITLES[i], cursor);
+    if (!here) return null;
     const next =
       i + 1 < SECTION_TITLES.length
-        ? markdown.indexOf(`## ${SECTION_TITLES[i + 1]}`, from)
-        : markdown.length;
-    if (next === -1) return null;
-    const body = markdown.slice(from, next).trim();
+        ? headingAt(markdown, SECTION_TITLES[i + 1], here.end)
+        : null;
+    if (i + 1 < SECTION_TITLES.length && !next) return null;
+    const body = markdown.slice(here.end, next ? next.start : markdown.length).trim();
     if (body.length < 200) return null; // suspiciously short section
-    sections.push({ title, body });
+    sections.push({ title: SECTION_TITLES[i], body });
+    cursor = here.end;
   }
   const wordCount = markdown.split(/\s+/).filter(Boolean).length;
   return { sections, wordCount };
