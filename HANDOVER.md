@@ -4,7 +4,9 @@
 
 Last updated: 2026-08-10 — plan 1 (per-section generation core) built and
 measured. 210 tests. The battery found the gate, not the model, is the
-problem; two fixes applied but NOT yet re-measured. Read Addendum 12
+problem, and that an invented retrogradation shipped because nothing
+gates grounding on the paid tier. Two fixes applied, not re-measured;
+the grounding gate is NOT built. Read Addendum 12
 before touching `validateSection` or `src/sections.ts`.
 
 ### Done
@@ -1027,9 +1029,9 @@ is confirmed, not refuted** — it was buried under a gate misfire.
 Read, not inferred from regexes (Addendum 7's warning about
 `FREE_TIER_ECHO` applies here too).
 
-- **Grounding is intact.** Every claim names its datum, degrees and all
-  ("tu Luna en Libra en la casa cinco, recién estrenada a un grado
-  escaso"). No invented placements found in either delivered report.
+- **Grounding is mostly intact, but NOT perfect — see the defect below.**
+  Claims name their datum, degrees and all ("tu Luna en Libra en la casa
+  cinco, recién estrenada a un grado escaso").
 - **The deterministic allocation works.** On madrid, the eight sections
   develop eight *different* aspect pairs — Sol-Neptuno in section 1,
   Luna-Venus in 2, Marte-Urano in 4, Saturno-Plutón in 5, Urano-Neptuno
@@ -1040,6 +1042,40 @@ Read, not inferred from regexes (Addendum 7's warning about
   named threads and closes on an image from that chart.
 - **The canary produced zero gender marks** across 2584 words. bilbao is
   the chart that breaks gender rules across all models on the free tier.
+
+### DEFECT: an invented retrogradation shipped, because nothing checks grounding
+
+Found on 2026-08-10 by running the delivered reports back through
+`validateProse`'s grounding checks — **after** an earlier draft of this
+addendum had claimed the reports were clean on the strength of reading 5
+of 16 sections. Read the whole thing or check it mechanically; do not
+spot-check grounding.
+
+`bakeoff-out/sections/madrid-1992.md`, section 3, says *"el hecho de que
+Mercurio esté retrógrado"*. **Mercury is not retrograde in that chart** —
+only Jupiter and Pluto are. One invented retrogradation in 16 delivered
+sections. bilbao-2000 is clean (its Urano and Neptuno retrogrades are
+real).
+
+**Why it shipped: `validateSection` does not check grounding at all.** It
+checks length and truncation. The free tier's `validateProse` *does*
+catch exactly this (`retrogradación inventada`), and it would have caught
+this one — the machinery exists and the paid path simply does not call
+it.
+
+This matters more than anything else in this addendum. Grounding is the
+eliminatory criterion in `prompts/rubric.md` — one invented placement
+disqualifies a model regardless of prose quality — and "every sentence
+names its placement, and you can check it" is the product's whole claim.
+
+**The fix is not to reuse `validateProse` wholesale**, which would drag
+in the gender, jargon and cliché rules that spec decision 6 deliberately
+excludes from the paid tier. Split out its three *chart-verifiable*
+checks — invented retrogradation, false sign, absent aspect — and make
+them **fatal** for a section. They are mechanical, cheap, and they are
+the only checks whose failure the buyer can personally detect. Note that
+decision 6 said no *gender* gate on the paid tier; it never said no
+grounding gate.
 
 ### Three smaller things worth keeping
 
@@ -1078,6 +1114,10 @@ predate them**. 205 → 210 tests.
 
 ### Still open
 
+0. **Gate grounding on the paid tier — highest priority of anything here.**
+   An invented retrogradation shipped in a delivered report because
+   nothing checks it (see the DEFECT section above). Make the three
+   chart-verifiable checks fatal for a section.
 3. **Consider briefing in sentences or paragraphs, not words.**
    Addendum 7 measured that models obey sentence counts and ignore word
    counts; nothing here contradicts it. Not attempted — it rewrites all
