@@ -1052,7 +1052,8 @@ addendum had claimed the reports were clean on the strength of reading 5
 of 16 sections. Read the whole thing or check it mechanically; do not
 spot-check grounding.
 
-`bakeoff-out/sections/madrid-1992.md`, section 3, says *"el hecho de que
+`bakeoff-out/sections-pre-fixes/madrid-1992.md` (the pre-fix run,
+archived so this evidence survives a re-run), section 3, says *"el hecho de que
 Mercurio esté retrógrado"*. **Mercury is not retrograde in that chart** —
 only Jupiter and Pluto are. One invented retrogradation in 16 delivered
 sections. bilbao-2000 is clean (its Urano and Neptuno retrogrades are
