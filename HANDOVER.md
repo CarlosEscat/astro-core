@@ -97,10 +97,16 @@ are not.
 - [ ] **Plan 3 — queued generation pipeline.** Inngest two-wave fan-out,
       conditional `paid → generating` claim, per-section retry and Kimi
       escalation, Resend email.
-- [ ] **Plan 4 — delivery UI.** `/informe/<token>` holding page with
-      progressive rendering, report component, shareable 9:16 card,
-      and wiring the buy CTA that is currently just copy in
-      `BirthForm.tsx:287`.
+- [ ] **Plan 4 — delivery UI** — PLAN WRITTEN 2026-08-10, not executed:
+      `docs/superpowers/plans/2026-08-10-delivery-ui.md`. **Split into
+      two phases.** Phase A (report component, section index, 9:16 share
+      card, +27 tests) needs NO vendors and can be executed NOW — it
+      renders the battery reports in `bakeoff-out/sections/` at
+      `/preview/informe/<chart>`. Phase B (`/informe/<token>`, 2 s
+      polling, progressive rendering, wiring the CTA at
+      `BirthForm.tsx:287`) needs plans 2 and 3.
+      Phase A also answers the open ~3,000-word question in Addendum 12,
+      which is why it is worth doing before plans 2-3 rather than after.
 - [ ] PDF rendering (Puppeteer over the same report component) — own spec
 - [ ] Daily cron: transits once/day → 12 horoscopes → Supabase cache
 - [ ] Oracle chat (post-MVP): system-oracle.md, rolling window, quotas

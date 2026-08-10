@@ -13,14 +13,15 @@ battery may invalidate.
 | 1 | Section generation core in `astro-core` | — | none |
 | 2 | Orders, payment, persistence | 1 (schema stores its output) | Stripe, Supabase |
 | 3 | Queued generation pipeline | 1 + 2 | Inngest, Resend |
-| 4 | Delivery UI and share card | 3 | — |
+| 4 | Delivery UI and share card | **A: none, B: 3** | — |
 
 **Why this order.** Plan 1 needs no accounts and ends by measuring the
 risk accepted in Addendum 10 — whether DeepSeek V4 Pro under per-section
 briefing holds quality. That answer arrives before any infrastructure is
 built on the assumption. Plan 2 can be built in parallel with plan 1 if
-you want, since the schema does not depend on which model wins; plans 3
-and 4 cannot.
+you want, since the schema does not depend on which model wins; plan 3
+cannot. **Plan 4 turned out to be splittable** — its rendering half
+depends on data, not infrastructure, so it can be built at any time.
 
 ---
 
@@ -148,9 +149,22 @@ recoverable rather than half-charged.
 
 ---
 
-## Plan 4 — Delivery UI and share card
+## Plan 4 — Delivery UI and share card ✅ WRITTEN 2026-08-10
 
-**Delivers:** the buyer reads their report. Depends on plan 3.
+`docs/superpowers/plans/2026-08-10-delivery-ui.md`
+
+**Split into two phases, which corrects the dependency stated below.**
+Phase A (report component, section index, 9:16 share card) needs NO
+vendors and is executable immediately: it renders the three battery
+reports already on disk in `bakeoff-out/sections/`. Phase B (token
+route, polling, progressive rendering, CTA) does depend on plans 2-3.
+
+Doing Phase A early is not just for morale — it answers the open
+question from Addendum 12 about whether a ~3,000-word report is the
+product we want, and it pins the section data shape before plan 3
+persists it. Same argument that put plan 1 first.
+
+**Delivers:** the buyer reads their report. Phase B depends on plan 3.
 
 ### Tasks
 
