@@ -577,6 +577,85 @@ body {
   text-align: center;
 }
 
+/* ── The paid report ────────────────────────────────────────────── */
+
+.report { max-width: var(--measure); margin: 0 auto; }
+
+.report__greeting {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  border-bottom: 1px solid var(--ink-line);
+  padding-bottom: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.report__section { margin: 0 0 3.5rem; scroll-margin-top: 2rem; }
+
+.report__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2rem);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--bone);
+  margin: 0 0 1.25rem;
+}
+
+/* A brass rule under each title: the engraved-instrument language, and it
+   gives the eye a rung to find when scrolling a 15-minute read. */
+.report__title::after {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 1px;
+  margin-top: 0.75rem;
+  background: var(--brass);
+}
+
+.report__p { margin: 0 0 1.15rem; text-wrap: pretty; }
+.report__p:last-child { margin-bottom: 0; }
+
+.rindex {
+  max-width: var(--measure);
+  margin: 0 auto 3.5rem;
+  border: 1px solid var(--ink-line);
+  border-radius: 3px;
+  background: var(--ink-raised);
+  padding: 1.5rem 1.25rem;
+}
+
+.rindex__list { list-style: none; margin: 0; padding: 0; }
+.rindex__item + .rindex__item { border-top: 1px solid var(--ink-line); }
+
+.rindex__link {
+  display: flex;
+  gap: 0.9rem;
+  align-items: baseline;
+  padding: 0.6rem 0;
+  color: var(--bone);
+  text-decoration: none;
+}
+.rindex__link:hover .rindex__name { color: var(--brass); }
+
+.rindex__num {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--slate);
+}
+.rindex__name { font-family: var(--font-display); font-size: 1.0625rem; }
+
+.report__meta {
+  max-width: var(--measure);
+  margin: 0 auto 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
