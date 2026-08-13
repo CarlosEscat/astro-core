@@ -8,6 +8,14 @@ en su decisión 1 (paridad de forma pero NO de registro). Aquel spec
 resolvía la sección de amor sola; este cambia el registro de las ocho y
 absorbe aquel como caso particular.
 
+**Enmendado el 2026-08-13** al aprobarse
+`2026-08-13-character-card-design.md`, que añade una ficha de personaje
+calculada como primera pantalla del informe. Las decisiones 4, 6, 7, 8 y
+10 llevan la enmienda marcada en su sitio. Ninguna se revierte: la ficha
+es este mismo principio — *separar el dato de la frase* — llevado al
+extremo, una superficie que no escribe nada y por tanto no puede
+equivocarse en nada.
+
 ## Problema
 
 El informe de pago está escrito para alguien que ya sabe astrología, y
@@ -92,6 +100,18 @@ hoy "conjunción" u "oposición". Sin esta tabla, la prosa llana podría
 afirmar que dos planetas chocan sin que nada lo verificara — que es la
 misma clase de defecto que el Addendum 12 encontró ya entregado.
 
+**Enmienda 2026-08-13 — `RELATION_ES` absorbe a `relationPhrase()`.**
+`profile.ts` ya tiene un `relationPhrase()` que devuelve "van pegados" /
+"tiran cada uno para un lado" / "van de la mano" para la lectura
+gratuita. Son la misma idea escrita dos veces, y con la ficha de personaje
+entrando en la misma pantalla serían tres formas de decir la misma
+geometría. `RELATION_ES` pasa a ser la tabla única; `relationPhrase()`
+se reescribe como una lectura de ella o desaparece.
+
+La ficha de personaje consume `RELATION_ES` para su respaldo de rasgos
+sin entrada revisada. Eso hace que **la ficha completa dependa de este
+plan A**; la parcial de la lectura gratuita no, porque no lleva rasgos.
+
 ### 5. Qué le pasa a `groundingProblems()`
 
 | Comprobación | Se apoya en | Después |
@@ -143,6 +163,18 @@ Dicho de otro modo: `strip` es opcional, y cuando existe cualquiera de
 sus dos listas puede venir vacía. Una sección sin nada que enseñar no
 recibe `strip` en absoluto — nadie renderiza una caja vacía.
 
+**Enmienda 2026-08-13 — los glifos van dibujados, no escritos.** Este
+spec pedía el glifo del signo como texto con U+FE0E. La ficha de
+personaje los dibuja como trazados SVG en línea, porque su exportación a
+PNG no puede depender de una fuente de sistema (Addendum 13: el PNG
+actual no sale ni en Fraunces ni en Plex). Si la tira conserva el texto y
+la ficha usa trazados, Leo se dibuja de dos formas distintas en la misma
+pantalla.
+
+**La tira adopta los trazados.** Salen de un módulo compartido, y con
+ello el apaño de U+FE0E desaparece de las dos superficies. Nada más de la
+tira cambia.
+
 ### 7. Sin rueda astral
 
 Descartada tras dibujarla con la geometría real de bilbao-2000.
@@ -156,6 +188,24 @@ que aprender antes de que la rueda diga nada, y los números de casa del
 Anotado como posible adorno posterior, nunca como el dispositivo que hace
 entendible el informe.
 
+**Enmienda 2026-08-13 — por qué la ficha de personaje no contradice
+esto.** Se aprueba una ficha calculada como primera pantalla del informe,
+y a primera vista parece justo lo que este apartado descarta. No lo es, y
+conviene dejar escrita la diferencia antes de que alguien la lea como una
+incoherencia.
+
+La rueda se descartó por tres motivos concretos. La ficha no incurre en
+ninguno:
+
+| Motivo contra la rueda | La ficha |
+|---|---|
+| Exige **glifos planetarios**, un segundo alfabeto | Usa solo los **doce glifos de signo**, los que cualquiera ha visto en un horóscopo. Ningún glifo planetario, igual que la tira |
+| Muestra **casas del 1 al 12**, la jerga que elimina la decisión 1 | No numera ninguna casa: zona de la vida en palabras, vía `AREA_CORTA_ES` |
+| **No responde a ninguna pregunta** que traiga la lectora | Responde a la primera: quién soy yo aquí — clase, cómo se te ve, cómo eres por dentro, de qué estás hecho |
+
+Lo que sigue descartado es la rueda: el instrumento que exige aprender un
+alfabeto antes de decir nada.
+
 ### 8. La sección de amor conserva su forma propia
 
 Del spec sustituido sobreviven, ya sin la tensión de registro que las
@@ -166,7 +216,10 @@ complicaba:
   del cuerpo: no puede verse dos veces.
 - **Sin marca de agua.** La gratuita lleva `· tu lectura` porque su
   trabajo es circular en capturas; el comprador ya ha pagado. La pieza
-  compartible del informe es la `ShareCard` 9:16.
+  compartible del informe es la tarjeta 9:16 — que a partir del
+  2026-08-13 **es la exportación de la ficha de personaje**, no la
+  `ShareCard` de Sol/Luna/Ascendente. Misma ranura, misma ruta de
+  rasterizado, más contenido.
 - **Lista de compatibilidad** al cerrar la sección, tras la prosa.
 - **El gancho está exento de nombrar su dato** y es **advisorio, nunca
   `fatal`**. Con la decisión 1 la exención casi desaparece: en registro
@@ -198,9 +251,11 @@ export interface StripPlacement {
   // conviviría con `ReportSection.body`, que es la prosa. Dos cosas
   // distintas con el mismo nombre en la misma pantalla es una trampa.
   planet: string;        // "Venus"
-  glyph: string;         // glifo del SIGNO, con U+FE0E. No hace falta un
-                         // mapa de glifos planetarios: no existe y la tira
-                         // no lo usa.
+  // Enmienda 2026-08-13: era `glyph: string` con U+FE0E. Ahora es la
+  // CLAVE del trazado compartido, que ambas superficies dibujan igual.
+  // Sigue siendo glifo de SIGNO: no hace falta un mapa de glifos
+  // planetarios, no existe y la tira no lo usa.
+  glyphKey: Sign;        // "Leo" -> trazado SVG del módulo compartido
   sign: string;          // "Leo"
   degree: number;        // signDegree (20.6), NUNCA la longitud absoluta
   area: string;          // AREA_ES[3]
@@ -213,6 +268,24 @@ export interface StripRelation {
   hard: boolean;         // cobre si tira, latón si acompaña
 }
 ```
+
+**Enmienda 2026-08-13 — `ReportView` recibe además una ficha opcional.**
+La ficha de personaje no es de una sección: es del informe entero. Entra
+como propiedad de nivel superior, hermana de las secciones, no dentro de
+`ReportSection`:
+
+```ts
+export interface ReportViewProps {
+  sections: ReportSection[];
+  /** Ficha de personaje. Ausente en la ruta de preview sin carta y
+   *  mientras el informe se genera. Se renderiza si está. */
+  card?: CharacterCard;
+}
+```
+
+Es exactamente la misma regla que ya rige abajo — se renderiza si el
+campo está, sin preguntar por título ni por índice — aplicada un nivel
+más arriba.
 
 `ReportView` **no ramifica por título ni por índice**: solo mira si los
 campos están. Quien decide qué sección se decora es el llamante, y lo
@@ -251,21 +324,32 @@ El prompt y la tira beben de la misma fuente y muestran **cosas
 distintas a propósito**: el prompt recibe la relación en palabras y sin
 número; la tira enseña el número que el modelo nunca vio.
 
-## Orden de ejecución: dos planes
+## Orden de ejecución: tres planes
 
 **Plan A — el registro.** Ocho briefs, `{{RULES_CHART}}` fuera,
 `RELATION_ES`, `buildSectionMessages` traducido, `groundingProblems`
 reescrito. Termina ejecutando `scripts/battery-sections.ts`.
 
 **Plan B — la presentación.** Tira de datos, `HookCard`, `matchesFor`,
-`ReportSection` decorado, sección de amor. Sin LLM, sin proveedores, sin
-red.
+`ReportSection` decorado, sección de amor, trazados de glifos. Sin LLM,
+sin proveedores, sin red.
+
+**Plan C — la ficha de personaje** (2026-08-13, spec propio). Consume
+`RELATION_ES` del plan A y los trazados de glifos del plan B, así que va
+detrás de los dos.
 
 **A va antes que B, y el orden importa.** El riesgo real de todo este
 documento es de calidad de prosa, y solo la batería lo mide. Construir la
 UI primero sería construir sobre una suposición no verificada — el mismo
 argumento que puso el plan 1 antes que el resto del informe de pago
 (Addendum 11).
+
+**La mitad gratuita de la ficha no espera a nadie.** La ficha parcial de
+la lectura gratuita no lleva rasgos, así que no toca `RELATION_ES` ni
+depende de la batería: solo necesita su tabla de clases y
+`AREA_CORTA_ES`, y se monta sobre el `/api/free` que ya está en
+producción. Puede salir antes que el plan A sin comprometer nada de lo de
+aquí.
 
 ## Qué se prueba
 

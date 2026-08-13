@@ -30,19 +30,56 @@ The card is a *wow and share* feature. The paragraph brief is the
 *readability* fix. Shipping the card and calling the wall solved would be
 a mistake.
 
+## Relationship to the plain-language spec
+
+`2026-08-10-paid-report-plain-language-design.md` governs the same screen
+and was amended on 2026-08-13 to absorb this one. The card is that spec's
+own principle — *separar el dato de la frase* — taken to its limit: a
+surface that writes nothing and therefore cannot get anything wrong.
+
+Four rules from it bind this design and are not relitigated here:
+
+1. **Houses are never numbered** (its decision 1). The card renders life
+   areas in words.
+2. **`RELATION_ES` is the single relation vocabulary** (its decision 4).
+   The card's trait fallback consumes it rather than inventing a third.
+3. **Sign glyphs only, never planetary ones** (its decision 7).
+4. **`ReportView` never branches on title or index** (its decision 10).
+   The card enters as an optional top-level prop.
+
+Its decision 6 (per-section data strip) and this card are **not
+redundant** and neither replaces the other: the strip exists so the
+reader can check a claim *next to the claim*, which a card at the top of
+3,000 words cannot do. Do not "simplify" by deleting one.
+
 ## Scope
 
-- **In:** `src/card.ts`, two copy tables, a drafting script, a standalone
+- **In:** `src/card.ts`, three copy tables (`classes.es.ts`,
+  `traits.es.ts`, `AREA_CORTA_ES`), a drafting script, a standalone
   jargon/cliché export in `src/validate.ts`, a shared zodiac-glyph path
   module, two React components, the free-tier projection, wiring into the
   live free page and the dev preview route.
 - **Out:** section briefs, prompts, model choice, `/informe/<token>`
   (phase B, blocked on plans 2 and 3), server-side PNG rendering, PDF.
 
-**This work is not blocked by plans 2 or 3.** The free partial card ships
-to real users immediately over the existing `/api/free`. The full card
-ships behind `/preview/informe/<chart>` and slots into `/informe/<token>`
-unchanged when phase B lands.
+### Sequencing
+
+**Nothing here is blocked by plans 2 or 3** (orders, payment, queue). But
+the two halves of the card have different dependencies, and the split is
+clean:
+
+- **The free partial card is genuinely independent and ships now.** Its
+  projection omits `rasgos` and `tensiones` entirely, so it touches no
+  relation vocabulary at all — it needs only `classes.es.ts` and
+  `AREA_CORTA_ES`, and it renders over the existing live `/api/free`.
+- **The full card follows plan A and plan B** of
+  `2026-08-10-paid-report-plain-language-design.md`. Plan A because its
+  traits consume `RELATION_ES`, which does not exist yet; plan B because
+  it should inherit that plan's glyph paths and area copy rather than
+  race them into the same screen.
+
+The full card then ships behind `/preview/informe/<chart>` and slots into
+`/informe/<token>` unchanged when phase B of the delivery plan lands.
 
 ---
 
@@ -148,7 +185,11 @@ export type Tone = "armonioso" | "tenso" | "fusion";
 export interface CardPlanet {
   body: Body;
   sign: Sign;
+  /** Internal key only. MUST NOT reach the DOM — see "houses are never
+   *  numbered" below. Render `area`. */
   house: number;
+  /** AREA_CORTA_ES[house]. This is what renders. */
+  area: string;
   signDegree: number;
   retrograde: boolean;
   /** How many other bodies aspect this one. Recomputable from chart.aspects. */
@@ -174,7 +215,7 @@ export interface CardHighlight {
 export interface CharacterCard {
   clase: { sign: Sign; nombre: string };
   seVe: { sign: Sign; signDegree: number };
-  porDentro: { sign: Sign; house: number };
+  porDentro: { sign: Sign; house: number; area: string };
   afinidad: Balance<Element>;
   planetas: CardPlanet[];
   rasgos: CardTrait[];
@@ -194,7 +235,30 @@ one in twelve buyers share a class, and that is fine, because rarity is
 carried by `rareza` and by the combination the card shows as a whole.
 
 **`seVe`** — Ascendant sign and degree. **`porDentro`** — Moon sign and
-house.
+life area.
+
+### Houses are never numbered
+
+The card renders the life area in words and **never a house number**.
+This is not a card decision; it is decision 1 of
+`2026-08-10-paid-report-plain-language-design.md`, and `AREA_ES`'s own
+header states it: *"la ÚNICA forma en que la información de casa puede
+llegar a un prompt"*. Decision 6's per-section data strip already
+complies. A card printing "casa 3" three rows above a strip that
+deliberately refuses to would be the product contradicting itself on one
+screen.
+
+**This requires a new copy table, `AREA_CORTA_ES`.** `AREA_ES` phrases run
+6–12 words ("cómo hablas, escribes y te mueves por tu barrio"); seven of
+them stacked is unreadable on screen and does not fit the 1080×1920
+export at all. `AREA_CORTA_ES` is 12 entries of 2–4 words ("tu barrio y
+cómo hablas", "el dinero", "el día a día"), lives beside `AREA_ES` in
+`src/copy/areas.es.ts`, and goes under the same table test as the others.
+
+`AREA_ES` is unchanged and keeps its role as the prompt-facing form. The
+short table is display-only and must never be handed to a model — a
+model given the terse phrasing would write terse, and the long form is
+what makes the prose readable.
 
 **`afinidad`** — the existing `elementBalance(chart)`, unchanged. Already
 weighted (Sun/Moon 3, Mercury/Venus/Mars 2, outers 0.5, Ascendant 3,
@@ -285,13 +349,25 @@ to block a first release on. The table is therefore sparse by design:
 a pair/tone with an entry renders its written name and line; anything
 missing renders through a fallback that is a designed path, not an error.
 
-The fallback composes `relationPhrase()` from `profile.ts` — which
-already returns "van pegados" / "tiran cada uno para un lado" / "van de
-la mano" — against a new `PLANET_DOMAIN` table (Venus → "cómo quieres y
-qué te gusta", Marte → "cómo peleas y cómo empiezas"). An unreviewed pair
-therefore still reads in sentences the free tier already speaks, and
-carries `nombre: null`; the component falls back to the two planet names
-as its heading.
+The fallback composes **`RELATION_ES`** — the closed set of plain
+relation phrases introduced by plan A of the plain-language spec —
+against a new `PLANET_DOMAIN` table (Venus → "cómo quieres y qué te
+gusta", Marte → "cómo peleas y cómo empiezas"). An unreviewed pair
+therefore still reads in sentences the report already speaks, and carries
+`nombre: null`; the component falls back to the two planet names as its
+heading.
+
+**It must be `RELATION_ES`, not `relationPhrase()`.** `profile.ts` has a
+`relationPhrase()` returning "van pegados" / "tiran cada uno para un
+lado" / "van de la mano" for the free tier, and plan A adds `RELATION_ES`
+for the paid prose — where decision 5 makes it load-bearing for grounding,
+not merely copy. If the card introduced a third wording, the same
+geometry would be described three different ways on one page. Plan A
+should fold `relationPhrase()` into `RELATION_ES` for the same reason;
+they are one idea written twice.
+
+**This makes the full card depend on plan A.** See sequencing below —
+the free partial card does not, because it carries no traits at all.
 
 Review is incremental and never gates a deploy. Priority order: the 21
 pairs among the seven shown planets first (63 entries), then the 21
@@ -408,8 +484,22 @@ self-contained and retire the U+FE0E workaround permanently.
 **Both components use the same path set**, from one shared module. If
 `CharacterCardView` kept the text glyphs and only the export used paths,
 the two would render visibly different symbols — the exact drift the
-shared-token rule exists to prevent. `SIGN_GLYPH` itself stays where it
-is; other surfaces still use it and are out of scope here.
+shared-token rule exists to prevent.
+
+**So does the per-section data strip.** Decision 6 of the plain-language
+spec specifies its sign glyphs as text with U+FE0E. Left as written, Leo
+would render one way in the strip and another in the card, on the same
+screen. The paths win and the strip adopts them; that spec has been
+amended to say so.
+
+`SIGN_GLYPH` itself stays where it is — other surfaces still use it and
+are out of scope here.
+
+**Only sign glyphs, never planetary ones.** The twelve zodiac symbols are
+the ones every reader has met on a horoscope page. Planetary glyphs are
+a second alphabet nobody has agreed to learn, which is one of the two
+reasons decision 7 rejected the astral wheel; the card does not use them
+and the strip already does not.
 
 ### Gating is a server-side projection
 
@@ -454,11 +544,18 @@ buenosaires-1985, bilbao-2000 — bilbao stays the canary):
 - **`definitorio` is nullable** and only ever carries the three
   structural kinds.
 
+- **No house numbers reach the struct's rendered fields.** Every
+  `CardPlanet.area` and `porDentro.area` is a non-empty
+  `AREA_CORTA_ES` phrase, on all three charts.
+
 `tests/copy-tables.test.ts`:
 
-- Every trait and class entry passes `countGenderMarks()`.
+- Every trait, class and `AREA_CORTA_ES` entry passes
+  `countGenderMarks()`.
 - No entry contains blocklisted jargon or cliché, via the new standalone
   check.
+- `AREA_CORTA_ES` covers all twelve houses, with no entry containing a
+  digit — the mechanical form of "houses are never numbered".
 - Class names all come from one register (no mixing epicene agent nouns
   with impersonal metaphors).
 
@@ -469,6 +566,9 @@ resolves the environment from the project root:
 
 - `CharacterCardView` renders every block; locked blocks render as locked
   when handed a free projection.
+- **No rendered output contains a house number.** Asserted against the
+  rendered DOM, not the struct — the struct keeps `house` as an internal
+  key and this is the test that stops it leaking.
 - **Free projection.** The `/api/free` payload does not contain the
   locked fields at all — absent, not hidden.
 - `CharacterCardShare` serialises with its `@font-face` rules present and
