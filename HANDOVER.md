@@ -2,7 +2,17 @@
 
 ## Estado actual (keep this section updated — it is the first thing read)
 
-Last updated: 2026-08-10 — **plan 4 phase A built** (report component,
+Last updated: 2026-08-13 — **design only, nothing built, still 241
+tests.** Two things happened since the last entry, both on paper:
+
+1. The paid report's **plain register** was specced and plan A written
+   (2026-08-10, commits `1b0c571`, `2bf5e4f`, `9a69de6`). This was
+   missing from this checklist entirely until today — see "Next up".
+2. The **character card** was specced and its phase-1 plan written
+   (2026-08-13). It reconciles with the plain-register spec, which was
+   amended in five places to absorb it. See **Addendum 14**.
+
+Before that, 2026-08-10 — **plan 4 phase A built** (report component,
 section index, 9:16 share card, preview route). 241 tests. The three
 battery reports now render at `/preview/informe/<chart>`, which answered
 Addendum 12's open ~3,000-word question: the length is fine, the
@@ -113,6 +123,33 @@ are not.
       **Phase B NOT started** (`/informe/<token>`, 2 s polling,
       progressive rendering, wiring the CTA at `BirthForm.tsx:287`) —
       it needs plans 2 and 3.
+**The paid report's register** is a separate track from the four plans
+above, and was missing from this list until 2026-08-13. It does not block
+plans 2 and 3, and plans 2 and 3 do not block it.
+
+- [ ] **Plain register, plan A — the words.** Spec:
+      `docs/superpowers/specs/2026-08-10-paid-report-plain-language-design.md`
+      (amended 2026-08-13). Plan:
+      `docs/superpowers/plans/2026-08-10-paid-report-plain-register.md`.
+      Eight briefs rewritten, `{{RULES_CHART}}` out of the report prompt,
+      `RELATION_ES` created, `buildSectionMessages` handing over
+      pre-translated data, `groundingProblems` rewritten against the new
+      vocabulary. **Ends by running `scripts/battery-sections.ts`** — the
+      prose-quality risk is real and only the battery measures it.
+      Nobody has ever asked V4 Pro for 3,000 words of plain Spanish.
+- [ ] **Plain register, plan B — the presentation.** Per-section data
+      strip, `HookCard`, `matchesFor`, decorated `ReportSection`, shared
+      glyph handling. No LLM, no vendors, no network. Goes after A.
+- [ ] **Character card, phase 1 (free tier).** Spec:
+      `docs/superpowers/specs/2026-08-13-character-card-design.md`. Plan:
+      `docs/superpowers/plans/2026-08-13-character-card-free.md`.
+      Eleven tasks, ~+45 tests. **Ships independently of everything
+      above** — the free card carries no traits, so it needs no
+      `RELATION_ES`. Renders with zero LLM calls. Read Addendum 14 first.
+- [ ] **Character card, phase 2 (paid).** Blocked on plan A
+      (`RELATION_ES`) and plan B (glyphs, area copy). Needs its own plan
+      once those exist. Carries the ~126-entry trait table, the drafting
+      script, the seven planet rows and the provenance test.
 - [ ] PDF rendering (Puppeteer over the same report component) — own spec
 - [ ] Daily cron: transits once/day → 12 horoscopes → Supabase cache
 - [ ] Oracle chat (post-MVP): system-oracle.md, rolling window, quotas
@@ -1323,3 +1360,120 @@ was out of scope here.
 `/informe/<token>`, the polling status endpoint, the holding page and the
 buy CTA all read an order or its sections, so they need plans 2 and 3.
 Phase A stands on its own.
+
+---
+
+## Addendum 14: the character card, and what reconciling it cost (2026-08-13)
+
+Spec: `docs/superpowers/specs/2026-08-13-character-card-design.md`
+Plan (phase 1): `docs/superpowers/plans/2026-08-13-character-card-free.md`
+
+**Nothing is built.** This addendum records decisions, not measurements.
+
+### What it is
+
+The paid report opens as prose and nothing else, which is neither
+attractive nor shareable. The card is a computed RPG/TCG-shaped summary —
+class, how you are seen, what you are inside, elemental affinity, traits
+— rendered as the report's first screen, with a partial version on the
+free reading.
+
+Everything on it is derived from `NatalChart` by pure functions. **No LLM
+call at render time.** That is the feature, not an implementation detail:
+it is the first user-visible surface in this product that cannot
+hallucinate, in a codebase where an invented retrogradation shipped to a
+delivered report (Addendum 12).
+
+### The decision that mattered: no D&D stats
+
+The original idea called for `STR: 14`, `INT: 18`, `LUCK: 20`. Rejected,
+for two independent reasons:
+
+- **Astrology has no strength scale**, so any 3-18 or 0-100 axis is
+  invented and the buyer cannot audit it. That inverts `prompts/rubric.md`,
+  where one unverifiable claim is eliminatory, and contradicts the comment
+  already standing in `ShareCard.tsx`.
+- **A shared scale implies a ranking.** `DEF: 8` is fatalism with a number
+  on it, against a rule that mandates agency-preserving language. Nobody
+  pays €9,90 to be told their luck is low.
+
+Every figure on the card is instead a **count** (how many bodies aspect
+this planet) or a **distribution** (element weights, where no axis is
+"better"). Both are recomputable by the reader from their own chart.
+
+### It is NOT the fix for the wall of text
+
+Addendum 13 measured that problem: length is fine, but five paragraphs
+exceed 200 words and the worst is a 286-word section as one unbroken
+block. That fix is Addendum 12's still-open item 3 — brief in paragraphs,
+not words — and it stays open. The card is a wow/share feature. Shipping
+it and calling the wall solved would be a mistake.
+
+### Reconciling with the plain-register spec found four conflicts
+
+Both specs govern the same screen. Three of the four were the card's
+fault, and all four are now fixed in both documents.
+
+1. **The card printed house numbers.** Decision 1 of the plain-register
+   spec removes house numbering, and `AREA_ES`'s own header calls itself
+   the only permitted form. The card renders life areas — which forced a
+   new `AREA_CORTA_ES`, because the existing phrases run 6-12 words and
+   seven of them do not fit a card, let alone the 1080x1920 export.
+2. **Three vocabularies for one geometry.** The card routed its trait
+   fallback through `relationPhrase()` while plan A adds `RELATION_ES`
+   for the same job. `RELATION_ES` becomes the single table and absorbs
+   `relationPhrase()`. **This is why the full card depends on plan A**;
+   the free partial does not, because it carries no traits.
+3. **Decision 7 read as a self-contradiction** — it rejects the astral
+   wheel on reasoning that appears to reject the card too. The
+   distinction holds (sign glyphs not planetary ones, no house numbers,
+   answers a question the reader actually has) but was unwritten. It is
+   now a table in that spec.
+4. **Glyphs rendered two ways** — text with U+FE0E in the strip, drawn
+   paths in the card, on one screen.
+
+### Then planning overturned the glyph decision again
+
+SVG path data for twelve zodiac glyphs cannot be written from memory, and
+generating it needs a font-parsing dependency. **Noto Sans Symbols 2
+covers U+2648-U+2653**, and the fonts are already being embedded as
+subsetted base64 via Google Fonts' `text=` parameter — which needs no
+subsetting library at all. One mechanism now solves both the glyphs and
+Addendum 13's open finding that the PNG export renders in Georgia rather
+than Fraunces. `SIGN_GLYPH` is unchanged and the strip needs no change.
+
+### Two more corrections the plan found
+
+- **The spec named the wrong endpoint.** It says `/api/free` serves the
+  card projection. It does not — `/api/free` returns only the LLM
+  reading; all chart data goes through `/api/chart`.
+- **The card duplicates three shipped components.** It contains the big
+  three (`Readout`), the affinity bars (`Elements`) and the rarity line
+  (`Signature`). Decision: the card **absorbs all three**, with their
+  glosses and degrees moving into the `FreeCard` struct so no reading
+  content is lost. `Elements`'s closing echo paragraph cannot move to the
+  card — it needs `matches`, which the card deliberately does not carry —
+  so it goes to `Matches`, which is what it was a statement about anyway.
+
+### Open, and honest about it
+
+- **Whether the register lands is unmeasured and is a market question.**
+  Spanish astrology buyers skew away from RPG players. It is cheap to
+  test — the card renders from a chart with no LLM call — and the free
+  partial reaches real users first, which is the argument for shipping
+  that half early.
+- **`signature().oneIn` is hardcoded `12*12*12` and returns 1728 for
+  every chart ever computed.** Honest arithmetic, but not personal, and
+  on a card surrounded by per-chart data it is the weakest line. Kept
+  as-is; making it per-chart needs a distribution model (sun signs are
+  not uniform, ascendants depend on latitude and hour). **Never present
+  it as computed per person** — that would make it exactly the invented
+  statistic this product refuses to ship.
+- **The gender rule may not be permanent.** It drives most free-tier
+  rejections, costs roughly one extra retry per delivered reading
+  (Addendum 8), and is why the twelve class names had to be epicene agent
+  nouns. If the birth form ever collects gender, most of that constraint
+  disappears — but it touches a CLAUDE.md invariant (no PII to the LLM
+  beyond chart data and a sanitized first name), so it needs its own
+  decision. The copy tables are keyed so gendered variants would be
+  additive, not a restructure.
