@@ -1,4 +1,9 @@
-import type { AspectType, Body, NatalChart } from "./types";
+import type { AspectType, Body, NatalChart, Sign } from "./types";
+import { elementBalance, signature, type Balance } from "./profile";
+import type { Element } from "./rulers";
+import { CLASS_ES } from "./copy/classes.es";
+import { AREA_CORTA_ES } from "./copy/areas.es";
+import { SUN_ES, MOON_ES, ASC_ES } from "./copy/signs.es";
 
 export type Tone = "armonioso" | "tenso" | "fusion";
 
@@ -63,4 +68,54 @@ export function selectTraits(chart: NatalChart): {
   }
 
   return { rasgos, tensiones };
+}
+
+/** Seven rows on the full card: the five personal planets plus Jupiter and Saturn. */
+const SHOWN_PLANETS = 7;
+
+/**
+ * What the free reading is allowed to know. The paid blocks are ABSENT, not
+ * hidden: a struct that carried them and let the client hide them would leave
+ * the paid report readable in devtools.
+ *
+ * Note there is no `house` anywhere — only `area`. Decision 1 of the
+ * plain-language spec removes house numbering from every reader-facing surface,
+ * and the cheapest way to honour that is never to carry the number out here.
+ */
+export interface FreeCard {
+  clase: { sign: Sign; nombre: string; signDegree: number; gloss: string };
+  seVe: { sign: Sign; signDegree: number; gloss: string };
+  porDentro: { sign: Sign; signDegree: number; area: string; gloss: string };
+  afinidad: Balance<Element>;
+  rareza: { oneIn: number };
+  /** Counts only — enough to render locked rows honestly. */
+  bloqueado: { rasgos: number; tensiones: number; planetas: number };
+}
+
+export function freeCard(chart: NatalChart): FreeCard {
+  const sun = chart.planets.find((p) => p.body === "Sun")!;
+  const moon = chart.planets.find((p) => p.body === "Moon")!;
+  const asc = chart.angles.ascendant;
+  const { rasgos, tensiones } = selectTraits(chart);
+
+  return {
+    clase: {
+      sign: sun.sign, nombre: CLASS_ES[sun.sign],
+      signDegree: sun.signDegree, gloss: SUN_ES[sun.sign],
+    },
+    seVe: {
+      sign: asc.sign, signDegree: asc.signDegree, gloss: ASC_ES[asc.sign],
+    },
+    porDentro: {
+      sign: moon.sign, signDegree: moon.signDegree,
+      area: AREA_CORTA_ES[moon.house], gloss: MOON_ES[moon.sign],
+    },
+    afinidad: elementBalance(chart),
+    rareza: { oneIn: signature(chart).oneIn },
+    bloqueado: {
+      rasgos: rasgos.length,
+      tensiones: tensiones.length,
+      planetas: SHOWN_PLANETS,
+    },
+  };
 }

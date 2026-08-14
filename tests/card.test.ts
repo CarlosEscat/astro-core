@@ -1,7 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { computeNatalChart } from "../src/chart";
 import { resolveBirthUtc } from "../src/birthtime";
-import { selectTraits } from "../src/card";
+import { selectTraits, freeCard } from "../src/card";
+import { elementBalance } from "../src/profile";
+import { AREA_CORTA_ES } from "../src/copy/areas.es";
+import { SUN_ES, MOON_ES, ASC_ES } from "../src/copy/signs.es";
 import type { AspectType, Body, NatalChart } from "../src/types";
 
 function chartFor(
@@ -113,5 +116,76 @@ describe("selectTraits", () => {
     expect(tensiones).toHaveLength(2);
     expect(tensiones[1].tone).toBe("fusion");
     expect(tensiones[1].pair).toEqual(["Venus", "Mercury"]);
+  });
+});
+
+describe("freeCard", () => {
+  it("reads the class from the sun sign", () => {
+    // bilbao-2000 is the Leo Sun chart (battery-sections.ts:45). If this fails,
+    // the fixture differs from the note — fix the expectation, not the code.
+    const { clase } = freeCard(bilbao);
+    expect(clase.sign).toBe("Leo");
+    expect(clase.nombre).toBe("ARTISTA");
+  });
+
+  it("reads how the reader is seen from the ascendant", () => {
+    const card = freeCard(bilbao);
+    expect(card.seVe.sign).toBe("Cancer");
+    expect(card.seVe.signDegree).toBeGreaterThanOrEqual(0);
+    expect(card.seVe.signDegree).toBeLessThan(30);
+  });
+
+  it("reads the inner world from the moon, as a life area", () => {
+    // The canary's Moon is in Cancer, house 2 — asserted in tests/profile.test.ts.
+    const card = freeCard(bilbao);
+    expect(card.porDentro.sign).toBe("Cancer");
+    expect(card.porDentro.area).toBe(AREA_CORTA_ES[2]);
+  });
+
+  it("carries the glosses Readout used to render", () => {
+    const card = freeCard(bilbao);
+    expect(card.clase.gloss).toBe(SUN_ES.Leo);
+    expect(card.porDentro.gloss).toBe(MOON_ES.Cancer);
+    expect(card.seVe.gloss).toBe(ASC_ES.Cancer);
+  });
+
+  it("carries a degree for each of the three, as Readout did", () => {
+    const card = freeCard(bilbao);
+    for (const d of [card.clase.signDegree, card.seVe.signDegree, card.porDentro.signDegree]) {
+      expect(d).toBeGreaterThanOrEqual(0);
+      expect(d).toBeLessThan(30);
+    }
+  });
+
+  it("never exposes a house number", () => {
+    for (const chart of Object.values(CHARTS)) {
+      expect(JSON.stringify(freeCard(chart))).not.toMatch(/"house"/);
+    }
+  });
+
+  it("omits the paid blocks entirely rather than hiding them", () => {
+    const card = freeCard(bilbao) as Record<string, unknown>;
+    for (const key of ["rasgos", "tensiones", "planetas", "definitorio"]) {
+      expect(card[key], key).toBeUndefined();
+    }
+  });
+
+  it("reports the real locked counts", () => {
+    for (const chart of Object.values(CHARTS)) {
+      const { rasgos, tensiones } = selectTraits(chart);
+      const card = freeCard(chart);
+      expect(card.bloqueado.rasgos).toBe(rasgos.length);
+      expect(card.bloqueado.tensiones).toBe(tensiones.length);
+      expect(card.bloqueado.planetas).toBe(7);
+    }
+  });
+
+  it("carries the element distribution unchanged", () => {
+    const card = freeCard(bilbao);
+    expect(card.afinidad).toEqual(elementBalance(bilbao));
+  });
+
+  it("carries the computed rarity", () => {
+    expect(freeCard(bilbao).rareza.oneIn).toBe(1728);
   });
 });
