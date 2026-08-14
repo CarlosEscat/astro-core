@@ -131,4 +131,17 @@ describe("class copy", () => {
       expect(CLASS_ES[sign].split(/\s+/), sign).toHaveLength(1);
     }
   });
+
+  // The frozen-table risk, made mechanical. A name that inflects (-o/-a, as in
+  // médico/médica) ships a gendered reading to every reader of that sign, and
+  // nothing catches it at runtime — that is the whole point of freezing the
+  // table. Every invariable Spanish agent noun here ends in -ista, -ega or -e
+  // (combatiente, navegante, orfebre), so the ending IS the guarantee.
+  // countGenderMarks cannot do this job: its patterns all need a verb or
+  // pronoun in front, which a bare noun never supplies.
+  it("uses only endings that cannot inflect for gender", () => {
+    for (const sign of SIGN_ORDER) {
+      expect(CLASS_ES[sign], sign).toMatch(/(?:ISTA|EGA|E)$/);
+    }
+  });
 });
