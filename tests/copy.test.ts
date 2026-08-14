@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { AREA_ES } from "../src/copy/areas.es";
+import { AREA_ES, AREA_CORTA_ES } from "../src/copy/areas.es";
 import { SIGN_ES, SIGN_GLYPH, SUN_ES, MOON_ES, ASC_ES, PARTNER_ES } from "../src/copy/signs.es";
 import { SIGN_ORDER } from "../src/rulers";
+import { copyProblems } from "../src/validate";
 
 const TABLES = { SUN_ES, MOON_ES, ASC_ES, PARTNER_ES, SIGN_ES, SIGN_GLYPH };
 
@@ -68,5 +69,33 @@ describe("copy gender neutrality", () => {
         }
       }
     }
+  });
+});
+
+describe("short area copy", () => {
+  it("covers all twelve houses", () => {
+    for (let h = 1; h <= 12; h++) expect(AREA_CORTA_ES[h]).toBeTruthy();
+  });
+
+  it("stays short enough for a card row", () => {
+    for (let h = 1; h <= 12; h++) {
+      const words = AREA_CORTA_ES[h].split(/\s+/).length;
+      expect(words, `house ${h}`).toBeLessThanOrEqual(6);
+    }
+  });
+
+  it("never numbers a house and never says casa", () => {
+    for (let h = 1; h <= 12; h++) {
+      expect(AREA_CORTA_ES[h]).not.toMatch(/\d/);
+      expect(AREA_CORTA_ES[h]).not.toMatch(/\bcasa\b/i);
+    }
+  });
+
+  it("carries no jargon or cliché", () => {
+    for (let h = 1; h <= 12; h++) expect(copyProblems(AREA_CORTA_ES[h])).toEqual([]);
+  });
+
+  it("does not repeat the long form", () => {
+    for (let h = 1; h <= 12; h++) expect(AREA_CORTA_ES[h]).not.toBe(AREA_ES[h]);
   });
 });
