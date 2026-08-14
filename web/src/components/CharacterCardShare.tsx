@@ -96,8 +96,14 @@ export function CharacterCardShare({
             <rect x="220" y="6" width="480" height="24" fill="#262c3c" />
             <rect x="220" y="6" width={(card.afinidad.totals[k] / max) * 480}
                   height="24" fill="#c9a227" />
-            <text x="740" y="26" fill="#a9a496" className="cc-mono" fontSize="30">
-              {n(card.afinidad.totals[k])}
+            {/* Weighted sum, not an independently checkable score — printed
+                against `card.afinidad.total` so it reads as a share of a
+                whole, same reasoning as CharacterCard.tsx's bars. Font size
+                dropped from 30 to 24 for this row only: "9,5 / 20,5" is
+                roughly 3x wider than the old bare "9,5", and at 30px the
+                widest case would run past the 1032 inner border edge. */}
+            <text x="740" y="26" fill="#a9a496" className="cc-mono" fontSize="24">
+              {n(card.afinidad.totals[k])} / {n(card.afinidad.total)}
             </text>
           </g>
         ))}

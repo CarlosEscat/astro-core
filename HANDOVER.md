@@ -3,7 +3,7 @@
 ## Estado actual (keep this section updated — it is the first thing read)
 
 Last updated: 2026-08-15 — **character card phase 1 BUILT AND VERIFIED IN
-THE BROWSER.** 241 → **297 tests**, 17 commits on
+THE BROWSER.** 241 → **297 tests**, 18 commits on
 `feat/character-card-free`. The free reading now opens with a computed
 character card and **zero LLM calls**; `Readout`, `Elements` and
 `Signature` are deleted, absorbed by it. Two long-open questions are
@@ -1502,7 +1502,7 @@ Spec: `docs/superpowers/specs/2026-08-13-character-card-design.md`
 Plan: `docs/superpowers/plans/2026-08-13-character-card-free.md`
 
 Phase 1 is **built, tested and verified in a real browser**. 241 → **297
-tests**, 17 commits. Everything below is measured, not predicted.
+tests**, 18 commits. Everything below is measured, not predicted.
 
 ### What the free reading looks like now
 
@@ -1664,3 +1664,50 @@ It needs `RELATION_ES` from plan A of the plain-language spec. It carries
 the ~126-entry trait table, the drafting script, the seven planet rows,
 the provenance test, the full `characterCard()`, the preview-route mount,
 the glyph decision above, and the removal of `ShareCard.tsx`.
+
+---
+
+## Addendum 16: final whole-branch review fixes, before merge (2026-08-15)
+
+Three defects survived eleven task-scoped reviews and were caught by a
+final whole-branch pass. All three fixed, still 297 tests (some rewritten,
+none removed).
+
+1. **`npm run build` was red.** `tests/card.test.ts` cast `FreeCard` to
+   `Record<string, unknown>` directly, which `tsc` rejects as an
+   insufficient-overlap conversion — vitest transpiles without
+   typechecking, so `npm test` stayed green while the declared build
+   script failed. Fixed as `as unknown as Record<string, unknown>`. While
+   in that file, the fusion-overflow test's synthetic `Aspect` literals
+   gained an explicit `Aspect` return type on the `aspect()` helper, so a
+   future shape change to `Aspect` raises a compile error there instead of
+   silently passing through `as unknown as NatalChart`.
+2. **The Afinidad bars printed unauditable numbers.** The totals are
+   weighted sums (Sun/Moon 3, Mercury/Venus/Mars 2, Jupiter/Saturn 1,
+   outers 0.5, Ascendant 3, Midheaven 2) with no published weight table —
+   `Fuego 9,5` was not something a reader could check. Both
+   `CharacterCard.tsx` and `CharacterCardShare.tsx` now render each total
+   against `card.afinidad.total` (`9,5 / 21,5`), restoring the share
+   `Elements.tsx` used to supply before the card absorbed it. The share
+   SVG's affinity value font dropped from 30px to 24px to keep the longer
+   string clear of the 1032px inner border — confirmed by rendering the
+   real component (worst case, all weight in one element: `"20,5 / 20,5"`)
+   in a browser and screenshotting it.
+3. **The web component tests could not detect a Sun/Moon/Ascendant swap.**
+   Both `web/tests/character-card.test.tsx` and
+   `web/tests/character-card-share.test.tsx` used fixtures where `seVe`
+   and `porDentro` shared the sign "Cancer" — so the one assertion
+   protecting the deliberate Sun·Moon·Ascendant combination order was
+   byte-identical under a Sun·Ascendant·Moon bug, and the share test had
+   no assertion binding "SE TE VE COMO" to `seVe` or "POR DENTRO" to
+   `porDentro` at all. Fixtures now use three distinct signs (Leo/Aries/
+   Pisces) with distinct degrees; row- and group-scoped assertions bind
+   each placement to its own sign. Verified the new ordering test can
+   fail: swapping `seVe`/`porDentro` in the combo line's source array
+   turned it red with a real diff (`'♌︎ Leo · ♈︎ Aries · ♓︎ Piscis'` vs the
+   expected `'♌︎ Leo · ♓︎ Piscis · ♈︎ Aries'`), then reverted to green.
+
+Also corrected: Addendum 15's "17 commits" was one short — the branch
+carries 18. And `CharacterCardView`'s docstring no longer claims it
+"serves" the delivery route and Puppeteer, since only `BirthForm` renders
+it today — softened to describe why it *can*.

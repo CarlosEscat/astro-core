@@ -11,8 +11,8 @@ const n = (x: number) => x.toLocaleString("es-ES", { maximumFractionDigits: 1 })
  * reader can check against their own chart — never a score on a shared scale,
  * which would be a number we invented and they cannot audit.
  *
- * Pure: no fetch, no browser APIs, so it serves the free page, the delivery
- * route and Puppeteer alike.
+ * Pure: no fetch, no browser APIs — so it can serve the free page, the
+ * delivery route and Puppeteer alike, though today only `BirthForm` renders it.
  */
 export function CharacterCardView({
   card, firstName,
@@ -61,6 +61,13 @@ export function CharacterCardView({
       <div className="cc__block">
         <p className="cc__label">Afinidad</p>
         <div className="cc__bars">
+          {/* Each total is a weighted sum (Sun/Moon 3, Mercury/Venus/Mars 2,
+              Jupiter/Saturn 1, outers 0.5, Ascendant 3, Midheaven 2) — no
+              weight table is published, so the bare number is not something a
+              reader can check. Rendered against `card.afinidad.total` it reads
+              as a share of a whole instead, which is checkable: the four
+              numerators must sum to the printed denominator. Elements.tsx did
+              this before the card absorbed it ("De tierra tienes 2 de 21,5"). */}
           {ELEMENTS.slice()
             .sort((a, b) => card.afinidad.totals[b] - card.afinidad.totals[a])
             .map((k) => (
@@ -72,7 +79,9 @@ export function CharacterCardView({
                     style={{ width: `${(card.afinidad.totals[k] / max) * 100}%` }}
                   />
                 </span>
-                <span className="cc__bar-val cc-mono">{n(card.afinidad.totals[k])}</span>
+                <span className="cc__bar-val cc-mono">
+                  {n(card.afinidad.totals[k])} / {n(card.afinidad.total)}
+                </span>
               </div>
             ))}
         </div>

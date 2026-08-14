@@ -9,11 +9,16 @@ afterEach(cleanup);
 
 // Gloss strings are deliberately obvious fixtures, not copy from signs.es.ts —
 // this asserts that the component renders whatever it is handed.
+//
+// The three signs are deliberately DISTINCT (see character-card.test.tsx for
+// the same reasoning): seVe and porDentro used to share "Cancer", which meant
+// no test bound "SE TE VE COMO" to seVe or "POR DENTRO" to porDentro at all —
+// a swap between the two rows would have rendered identical text.
 const card: FreeCard = {
   clase: { sign: "Leo", nombre: "ARTISTA", signDegree: 7.2, gloss: "glosa del sol" },
-  seVe: { sign: "Cancer", signDegree: 12.4, gloss: "glosa del ascendente" },
+  seVe: { sign: "Aries", signDegree: 12.4, gloss: "glosa del ascendente" },
   porDentro: {
-    sign: "Cancer", signDegree: 3.1,
+    sign: "Pisces", signDegree: 3.1,
     area: "el dinero y lo tuyo", gloss: "glosa de la luna",
   },
   afinidad: {
@@ -65,7 +70,36 @@ describe("CharacterCardShare", () => {
   it("names the class and the signs", () => {
     const { container } = render(<CharacterCardShare card={card} />);
     expect(container.textContent).toContain("ARTISTA");
-    expect(container.textContent).toContain("Cáncer");
+    expect(container.textContent).toContain("Aries");
+    expect(container.textContent).toContain("Piscis");
+  });
+
+  it("binds each label to its own sign, so a swap would fail", () => {
+    // seVe and porDentro used to share "Cancer" in this fixture, so nothing
+    // bound "SE TE VE COMO" to seVe or "POR DENTRO" to porDentro — a swap
+    // between the two rows would have rendered byte-identical text. With
+    // distinct signs, each label group's own text must name its own
+    // placement and not the other one's.
+    const { container } = render(<CharacterCardShare card={card} />);
+    const groups = [...container.querySelectorAll("svg g")];
+
+    const seVeGroup = groups.find((g) => g.textContent?.includes("SE TE VE COMO"));
+    expect(seVeGroup, "SE TE VE COMO group must render").toBeDefined();
+    expect(seVeGroup!.textContent).toContain("Aries");
+    expect(seVeGroup!.textContent).not.toContain("Piscis");
+
+    const porDentroGroup = groups.find((g) => g.textContent?.includes("POR DENTRO"));
+    expect(porDentroGroup, "POR DENTRO group must render").toBeDefined();
+    expect(porDentroGroup!.textContent).toContain("Piscis");
+    expect(porDentroGroup!.textContent).not.toContain("Aries");
+  });
+
+  it("renders each affinity total against the whole, so the figure is a checkable share", () => {
+    const { container } = render(<CharacterCardShare card={card} />);
+    expect(container.textContent).toContain("9,5 / 21,5");
+    expect(container.textContent).toContain("2 / 21,5");
+    expect(container.textContent).toContain("6 / 21,5");
+    expect(container.textContent).toContain("4 / 21,5");
   });
 
   it("shows no house number", () => {
