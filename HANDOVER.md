@@ -2,15 +2,20 @@
 
 ## Estado actual (keep this section updated — it is the first thing read)
 
-Last updated: 2026-08-15 — **character card phase 1 BUILT AND VERIFIED IN
-THE BROWSER.** 241 → **297 tests**, 18 commits on
-`feat/character-card-free`. The free reading now opens with a computed
-character card and **zero LLM calls**; `Readout`, `Elements` and
-`Signature` are deleted, absorbed by it. Two long-open questions are
-closed by measurement: the PNG export finally renders in **Fraunces**
-(Addendum 13's open font item), and the whole card is grounded with no
-model in the loop. Read **Addendum 15** before touching it — three plan
-defects and one architectural leak are recorded there.
+Last updated: 2026-08-15 — **character card phase 1 BUILT, VERIFIED IN THE
+BROWSER, AND MERGED TO `main`.** 241 → **301 tests**, 20 commits (branch
+`feat/character-card-free`, since deleted). `npm test`, `npm run build`,
+`npm run example` and the `web` typecheck were all green on the merged
+result, not just on the branch. **Not pushed** — `main` is ahead of
+`origin/main`.
+
+The free reading now opens with a computed character card and **zero LLM
+calls**; `Readout`, `Elements` and `Signature` are deleted, absorbed by
+it. Two long-open questions are closed by measurement: the PNG export
+finally renders in **Fraunces** (Addendum 13's open font item), and the
+whole card is grounded with no model in the loop. Read **Addendum 15**
+(what was built, and the plan defects) and **Addendum 16** (what the
+final whole-branch review caught) before touching it.
 
 Before that, 2026-08-13 — design only, nothing built, still 241 tests.
 Two things happened, both on paper:
@@ -150,8 +155,8 @@ plans 2 and 3, and plans 2 and 3 do not block it.
 - [ ] **Plain register, plan B — the presentation.** Per-section data
       strip, `HookCard`, `matchesFor`, decorated `ReportSection`, shared
       glyph handling. No LLM, no vendors, no network. Goes after A.
-- [x] **Character card, phase 1 (free tier)** — **BUILT 2026-08-15**,
-      241 → 297 tests. Spec:
+- [x] **Character card, phase 1 (free tier)** — **BUILT AND MERGED
+      2026-08-15**, 241 → 301 tests. Spec:
       `docs/superpowers/specs/2026-08-13-character-card-design.md`. Plan:
       `docs/superpowers/plans/2026-08-13-character-card-free.md`.
       Eleven tasks, all executed. `src/card.ts` (`selectTraits`,
@@ -1501,8 +1506,10 @@ than Fraunces. `SIGN_GLYPH` is unchanged and the strip needs no change.
 Spec: `docs/superpowers/specs/2026-08-13-character-card-design.md`
 Plan: `docs/superpowers/plans/2026-08-13-character-card-free.md`
 
-Phase 1 is **built, tested and verified in a real browser**. 241 → **297
-tests**, 18 commits. Everything below is measured, not predicted.
+Phase 1 is **built, tested and verified in a real browser**. 241 → **301
+tests** (297 at the time this addendum was first written; the final review
+in Addendum 16 added four), 20 commits. Everything below is measured, not
+predicted.
 
 ### What the free reading looks like now
 
@@ -1670,8 +1677,8 @@ the glyph decision above, and the removal of `ShareCard.tsx`.
 ## Addendum 16: final whole-branch review fixes, before merge (2026-08-15)
 
 Three defects survived eleven task-scoped reviews and were caught by a
-final whole-branch pass. All three fixed, still 297 tests (some rewritten,
-none removed).
+final whole-branch pass. All three fixed: **297 → 301 tests** (four added,
+several rewritten, none removed).
 
 1. **`npm run build` was red.** `tests/card.test.ts` cast `FreeCard` to
    `Record<string, unknown>` directly, which `tsc` rejects as an
@@ -1707,7 +1714,35 @@ none removed).
    turned it red with a real diff (`'♌︎ Leo · ♈︎ Aries · ♓︎ Piscis'` vs the
    expected `'♌︎ Leo · ♓︎ Piscis · ♈︎ Aries'`), then reverted to green.
 
-Also corrected: Addendum 15's "17 commits" was one short — the branch
-carries 18. And `CharacterCardView`'s docstring no longer claims it
+Also corrected: `CharacterCardView`'s docstring no longer claims it
 "serves" the delivery route and Puppeteer, since only `BirthForm` renders
-it today — softened to describe why it *can*.
+it today — softened to describe why it *can*. (The commit count in this
+section was revised twice as the fix wave landed; the merged total is 20.)
+
+### Two nits knowingly left in, and one drift worth watching
+
+Parked at merge rather than opening a second fix wave. None is a defect in
+shipped behaviour; all three are traps for whoever edits these files next.
+
+- **The component test fixtures use `afinidad.total: 21.5`. The real value
+  is always 20.5** — `WEIGHT` sums to 15.5 across the ten bodies, plus
+  Ascendant 3 and Midheaven 2, and that grand total is sign-independent,
+  so it is identical for every chart ever computed. The fixtures are
+  self-consistent (their four element totals do sum to 21.5) and they only
+  exercise rendering, so no test is wrong — but note that this addendum's
+  own example above reads `9,5 / 21,5` from the fixture while the
+  worst-case note reads `20,5 / 20,5` from reality. Do not take 21.5 as
+  the invariant.
+- **The comment justifying the 30px → 24px affinity font drop is wrong on
+  its arithmetic.** It claims the longer string would run past the 1032px
+  inner border at 30px. IBM Plex Mono advances ~0.6em, and the true worst
+  case `"20,5 / 20,5"` is 11 characters — ≈198px at 30px, ending near
+  x=938, comfortably inside. 24px is safe and legible either way, but the
+  stated reason does not hold. Correct it if you are in that file.
+- **`/api/chart` now returns fields nobody reads.** `bigThree` and
+  `signature` fed `Readout` and `Signature`, both deleted; `ruler` was
+  already unused. They remain required on `ChartResponse`, which is
+  hand-written and **not compiler-enforced against the route's
+  `NextResponse.json` literal** — nothing would catch a future divergence.
+  Harmless today, but the response has now visibly drifted from what is
+  rendered, which is exactly the failure mode that gap invites.
