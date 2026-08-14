@@ -5,7 +5,7 @@ import { selectTraits, freeCard } from "../src/card";
 import { elementBalance } from "../src/profile";
 import { AREA_CORTA_ES } from "../src/copy/areas.es";
 import { SUN_ES, MOON_ES, ASC_ES } from "../src/copy/signs.es";
-import type { AspectType, Body, NatalChart } from "../src/types";
+import type { Aspect, AspectType, Body, NatalChart } from "../src/types";
 
 function chartFor(
   local: { year: number; month: number; day: number; hour: number; minute: number },
@@ -98,7 +98,7 @@ describe("selectTraits", () => {
    * guarantees and what selectTraits relies on.
    */
   it("gives a fusion trait a tensiones slot when rasgos is full", () => {
-    const aspect = (a: Body, b: Body, type: AspectType, orb: number) =>
+    const aspect = (a: Body, b: Body, type: AspectType, orb: number): Aspect =>
       ({ a, b, type, angle: 0, orb, applying: false });
     const chart = {
       aspects: [
@@ -164,7 +164,7 @@ describe("freeCard", () => {
   });
 
   it("omits the paid blocks entirely rather than hiding them", () => {
-    const card = freeCard(bilbao) as Record<string, unknown>;
+    const card = freeCard(bilbao) as unknown as Record<string, unknown>;
     for (const key of ["rasgos", "tensiones", "planetas", "definitorio"]) {
       expect(card[key], key).toBeUndefined();
     }
