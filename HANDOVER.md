@@ -2,12 +2,22 @@
 
 ## Estado actual (keep this section updated — it is the first thing read)
 
-Last updated: 2026-08-13 — **design only, nothing built, still 241
-tests.** Two things happened since the last entry, both on paper:
+Last updated: 2026-08-15 — **character card phase 1 BUILT AND VERIFIED IN
+THE BROWSER.** 241 → **297 tests**, 17 commits on
+`feat/character-card-free`. The free reading now opens with a computed
+character card and **zero LLM calls**; `Readout`, `Elements` and
+`Signature` are deleted, absorbed by it. Two long-open questions are
+closed by measurement: the PNG export finally renders in **Fraunces**
+(Addendum 13's open font item), and the whole card is grounded with no
+model in the loop. Read **Addendum 15** before touching it — three plan
+defects and one architectural leak are recorded there.
+
+Before that, 2026-08-13 — design only, nothing built, still 241 tests.
+Two things happened, both on paper:
 
 1. The paid report's **plain register** was specced and plan A written
    (2026-08-10, commits `1b0c571`, `2bf5e4f`, `9a69de6`). This was
-   missing from this checklist entirely until today — see "Next up".
+   missing from this checklist entirely until that day — see "Next up".
 2. The **character card** was specced and its phase-1 plan written
    (2026-08-13). It reconciles with the plain-register spec, which was
    amended in five places to absorb it. See **Addendum 14**.
@@ -140,12 +150,18 @@ plans 2 and 3, and plans 2 and 3 do not block it.
 - [ ] **Plain register, plan B — the presentation.** Per-section data
       strip, `HookCard`, `matchesFor`, decorated `ReportSection`, shared
       glyph handling. No LLM, no vendors, no network. Goes after A.
-- [ ] **Character card, phase 1 (free tier).** Spec:
+- [x] **Character card, phase 1 (free tier)** — **BUILT 2026-08-15**,
+      241 → 297 tests. Spec:
       `docs/superpowers/specs/2026-08-13-character-card-design.md`. Plan:
       `docs/superpowers/plans/2026-08-13-character-card-free.md`.
-      Eleven tasks, ~+45 tests. **Ships independently of everything
-      above** — the free card carries no traits, so it needs no
-      `RELATION_ES`. Renders with zero LLM calls. Read Addendum 14 first.
+      Eleven tasks, all executed. `src/card.ts` (`selectTraits`,
+      `freeCard`), `CLASS_ES`, `AREA_CORTA_ES`, `copyProblems`,
+      `scripts/build-card-fonts.ts` + the generated
+      `web/src/lib/card-fonts.ts`, `CharacterCard.tsx`,
+      `CharacterCardShare.tsx`, the card on `/api/chart`, and the
+      deletion of `Readout`/`Elements`/`Signature`. Renders with zero LLM
+      calls. **Read Addendum 15 before touching it** — the plan shipped
+      four defects that only review or the browser caught.
 - [ ] **Character card, phase 2 (paid).** Blocked on plan A
       (`RELATION_ES`) and plan B (glyphs, area copy). Needs its own plan
       once those exist. Carries the ~126-entry trait table, the drafting
@@ -1477,3 +1493,174 @@ than Fraunces. `SIGN_GLYPH` is unchanged and the strip needs no change.
   beyond chart data and a sanitized first name), so it needs its own
   decision. The copy tables are keyed so gendered variants would be
   additive, not a restructure.
+
+---
+
+## Addendum 15: the character card ships, and what executing the plan cost (2026-08-15)
+
+Spec: `docs/superpowers/specs/2026-08-13-character-card-design.md`
+Plan: `docs/superpowers/plans/2026-08-13-character-card-free.md`
+
+Phase 1 is **built, tested and verified in a real browser**. 241 → **297
+tests**, 17 commits. Everything below is measured, not predicted.
+
+### What the free reading looks like now
+
+The reading opens with the card: class name, three placement rows with
+gloss and degree, the affinity bars, three locked rows, the combination
+line, the rarity line. Then love, matches, the opening prose, and the
+9:16 export. `Readout.tsx`, `Elements.tsx` and `Signature.tsx` are
+**deleted** — the card absorbed all three, with their glosses and degrees
+moved into the `FreeCard` struct so nothing was lost.
+
+**The card makes zero LLM calls.** That property survived the whole
+build. It is the first user-visible surface in this product that cannot
+hallucinate.
+
+### The three questions the plan asked, answered
+
+**1. Does the PNG export render in Fraunces?** *Yes — Addendum 13's open
+font item is now CLOSED.* Verified by rasterising the live SVG twice, once
+as serialised and once with its `@font-face` rules stripped, and comparing
+pixels: the two images hash differently, and the `ARTISTA` headline band
+carries **8,653 glyph pixels with the embedded fonts against 11,251
+without** — Georgia is materially heavier. The export is 1080x1920, ink
+ground, canvas untainted.
+
+**2. Does any house number reach the page?** *No.* Checked against the
+live DOM, not the struct: `/casa\s*\d|\bcasa\b/i` over `document.body.innerText`
+returns false. `FreeCard` carries no `house` key at all — only `area`,
+via `AREA_CORTA_ES`.
+
+**3. Does the register land?** **Still unmeasured, and still a market
+question.** It renders well and reads as a well-made profile rather than
+a game sheet, but no amount of internal reasoning settles whether Spanish
+astrology buyers find it delightful or childish. The free partial now
+reaches real users, which is the cheapest way to find out.
+
+### Font subset: two faces, not three
+
+`web/src/lib/card-fonts.ts` is **39,833 bytes** — Fraunces 23,420 B and
+IBM Plex Mono 6,020 B, base64'd.
+
+**Noto Sans Symbols 2 was dropped and the plan's glyph deviation is
+dead.** Google's `css2` endpoint cannot subset it: the `/l/font?kit=…` URL
+it returns for that family responds **HTTP 400 with an HTML body**
+(reproduced with curl, with and without UA and Referer, single glyph and
+full set). The only working source is the static `symbols` unicode-range
+file at **229,448 bytes** — ~8x the plan's ceiling and ~307 KB of base64
+inside every serialised share SVG. So zodiac glyphs keep today's
+`SIGN_GLYPH` behaviour (U+2648–U+2653 + U+FE0E through a system font).
+Not a regression; it is exactly what shipped before. **Glyph fidelity is
+deferred to phase 2**, where the spec already requires the card and the
+per-section data strip to converge on one mechanism.
+
+**The build script silently embedded that 400 HTML page as font data** on
+its first run and reported a plausible "1.6 KB". It now asserts the `wOF2`
+magic number before base64-encoding, and checks the CSS fetch status
+before regexing. Note also that Google now serves subsetted faces from
+`/l/font?kit=…` with **no `.woff2` extension**, so the plan's regex
+matched nothing.
+
+Two further subset notes: `°` and `′` had to be added to the character
+set — `formatDegree()` renders every placement as `12°24′` inside
+`.cc-mono`, and without them that notation fell back to a system font.
+And the generated file is **not byte-reproducible**: Google served a
+different Fraunces build between two runs (23,696 → 23,420 B).
+
+### KNOWN LEAK, deliberately deferred to phase 2
+
+**SVG `<style>` elements are not scoped — they apply document-wide.** So
+`CARD_FONT_CSS`, injected inside the share SVG, leaks onto the page and
+overrides the `.cc-display` / `.cc-mono` / `.cc-glyph` rules in
+`globals.css` (equal specificity, later in document order). Confirmed
+live: `.cc__class` computes to `CardDisplay, Georgia, serif`, not
+`var(--font-display)`.
+
+**Nothing is visibly wrong today** — `CardDisplay` *is* Fraunces, and
+every character the card currently renders is inside the subset. But the
+`globals.css` rules are dead in practice, and any character outside the
+subset would silently drop to Georgia. The one-line fix is to emit
+`svg .cc-display{…}` from `scripts/build-card-fonts.ts`, which still
+matches inside the standalone serialised SVG but no longer matches page
+elements. Deliberately not done now.
+
+### The plan shipped four defects. Three were caught by review, one by the browser.
+
+Recorded because the pattern matters: every one passed a green test suite.
+
+1. **A test that could never pass.** Task 1 asserted
+   `copyProblems("sois almas gemelas")` flags `"alma gemela"` — but
+   `CLICHES` holds the singular and the check is `lower.includes()`, so
+   the plural `-s` breaks both words. Fixed the fixture, not the check:
+   `copyProblems` stays a plain substring check over the same lists
+   `validateProse` uses, so hand copy and model output meet one standard.
+2. **A test that contradicted its own task.** Task 5 asserted the
+   serialised `FreeCard` contains none of `"rasgos"`/`"tensiones"`/
+   `"planetas"`, while the same task mandated
+   `bloqueado: { rasgos, tensiones, planetas }`. Rewritten as a
+   *top-level* absence assertion — "absent, not hidden" means no paid
+   **content**, and a count is not content.
+3. **Two tests that could not fail.** Task 3's `carries no gender mark`
+   is vacuous on single-word input: every `GENDERED_READER` pattern needs
+   a verb or pronoun prefix a bare noun never supplies. And its
+   "one register" test only counted words — it would pass if `Virgo` were
+   `HOGUERA`. The spec calls this frozen table *"strictly stronger than
+   the free tier's runtime gate"*, a claim those tests did not earn.
+   Added an epicene-ending assertion (`/(?:ISTA|EGA|E)$/`) that rejects
+   `GUERRERO`, `GUERRERA`, `MÉDICA`, `NÓMADA`, `HOGUERA` and `MAREA`.
+   **Mechanical register testing was declined** — separating `ALQUIMISTA`
+   from `HOGUERA` needs a per-entry tag, and phase 2's ~126 trait entries
+   would inherit that cost. Register stays an authorial rule.
+4. **Missing CSS.** The plan's component used `.cc-display`/`.cc-mono`/
+   `.cc-glyph` but its `globals.css` block never defined them; they exist
+   only inside `CARD_FONT_CSS`. The on-screen card would have rendered in
+   Plex Sans. Added rules pointing at the page's next/font custom
+   properties (now shadowed by the leak above, but correct).
+
+Three more gaps review found in the plan's own tests, all now closed: the
+fusion-overflow branch in `selectTraits` is **unreachable from all three
+fixture charts** and needed a synthetic one; the export's
+self-containment test missed `@import`, protocol-relative refs and
+`xlink:href` (and a tainted canvas throws only at runtime, where no jsdom
+test can see it); and `Matches`'s negative test used **zero** sharing
+signs where the boundary is two, so a `>= 1` threshold bug would have
+passed.
+
+### Two pieces of shipped copy went missing in the absorption
+
+Caught by review, not by tests, because nothing tests deleted copy.
+
+- **`Signature`'s "Tu combinación" line** — the condensed three-sign row —
+  survived nowhere, leaving *"1 de 1728 combinaciones"* with nothing
+  adjacent naming the combination it counts. **Restored** on the card,
+  in Sun · Moon · Ascendant order (`clase`, `porDentro`, `seVe`), which
+  is deliberately **not** the card's visual row order. Do not "tidy" it.
+- **`Elements`'s opening sentence** (*"Tu mezcla se va casi toda a…"*) is
+  **dropped on purpose.** The affinity bars show all four totals sorted,
+  dominant and weakest included, so the sentence narrated numbers sitting
+  directly above it.
+
+### Smaller things worth knowing
+
+- `1728` is still identical for every chart. The card now shows the
+  combination beside it, which makes the number parse — but it is still
+  not per-person, and must never be presented as if it were.
+- Locked rows carry a visually-hidden `"Bloqueado: "` prefix. The lock
+  was previously conveyed **only** by a CSS `::before` emoji, which is
+  decorative and unreliably announced — and spec decision 5 makes those
+  rows the pitch, so screen-reader users were losing the conversion cue.
+  The colour emoji is kept deliberately, against the U+FE0E discipline
+  used for zodiac glyphs.
+- Dead CSS was left in place, not deleted: `.readout*`, `.bars`/`.bar__*`
+  and `.card`/`.sig*` are now unreferenced. `.verdict`/`.punch` are still
+  live — the moved echo paragraph uses them.
+- `ShareCard.tsx` is **not** deleted; the preview route still uses it and
+  it has its own tests. Phase 2 removes it.
+
+### Phase 2 is unchanged and still blocked
+
+It needs `RELATION_ES` from plan A of the plain-language spec. It carries
+the ~126-entry trait table, the drafting script, the seven planet rows,
+the provenance test, the full `characterCard()`, the preview-route mount,
+the glyph decision above, and the removal of `ShareCard.tsx`.
