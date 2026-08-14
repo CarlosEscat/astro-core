@@ -138,6 +138,28 @@ function sentencesOf(text: string): string[] {
   return text.split(/(?<=[.!?…])\s+/);
 }
 
+/**
+ * Shared jargon and cliché checking logic. Two callers, `validateProse` and
+ * `copyProblems`, both need this. Centralizing it prevents a fix to a message
+ * string or the casa regex from landing on only one path.
+ */
+function appendJargonAndClicheProblems(
+  text: string,
+  problems: string[],
+  allowJargon: boolean,
+): void {
+  const lower = text.toLowerCase();
+  if (!allowJargon) {
+    for (const word of JARGON) {
+      if (lower.includes(word)) problems.push(`jerga prohibida: "${word}"`);
+    }
+    if (/\bcasa\s*\d/i.test(text)) problems.push("jerga prohibida: casa numerada");
+  }
+  for (const phrase of CLICHES) {
+    if (lower.includes(phrase)) problems.push(`cliché prohibido: "${phrase}"`);
+  }
+}
+
 function planetsIn(fragment: string): string[] {
   const lower = fragment.toLowerCase();
   const found = new Set<string>();
@@ -200,18 +222,7 @@ export function validateProse(
     problems.push("texto truncado: no termina en puntuación final");
   }
 
-  const lower = trimmed.toLowerCase();
-
-  if (!opts.allowJargon) {
-    for (const word of JARGON) {
-      if (lower.includes(word)) problems.push(`jerga prohibida: "${word}"`);
-    }
-    if (/\bcasa\s*\d/i.test(trimmed)) problems.push("jerga prohibida: casa numerada");
-  }
-
-  for (const phrase of CLICHES) {
-    if (lower.includes(phrase)) problems.push(`cliché prohibido: "${phrase}"`);
-  }
+  appendJargonAndClicheProblems(trimmed, problems, opts.allowJargon ?? false);
 
   for (const re of GENDERED_READER) {
     const m = trimmed.match(re);
@@ -349,19 +360,12 @@ export function countGenderMarks(text: string): string[] {
  * Jargon and cliché only, for strings that are not model output: copy tables,
  * static UI text. `validateProse` cannot serve here — it demands a NatalChart
  * these strings are not grounded in, and a word range that is meaningless for a
- * three-word label. The lists are the same ones the prose gate uses, so hand
- * copy and model copy are held to one standard.
+ * three-word label. Uses the same checking logic as `validateProse` so hand copy
+ * and model copy are held to one standard.
  */
 export function copyProblems(text: string): string[] {
   const problems: string[] = [];
-  const lower = text.toLowerCase();
-  for (const word of JARGON) {
-    if (lower.includes(word)) problems.push(`jerga prohibida: "${word}"`);
-  }
-  if (/\bcasa\s*\d/i.test(text)) problems.push("jerga prohibida: casa numerada");
-  for (const phrase of CLICHES) {
-    if (lower.includes(phrase)) problems.push(`cliché prohibido: "${phrase}"`);
-  }
+  appendJargonAndClicheProblems(text, problems, false);
   return problems;
 }
 
