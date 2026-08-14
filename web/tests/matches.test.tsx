@@ -11,6 +11,12 @@ const airMatches: Match[] = [
   { sign: "Gemini", say: "encaje aire", why: "por qué" },
   { sign: "Libra", say: "otro aire", why: "por qué" },
 ];
+// One water sign, one air sign — exactly one match shares "Agua", the real
+// boundary for the >= 2 threshold (a >= 1 bug would wrongly fire here).
+const oneWaterMatch: Match[] = [
+  { sign: "Cancer", say: "encaje agua", why: "por qué" },
+  { sign: "Gemini", say: "encaje aire", why: "por qué" },
+];
 
 describe("Matches", () => {
   it("lists the matches and the friction sign", () => {
@@ -28,9 +34,9 @@ describe("Matches", () => {
     expect(container.textContent).toContain("Buscas fuera lo que no llevas dentro");
   });
 
-  it("stays quiet when fewer than two matches share it", () => {
+  it("stays quiet when only one match shares the weakest element", () => {
     const { container } = render(
-      <Matches matches={airMatches} friction={friction} weakest="Agua" />,
+      <Matches matches={oneWaterMatch} friction={friction} weakest="Agua" />,
     );
     expect(container.textContent).not.toContain("Buscas fuera");
   });

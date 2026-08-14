@@ -90,6 +90,18 @@ describe("CharacterCardView", () => {
     }
   });
 
+  it("renders the combination in Sun · Moon · Ascendant order", () => {
+    const { container } = render(<CharacterCardView card={card} />);
+    // clase = Sun (Leo), porDentro = Moon (Cancer), seVe = Ascendant (Cancer) —
+    // this is the order signature() returns, not the card's visual row order.
+    // Scoped to .cc__combo (rather than the whole container) and matched with
+    // the glyphs the row actually renders, since "Leo" and "Cáncer" also
+    // appear, unglyphed and in different order, in the rows above.
+    const combo = container.querySelector(".cc__combo");
+    expect(combo, "the combination line must render").toBeTruthy();
+    expect(combo!.textContent).toBe("♌︎ Leo · ♋︎ Cáncer · ♋︎ Cáncer");
+  });
+
   it("states the rarity formatted for es-ES", () => {
     const { container } = render(<CharacterCardView card={card} />);
     // es-ES does not group four-digit numbers (CLDR minimumGroupingDigits: 2).

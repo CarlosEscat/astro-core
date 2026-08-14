@@ -19,6 +19,8 @@ function Fit({ rank, m }: { rank: string; m: Match }) {
 export function Matches({
   matches, friction, weakest,
 }: { matches: Match[]; friction: Match; weakest: ElementName }) {
+  const echo = matches.filter((m) => ELEMENT[m.sign] === weakest);
+
   return (
     <>
       {matches.map((m, i) => (
@@ -28,13 +30,10 @@ export function Matches({
         <span className="label">El que te desordena</span>
         <Fit rank="—" m={friction} />
       </div>
-      {matches.filter((m) => ELEMENT[m.sign] === weakest).length >= 2 && (
+      {echo.length >= 2 && (
         <p className="verdict punch">
           Y ahora fíjate: los signos con los que mejor encajas,{" "}
-          <strong>
-            {matches.filter((m) => ELEMENT[m.sign] === weakest)
-              .map((m) => SIGN_ES[m.sign]).join(" y ")}
-          </strong>
+          <strong>{echo.map((m) => SIGN_ES[m.sign]).join(" y ")}</strong>
           , son justo de {weakest.toLowerCase()}. Buscas fuera lo que no llevas
           dentro.
         </p>

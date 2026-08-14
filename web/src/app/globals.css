@@ -711,7 +711,8 @@ body {
 .cc__locked { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.25rem 0 0; }
 .cc__lock { color: #6e7689; font-size: .85rem; margin: 0; }
 .cc__lock::before { content: "🔒 "; }
-.cc__rarity { color: #b4653a; font-size: .85rem; margin: 1rem 0 0; }
+.cc__combo { color: #ece6da; font-size: .95rem; margin: 1rem 0 0; }
+.cc__rarity { color: #b4653a; font-size: .85rem; margin: .25rem 0 0; }
 
 /* Visually hidden but screen-reader-visible: the lock emoji above is
    decorative CSS content, which is not reliably announced, so the locked

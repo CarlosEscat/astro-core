@@ -90,6 +90,17 @@ export function CharacterCardView({
         </p>
       </div>
 
+      {/* The rarity line counts a combination, so the combination has to be
+          visible next to it. The three signs are each already on a row above,
+          but split across three labels — this is the one place they read as
+          the single thing 1728 is counting. Carried over from Signature.tsx,
+          which the card absorbed. */}
+      <p className="cc__combo">
+        {[card.clase.sign, card.porDentro.sign, card.seVe.sign]
+          .map((s) => `${SIGN_GLYPH[s]} ${SIGN_ES[s]}`)
+          .join(" · ")}
+      </p>
+
       <p className="cc__rarity cc-mono">
         1 de {card.rareza.oneIn.toLocaleString("es-ES")} combinaciones
       </p>
