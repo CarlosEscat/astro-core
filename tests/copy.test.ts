@@ -1,8 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { AREA_ES, AREA_CORTA_ES } from "../src/copy/areas.es";
 import { SIGN_ES, SIGN_GLYPH, SUN_ES, MOON_ES, ASC_ES, PARTNER_ES } from "../src/copy/signs.es";
+import { CLASS_ES } from "../src/copy/classes.es";
 import { SIGN_ORDER } from "../src/rulers";
-import { copyProblems } from "../src/validate";
+import { copyProblems, countGenderMarks } from "../src/validate";
 
 const TABLES = { SUN_ES, MOON_ES, ASC_ES, PARTNER_ES, SIGN_ES, SIGN_GLYPH };
 
@@ -97,5 +98,37 @@ describe("short area copy", () => {
 
   it("does not repeat the long form", () => {
     for (let h = 1; h <= 12; h++) expect(AREA_CORTA_ES[h]).not.toBe(AREA_ES[h]);
+  });
+});
+
+describe("class copy", () => {
+  it("covers all twelve signs", () => {
+    for (const sign of SIGN_ORDER) expect(CLASS_ES[sign]).toBeTruthy();
+  });
+
+  it("gives every sign a distinct class", () => {
+    expect(new Set(Object.values(CLASS_ES)).size).toBe(12);
+  });
+
+  it("carries no gender mark", () => {
+    for (const sign of SIGN_ORDER) {
+      expect(countGenderMarks(CLASS_ES[sign]), sign).toEqual([]);
+    }
+  });
+
+  it("carries no jargon or cliché", () => {
+    for (const sign of SIGN_ORDER) expect(copyProblems(CLASS_ES[sign])).toEqual([]);
+  });
+
+  it("uses no article, so it cannot inflect", () => {
+    for (const sign of SIGN_ORDER) {
+      expect(CLASS_ES[sign], sign).not.toMatch(/^(el|la|los|las)\s/i);
+    }
+  });
+
+  it("is a single word, keeping one register", () => {
+    for (const sign of SIGN_ORDER) {
+      expect(CLASS_ES[sign].split(/\s+/), sign).toHaveLength(1);
+    }
   });
 });
