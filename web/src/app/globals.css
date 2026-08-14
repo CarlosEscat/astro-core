@@ -674,3 +674,40 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Character card ─────────────────────────────────────────────── */
+
+/* These three map to the page's own next/font faces (loaded via globals.css
+   custom properties above), not to CARD_FONT_CSS — that 40 KB of embedded
+   base64 exists only so a detached SVG loaded through a blob URL can see the
+   card's fonts. The page already has them, so it never needs the blob. */
+.cc-display { font-family: var(--font-display); }
+.cc-mono { font-family: var(--font-mono); }
+.cc-glyph { font-family: var(--font-display); }
+
+.cc { border: 1px solid #262c3c; padding: 1.5rem; margin: 2rem 0; }
+.cc__label { color: #6e7689; font-size: .75rem; letter-spacing: .18em;
+             text-transform: uppercase; margin: 0 0 .35rem; }
+.cc__class { color: #c9a227; font-size: 2.25rem; letter-spacing: .06em; margin: 0; }
+.cc__name { color: #6e7689; font-size: .85rem; margin: .35rem 0 0; }
+.cc__head { border-bottom: 1px solid #262c3c; padding-bottom: 1rem; }
+.cc__rows { margin: 1rem 0; }
+.cc__row { padding: .6rem 0; border-bottom: 1px solid #262c3c; }
+.cc__row:last-child { border-bottom: 0; }
+.cc__row dt { color: #6e7689; font-size: .75rem; letter-spacing: .12em;
+              text-transform: uppercase; }
+.cc__row dd { color: #ece6da; margin: .2rem 0 0; }
+.cc__placement { display: block; }
+.cc__deg { color: #a9a496; font-size: .85em; }
+.cc__gloss { display: block; color: #a9a496; font-size: .9rem; margin-top: .2rem; }
+.cc__bars { display: grid; gap: .35rem; }
+.cc__bar { display: grid; grid-template-columns: 4.5rem 1fr 2.5rem; align-items: center;
+           gap: .5rem; }
+.cc__bar-name { color: #a9a496; font-size: .8rem; }
+.cc__bar-track { background: #262c3c; height: .5rem; }
+.cc__bar-fill { display: block; background: #c9a227; height: 100%; }
+.cc__bar-val { color: #a9a496; font-size: .8rem; text-align: right; }
+.cc__locked { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.25rem 0 0; }
+.cc__lock { color: #6e7689; font-size: .85rem; margin: 0; }
+.cc__lock::before { content: "🔒 "; }
+.cc__rarity { color: #b4653a; font-size: .85rem; margin: 1rem 0 0; }
