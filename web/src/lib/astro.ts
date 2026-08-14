@@ -30,3 +30,5 @@ export {
   modalityBalance, chartRuler, signature,
 } from "@core/profile";
 export { SIGN_ES, SIGN_GLYPH, SUN_ES, MOON_ES, ASC_ES, PARTNER_ES } from "@core/copy/signs.es";
+export { freeCard, selectTraits } from "@core/card";
+export type { FreeCard, SelectedTrait, Tone } from "@core/card";

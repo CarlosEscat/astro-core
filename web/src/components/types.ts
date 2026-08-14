@@ -1,4 +1,5 @@
 import type { Sign } from "@core/types";
+import type { FreeCard } from "@core/card";
 
 export interface Placement { sign: Sign; degree: number; gloss: string }
 export interface BigThree { sun: Placement; moon: Placement; ascendant: Placement }
@@ -18,5 +19,6 @@ export interface ChartResponse {
   elements: Elements;
   ruler: { body: string; sign: Sign; inDomicile: boolean };
   signature: { sun: Sign; moon: Sign; ascendant: Sign; oneIn: number };
+  card: FreeCard;
 }
 export interface FreeReading { apertura: string; amor: string; hook: string }

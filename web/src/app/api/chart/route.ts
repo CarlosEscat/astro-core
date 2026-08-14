@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  chartFromBirthData, chartRuler, elementBalance, frictionSign, signature,
+  chartFromBirthData, chartRuler, elementBalance, freeCard, frictionSign, signature,
   topMatches, ASC_ES, MOON_ES, PARTNER_ES, SUN_ES,
 } from "@/lib/astro";
 
@@ -55,5 +55,6 @@ export async function POST(req: NextRequest) {
                 weakest: elements.weakest, total: elements.total },
     ruler: { body: ruler.body, sign: ruler.sign, inDomicile: ruler.inDomicile },
     signature: signature(chart),
+    card: freeCard(chart),
   });
 }
