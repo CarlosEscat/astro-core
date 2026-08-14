@@ -79,9 +79,15 @@ export function CharacterCardView({
       </div>
 
       <div className="cc__locked">
-        <p className="cc__lock" data-locked>{card.bloqueado.rasgos} rasgos</p>
-        <p className="cc__lock" data-locked>{card.bloqueado.tensiones} tensiones</p>
-        <p className="cc__lock" data-locked>{card.bloqueado.planetas} planetas</p>
+        <p className="cc__lock" data-locked>
+          <span className="cc__sr">Bloqueado: </span>{card.bloqueado.rasgos} rasgos
+        </p>
+        <p className="cc__lock" data-locked>
+          <span className="cc__sr">Bloqueado: </span>{card.bloqueado.tensiones} tensiones
+        </p>
+        <p className="cc__lock" data-locked>
+          <span className="cc__sr">Bloqueado: </span>{card.bloqueado.planetas} planetas
+        </p>
       </div>
 
       <p className="cc__rarity cc-mono">

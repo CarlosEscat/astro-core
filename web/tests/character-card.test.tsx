@@ -39,7 +39,17 @@ describe("CharacterCardView", () => {
     const { container } = render(<CharacterCardView card={card} />);
     expect(container.textContent).toContain("el dinero y lo tuyo");
     expect(container.textContent).not.toMatch(/casa/i);
-    expect(container.textContent).not.toMatch(/\bcasa\s*\d/i);
+
+    // The row that could leak a house number is the one that carries a life
+    // area. Its only legitimate digits are its degree, so strip that and assert
+    // nothing numeric survives — this catches a bare "2" that the /casa/i check
+    // above would sail past, which is the whole point of testing the DOM rather
+    // than the struct.
+    const rows = [...container.querySelectorAll(".cc__row")];
+    const porDentro = rows.find((r) => r.textContent?.includes("Por dentro"));
+    expect(porDentro, "the Por dentro row must render").toBeDefined();
+    const withoutDegree = porDentro!.textContent!.replace(formatDegree(3.1), "");
+    expect(withoutDegree).not.toMatch(/\d/);
   });
 
   it("renders all three glosses, which Readout used to carry", () => {
@@ -66,6 +76,18 @@ describe("CharacterCardView", () => {
     expect(locked.length).toBe(3);
     expect(container.textContent).toContain("3 rasgos");
     expect(container.textContent).toContain("2 tensiones");
+  });
+
+  it("exposes the locked state as text, not only as styling", () => {
+    // The lock icon is CSS ::before content, which screen readers do not
+    // reliably announce — the locked rows are the pitch, so the gate itself
+    // must be readable, not just visible.
+    const { container } = render(<CharacterCardView card={card} />);
+    const locked = [...container.querySelectorAll("[data-locked]")];
+    expect(locked.length).toBe(3);
+    for (const row of locked) {
+      expect(row.textContent?.trim().startsWith("Bloqueado:")).toBe(true);
+    }
   });
 
   it("states the rarity formatted for es-ES", () => {
