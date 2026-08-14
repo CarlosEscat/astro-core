@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { computeNatalChart } from "../src/chart";
 import { resolveBirthUtc } from "../src/birthtime";
 import { selectTraits } from "../src/card";
-import type { Body, NatalChart } from "../src/types";
+import type { AspectType, Body, NatalChart } from "../src/types";
 
 function chartFor(
   local: { year: number; month: number; day: number; hour: number; minute: number },
@@ -84,5 +84,34 @@ describe("selectTraits", () => {
       const { rasgos, tensiones } = selectTraits(chart);
       expect(rasgos.length + tensiones.length, name).toBeGreaterThan(0);
     }
+  });
+
+  /**
+   * The fusion-overflow fallback: a conjunction that finds `rasgos` full takes a
+   * free `tensiones` slot instead of being dropped. None of the three fixture
+   * charts can reach this state — in every one of them `rasgos` and `tensiones`
+   * fill in an order that hits the break first — so it needs a built chart.
+   * Aspects are ordered by ascending orb because that is what detectAspects
+   * guarantees and what selectTraits relies on.
+   */
+  it("gives a fusion trait a tensiones slot when rasgos is full", () => {
+    const aspect = (a: Body, b: Body, type: AspectType, orb: number) =>
+      ({ a, b, type, angle: 0, orb, applying: false });
+    const chart = {
+      aspects: [
+        aspect("Sun", "Jupiter", "trine", 1),
+        aspect("Moon", "Venus", "sextile", 2),
+        aspect("Mercury", "Mars", "trine", 3),
+        aspect("Saturn", "Mars", "square", 4),
+        aspect("Venus", "Mercury", "conjunction", 5),
+      ],
+    } as unknown as NatalChart;
+
+    const { rasgos, tensiones } = selectTraits(chart);
+    expect(rasgos).toHaveLength(3);
+    expect(rasgos.every((t) => t.tone === "armonioso")).toBe(true);
+    expect(tensiones).toHaveLength(2);
+    expect(tensiones[1].tone).toBe("fusion");
+    expect(tensiones[1].pair).toEqual(["Venus", "Mercury"]);
   });
 });
