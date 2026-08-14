@@ -1,10 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Readout } from "./Readout";
+import { CharacterCardView } from "./CharacterCard";
+import { CharacterCardShare } from "./CharacterCardShare";
 import { Matches } from "./Matches";
-import { Elements } from "./Elements";
-import { Signature } from "./Signature";
 import { LoveHook } from "./LoveHook";
 import type { ChartResponse, FreeReading } from "./types";
 
@@ -246,7 +245,7 @@ export function BirthForm() {
 
       {profile && (
         <section className="reading" aria-live="polite">
-          <Readout big={profile.bigThree} />
+          <CharacterCardView card={profile.card} firstName={firstName.trim() || undefined} />
 
           {/* Love sits second: it is the shareable unit. */}
           <section className="module">
@@ -260,12 +259,8 @@ export function BirthForm() {
 
           <section className="module">
             <h2 className="module__title">Con quién encajas</h2>
-            <Matches matches={profile.matches} friction={profile.friction} />
-          </section>
-
-          <section className="module">
-            <h2 className="module__title">De qué está hecha tu mezcla</h2>
-            <Elements elements={profile.elements} matches={profile.matches} />
+            <Matches matches={profile.matches} friction={profile.friction}
+                     weakest={profile.elements.weakest} />
           </section>
 
           <section className="module">
@@ -279,7 +274,7 @@ export function BirthForm() {
             )}
           </section>
 
-          <Signature sig={profile.signature} />
+          <CharacterCardShare card={profile.card} firstName={firstName.trim() || undefined} />
 
           {free && <div className="next-step">
             <h2>Esto es solo la superficie</h2>
