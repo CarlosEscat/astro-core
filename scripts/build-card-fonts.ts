@@ -25,9 +25,16 @@
  */
 import { writeFile } from "node:fs/promises";
 
+// This subset is hand-maintained, not derived from component source — it
+// must be re-audited whenever the card's copy changes. A prior round missed
+// the degree notation this way; see the comment on REST below for how that
+// failed silently (no error, just a system-font fallback for two glyphs).
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const SPANISH = "ÁÉÍÓÚÜÑáéíóúüñ¿¡";
-const REST = "0123456789 .,:;·—–-()«»\"'%";
+// ° and ′ are not decoration: formatDegree() renders every placement as
+// "12°24′" inside .cc-mono, so without them the degree notation falls back
+// to a system font — the exact per-device drift this subset exists to stop.
+const REST = "0123456789 .,:;·—–-()«»\"'%°′";
 const TEXT = LETTERS + SPANISH + REST;
 
 const FACES = [
@@ -41,6 +48,11 @@ const UA =
   "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
 async function face(name: string, family: string, text: string): Promise<string> {
+  // `family` is deliberately NOT encodeURIComponent'd: its literal `+`
+  // (space), `,` (axis list separator) and `@` (axis tuple marker) are
+  // Google's required css2 syntax, not characters that need escaping —
+  // encoding them breaks the URL. Only `text` (arbitrary user-facing
+  // characters) needs encoding.
   const url =
     `https://fonts.googleapis.com/css2?family=${family}` +
     `&text=${encodeURIComponent(text)}&display=swap`;
