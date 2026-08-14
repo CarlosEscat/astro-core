@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { computeNatalChart } from "../src/chart";
 import { resolveBirthUtc } from "../src/birthtime";
-import { validateProse, validateSection, countGenderMarks } from "../src/validate";
+import { validateProse, validateSection, countGenderMarks, copyProblems } from "../src/validate";
 import { briefFor } from "../src/sections";
 
 const { utc } = resolveBirthUtc({ year: 2000, month: 7, day: 30, hour: 4, minute: 15 }, 43.263, -2.935);
@@ -303,5 +303,32 @@ describe("per-section validation", () => {
       );
       expect(v.fatal.join(" ")).toMatch(/Mercury/);
     });
+  });
+});
+
+describe("copyProblems", () => {
+  it("passes clean reader-facing copy", () => {
+    expect(copyProblems("cómo hablas y te mueves")).toEqual([]);
+  });
+
+  it("flags jargon", () => {
+    expect(copyProblems("tu regente en domicilio")).toEqual([
+      'jerga prohibida: "regente"',
+      'jerga prohibida: "domicilio"',
+    ]);
+  });
+
+  it("flags a cliché", () => {
+    expect(copyProblems("sois alma gemela")).toEqual([
+      'cliché prohibido: "alma gemela"',
+    ]);
+  });
+
+  it("flags a numbered house", () => {
+    expect(copyProblems("tu casa 7")).toContain("jerga prohibida: casa numerada");
+  });
+
+  it("imposes no length rule and needs no chart", () => {
+    expect(copyProblems("el dinero")).toEqual([]);
   });
 });

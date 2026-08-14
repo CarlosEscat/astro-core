@@ -346,6 +346,26 @@ export function countGenderMarks(text: string): string[] {
 }
 
 /**
+ * Jargon and cliché only, for strings that are not model output: copy tables,
+ * static UI text. `validateProse` cannot serve here — it demands a NatalChart
+ * these strings are not grounded in, and a word range that is meaningless for a
+ * three-word label. The lists are the same ones the prose gate uses, so hand
+ * copy and model copy are held to one standard.
+ */
+export function copyProblems(text: string): string[] {
+  const problems: string[] = [];
+  const lower = text.toLowerCase();
+  for (const word of JARGON) {
+    if (lower.includes(word)) problems.push(`jerga prohibida: "${word}"`);
+  }
+  if (/\bcasa\s*\d/i.test(text)) problems.push("jerga prohibida: casa numerada");
+  for (const phrase of CLICHES) {
+    if (lower.includes(phrase)) problems.push(`cliché prohibido: "${phrase}"`);
+  }
+  return problems;
+}
+
+/**
  * Structure and grounding. No gender, jargon or cliché check — the free tier's
  * gate works because a rejection there costs $0.000375 and can rotate to a
  * different chart feature on retry. Neither is true of a paid section, and
