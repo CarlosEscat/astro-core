@@ -1,4 +1,11 @@
-import type { Sign } from "../types";
+import type { Body, Sign } from "../types";
+
+/** Planet names in Spanish. Both tiers may write these. */
+export const PLANET_ES: Record<Body, string> = {
+  Sun: "Sol", Moon: "Luna", Mercury: "Mercurio", Venus: "Venus", Mars: "Marte",
+  Jupiter: "Júpiter", Saturn: "Saturno", Uranus: "Urano", Neptune: "Neptuno",
+  Pluto: "Plutón",
+};
 
 export const SIGN_ES: Record<Sign, string> = {
   Aries: "Aries", Taurus: "Tauro", Gemini: "Géminis", Cancer: "Cáncer",

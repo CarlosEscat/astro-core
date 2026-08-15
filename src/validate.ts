@@ -2,6 +2,7 @@ import type { Body, NatalChart } from "./types";
 import type { FreeReading } from "./report";
 import type { SectionBrief } from "./sections";
 import { SIGN_ES } from "./copy/signs.es";
+import { RELATIONS } from "./copy/relations.es";
 
 /**
  * Mechanical output gate. Every check is verifiable against the chart or the
@@ -133,6 +134,41 @@ const ASPECT_ES: Record<string, string> = {
   "trígono": "trine", trigono: "trine", trino: "trine",
   sextil: "sextile",
 };
+
+/**
+ * Vocabulary the paid sections may no longer use. Same list the free prompt
+ * bans, minus planet and sign names, which both tiers keep — they are "las dos
+ * únicas palabras que todo el mundo reconoce".
+ *
+ * Advisory, never fatal: this is a register slip, not a false claim about the
+ * chart, and escalating over a non-factual defect is what Addendum 12 measured
+ * at 317-603 s and $0.08 a section.
+ */
+const BANNED_JARGON = [
+  "conjunción", "conjuncion", "oposición", "oposicion", "cuadratura",
+  "trígono", "trigono", "sextil", "aspecto", "orbe", "regente", "regir",
+  "domicilio", "exaltación", "exaltacion", "retrógrado", "retrógrada",
+  "retrogrado", "retrograda", "cúspide", "cuspide", "efeméride", "efemeride",
+];
+
+/**
+ * "la casa tres", "en casa 7" — a numbered house, in words or digits.
+ * Built with `new RegExp` because it interpolates the Unicode word-boundary
+ * lookarounds; a regex literal cannot.
+ */
+const NUMBERED_HOUSE = new RegExp(
+  `${WORD_START}casas?\\s+(?:\\d{1,2}|un[ao]|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce)${WORD_END}`,
+  "giu",
+);
+
+function jargonProblems(text: string): string[] {
+  const found = new Set<string>();
+  for (const word of BANNED_JARGON) {
+    if (new RegExp(`${WORD_START}${word}${WORD_END}`, "iu").test(text)) found.add(word);
+  }
+  for (const m of text.matchAll(NUMBERED_HOUSE)) found.add(m[0].toLowerCase().trim());
+  return [...found].map((w) => `jerga: "${w}"`);
+}
 
 function sentencesOf(text: string): string[] {
   return text.split(/(?<=[.!?…])\s+/);
@@ -287,23 +323,33 @@ export function groundingProblems(text: string, chart: NatalChart): string[] {
     }
   }
 
-  // An aspect keyword in a sentence naming exactly two planets must match a
-  // real aspect of that type between them. Other counts are unattributable.
+  // A relation claim in a sentence naming exactly two planets must match a real
+  // aspect of that family between them. Two vocabularies are checked: the
+  // technical one (the teaser still writes it) and the plain one (the paid
+  // sections now write it). Other planet counts are unattributable.
   for (const sentence of sentencesOf(trimmed)) {
-    const types = Object.entries(ASPECT_ES)
-      .filter(([es]) => new RegExp(`${WORD_START}${es}${WORD_END}`, "iu").test(sentence))
-      .map(([, en]) => en);
-    if (types.length === 0) continue;
+    const types = new Set<string>();
+
+    for (const [es, en] of Object.entries(ASPECT_ES)) {
+      if (new RegExp(`${WORD_START}${es}${WORD_END}`, "iu").test(sentence)) types.add(en);
+    }
+    for (const relation of RELATIONS) {
+      if (relation.match.test(sentence)) for (const t of relation.types) types.add(t);
+    }
+    if (types.size === 0) continue;
+
     const mentioned = planetsIn(sentence);
     if (mentioned.length !== 2) continue;
     const [p1, p2] = mentioned;
     const matches = chart.aspects.some(
       (a) =>
-        types.includes(a.type) &&
+        types.has(a.type) &&
         ((a.a === p1 && a.b === p2) || (a.a === p2 && a.b === p1)),
     );
     if (!matches) {
-      problems.push(`aspecto no presente en la carta: ${p1}-${p2} (${types.join("/")})`);
+      problems.push(
+        `relación no presente en la carta: ${p1}-${p2} (${[...types].join("/")})`,
+      );
     }
   }
 
@@ -404,6 +450,7 @@ export function validateSection(
       problems.push(`${words} palabras (rango ${floor}-${ceiling})`);
     }
     if (!/[.!?…]["»)]?$/.test(trimmed)) fatal.push("texto truncado: no termina en puntuación final");
+    problems.push(...jargonProblems(trimmed));
     fatal.push(...groundingProblems(trimmed, chart));
   }
 

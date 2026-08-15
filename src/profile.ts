@@ -240,6 +240,11 @@ export function topMatches(chart: NatalChart, n = 3): SignScore[] {
 }
 
 import { AREA_ES } from "./copy/areas.es";
+// One geometry, one wording. This file used to carry its own relationPhrase()
+// returning these same three strings; the character-card spec calls that "one
+// idea written twice" and requires the fold, so the free tier, the paid prose
+// and the card cannot describe a conjunction three different ways on one page.
+import { RELATION_ES } from "./copy/relations.es";
 
 export type FeatureKind =
   | "cumulo-casa"
@@ -265,13 +270,6 @@ const PRIORITY: Record<FeatureKind, number> = {
   "regente-domicilio": 5,
   "aspecto-estrecho": 6,
 };
-
-/** How a pair of planets get on, in words a reader already knows. */
-function relationPhrase(type: Aspect["type"]): string {
-  if (type === "conjunction") return "van pegados";
-  if (type === "opposition" || type === "square") return "tiran cada uno para un lado";
-  return "van de la mano";
-}
 
 const MIN_STELLIUM = 3;
 const ABSENT_ELEMENT_THRESHOLD = 2;
@@ -340,7 +338,7 @@ export function chartFeatures(chart: NatalChart): ChartFeature[] {
   if (tightest) {
     push("aspecto-estrecho", {
       planetas: [PLANET_ES[tightest.a], PLANET_ES[tightest.b]],
-      relacion: relationPhrase(tightest.type),
+      relacion: RELATION_ES[tightest.type],
       significa: "es el lazo más fuerte de toda la carta",
     });
   }

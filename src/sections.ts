@@ -19,34 +19,50 @@ export interface SectionBrief {
   /** The focus that makes this section grow, and the ceiling it grows to. */
   growsOn?: Focus;
   grownMax?: number;
+  /**
+   * How many paragraphs this section is asked for. Structural counts are
+   * obeyed where word budgets are ignored (Addendum 7); this is what stops a
+   * section arriving as one 286-word block (Addendum 13).
+   *
+   * Set against OBSERVED lengths rather than the nominal range: every section
+   * overshoots, so a count derived from `maxWords` would under-deliver
+   * paragraphs exactly when the section runs long and needs them most.
+   */
+  paragraphs: readonly [number, number];
+  /** Used instead of `paragraphs` when `growsOn` matches the focus. */
+  grownParagraphs?: readonly [number, number];
 }
 
 export const SECTION_BRIEFS: SectionBrief[] = [
   {
     index: 0, title: "Tu retrato esencial", minWords: 250, maxWords: 300,
+    paragraphs: [3, 4],
     brief:
-      "El gancho del informe. Teje Sol, Luna y Ascendente en un retrato " +
-      "unificado que produzca el efecto \"¿cómo lo sabe?\". Abre con la " +
-      "tensión o la armonía más llamativa entre los tres. No los describas " +
-      "por separado: describe cómo conviven.",
+      "El gancho del informe. Teje su Sol, su Luna y su forma de asomarse al " +
+      "mundo en un retrato unificado que produzca el efecto \"¿cómo lo sabe?\". " +
+      "Abre con la tensión o la armonía más llamativa entre los tres. No los " +
+      "describas por separado: describe cómo conviven.",
   },
   {
     index: 1, title: "El corazón de tu identidad", minWords: 250, maxWords: 300,
+    paragraphs: [3, 4],
     brief:
-      "Tu Sol: signo, casa y los aspectos que se te asignan abajo. Qué te da " +
-      "vida, dónde brillas, qué te apaga.",
+      "Su Sol: el signo, la zona de la vida donde cae y las tensiones que se " +
+      "te asignan. Qué le da vida, dónde brilla, qué le apaga.",
   },
   {
     index: 2, title: "Tu mundo emocional", minWords: 250, maxWords: 300,
+    paragraphs: [3, 4],
     brief:
-      "Tu Luna. Cómo sientes, qué necesitas para sentirte en casa, cómo " +
-      "reaccionas cuando algo te duele.",
+      "Su Luna. Cómo siente, qué necesita para sentirse en casa, cómo " +
+      "reacciona cuando algo le duele.",
   },
   {
     index: 3, title: "La puerta por la que entras al mundo", minWords: 200, maxWords: 250,
+    paragraphs: [3, 4],
     brief:
-      "Tu Ascendente y su regente si su posición está en el JSON. La primera " +
-      "impresión que causas y el papel que la vida te invita a ensayar.",
+      "Cómo se asoma al mundo: la primera impresión que causa y el papel que " +
+      "la vida le invita a ensayar.",
   },
   {
     // 350-480, not the 300-350 the prompt file carried. That range was never
@@ -56,33 +72,40 @@ export const SECTION_BRIEFS: SectionBrief[] = [
     // architecture (Addenda 7 and 8). The range now says what four beats cost.
     index: 4, title: "Amor y vínculos", minWords: 350, maxWords: 480,
     growsOn: "amor", grownMax: 600,
+    paragraphs: [4, 5], grownParagraphs: [5, 6],
     brief:
-      "La lectura gratuita ya le ha dado tres cosas: su Venus por signo y por " +
-      "zona de la vida, su Descendente, y los signos con los que mejor encaja. " +
-      "No las repitas: aquí vas más hondo. Cubre, en prosa continua y no como " +
-      "lista: el patrón que se repite de una relación a otra y en qué momento " +
-      "se tuerce siempre; los aspectos duros que se te asignan abajo leídos " +
-      "como dinámicas entre dos personas y nunca como etiquetas; la distancia " +
-      "entre lo que dice buscar en voz alta y a quién elige de hecho; la casa " +
-      "ocho y la Luna, la intimidad y qué necesita para soltar del todo. " +
+      "Ve más hondo que una lectura de superficie de su Venus. Cubre, en prosa " +
+      "continua y no como lista: el patrón que se repite de una relación a " +
+      "otra y en qué momento se tuerce siempre; las tensiones que se te " +
+      "asignan leídas como dinámicas entre dos personas y nunca como " +
+      "etiquetas; la distancia entre lo que dice buscar en voz alta y a quién " +
+      "elige de hecho; la intimidad y qué necesita para soltar del todo. " +
       "Cierra explicando cómo se trabaja ese patrón, con agencia.",
   },
   {
     index: 5, title: "Vocación y propósito", minWords: 300, maxWords: 350,
     growsOn: "trabajo", grownMax: 450,
+    paragraphs: [3, 4], grownParagraphs: [4, 5],
     brief:
-      "Medio Cielo, casa diez, Saturno y los planetas en casas dos, seis y " +
-      "diez. Hacia dónde apunta tu ambición, qué estilo de trabajo te " +
-      "sostiene, qué reconocimiento buscas.",
+      "Su cara pública, lo que se le da bien sostener en el día a día y lo que " +
+      "construye para que dure. Hacia dónde apunta su ambición, qué estilo de " +
+      "trabajo le sostiene, qué reconocimiento busca.",
   },
   {
+    // 4-5 paragraphs, not the 3-4 its word range alone would suggest: this is
+    // Addendum 13's repeat offender, delivered at 441-454 words in only 2-3
+    // paragraphs on all three charts.
     index: 6, title: "Tus luces y tus sombras", minWords: 300, maxWords: 350,
+    paragraphs: [4, 5],
     brief:
-      "Los aspectos que se te asignan abajo, leídos en profundidad. Cada " +
-      "tensión presentada con su regalo: qué fuerza esconde y cómo se canaliza.",
+      "Las tensiones que se te asignan, leídas en profundidad. Cada una " +
+      "presentada con su regalo: qué fuerza esconde y cómo se canaliza.",
   },
   {
+    // Floor of 3 on a 200-250 range: this is the section that produced the
+    // 286-word single block, and a floor of 2 would still permit half of it.
     index: 7, title: "Claves para tu camino", minWords: 200, maxWords: 250,
+    paragraphs: [3, 4],
     brief:
       "Síntesis final. Tres hilos concretos que unan las secciones anteriores, " +
       "formulados como invitaciones prácticas, no como órdenes ni promesas. " +
@@ -95,7 +118,12 @@ export function briefFor(index: number, focus?: Focus): SectionBrief {
   const base = SECTION_BRIEFS[index];
   if (!base) throw new RangeError(`No existe la sección ${index}`);
   if (focus && base.growsOn === focus && base.grownMax) {
-    return { ...base, maxWords: base.grownMax };
+    return {
+      ...base,
+      maxWords: base.grownMax,
+      // A longer section needs more paragraphs, not longer ones.
+      paragraphs: base.grownParagraphs ?? base.paragraphs,
+    };
   }
   return base;
 }

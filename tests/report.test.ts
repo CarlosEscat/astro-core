@@ -124,7 +124,9 @@ describe("validateTeaser", () => {
       chart,
     );
     expect(r.ok).toBe(false);
-    expect(r.problems.join(" ")).toContain("aspecto");
+    // "relación no presente" since the check covers both the technical and the
+    // plain vocabulary; matching on the stable half keeps this off the wording.
+    expect(r.problems.join(" ")).toContain("no presente");
   });
 });
 
@@ -169,6 +171,19 @@ describe("shared rules fragment", () => {
       expect(prompt).not.toContain("<!--");
       expect(prompt).not.toContain("Los productos que reciben datos ya traducidos");
     }
+  });
+
+  // Notes are stripped from prompt BODIES too, not just fragments, and before
+  // substitution. system-report.md carries a "SUPERSEDED" note that mentions
+  // {{RULES_CHART}}; without stripping first, that mention would inject the
+  // whole fragment into the middle of a comment.
+  it("strips a note from a prompt body without expanding what it mentions", () => {
+    const prompt = report();
+    expect(prompt).not.toContain("SUPERSEDED");
+    expect(prompt.startsWith("# Rol")).toBe(true);
+    // The real placeholder still expanded exactly once, elsewhere in the file.
+    const heading = "# Reglas del vocabulario técnico";
+    expect(prompt.split(heading)).toHaveLength(2);
   });
 
   it("leaves no placeholder unreplaced in any prompt", () => {

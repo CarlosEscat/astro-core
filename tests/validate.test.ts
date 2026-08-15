@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { computeNatalChart } from "../src/chart";
 import { resolveBirthUtc } from "../src/birthtime";
-import { validateProse, validateSection, countGenderMarks, copyProblems } from "../src/validate";
+import { validateProse, validateSection, countGenderMarks, copyProblems, groundingProblems } from "../src/validate";
 import { briefFor } from "../src/sections";
 
 const { utc } = resolveBirthUtc({ year: 2000, month: 7, day: 30, hour: 4, minute: 15 }, 43.263, -2.935);
@@ -211,9 +211,16 @@ describe("per-section validation", () => {
     expect(v.genderMarks.length).toBeGreaterThan(0);
   });
 
-  it("does not reject jargon, which the paid tier is allowed to use", () => {
+  // Reversed by plan A: the paid sections are now written in the plain
+  // register, so a technical word is a rule violation. It stays OUT of `fatal`,
+  // which is the invariant this test was really protecting — a register slip
+  // must never buy a Kimi escalation (Addendum 12).
+  it("flags jargon without making it fatal", () => {
     const text = words(210).replace("palabra.", "una conjunción de manual y un orbe estrechísimo.");
-    expect(validateSection(text, brief, bilbao).ok).toBe(true);
+    const v = validateSection(text, brief, bilbao);
+    expect(v.ok).toBe(false);
+    expect(v.problems.some((p) => /jerga/i.test(p))).toBe(true);
+    expect(v.fatal).toHaveLength(0);
   });
 
   it("countGenderMarks finds real marks and ignores clean prose", () => {
@@ -278,7 +285,7 @@ describe("per-section validation", () => {
 
     it("rejects an aspect the chart does not contain", () => {
       const v = validateSection(body("la cuadratura entre tu Luna y tu Saturno pesa."), brief, bilbao);
-      expect(v.fatal.join(" ")).toMatch(/aspecto no presente/);
+      expect(v.fatal.join(" ")).toMatch(/relación no presente/);
     });
 
     it("accepts claims that are true of the chart", () => {
@@ -330,5 +337,86 @@ describe("copyProblems", () => {
 
   it("imposes no length rule and needs no chart", () => {
     expect(copyProblems("el dinero")).toEqual([]);
+  });
+});
+
+describe("groundingProblems on plain-language relations", () => {
+  // Fixture facts, verified against the computed chart rather than assumed:
+  // Venus-Urano IS an opposition (orb 1.29); Sol-Saturno is no aspect at all;
+  // Sol-Plutón IS a trine (orb 3.05), so it is the wrong-family case, not the
+  // absent one. The plan's draft had Sol-Plutón as absent — it is not.
+  it("accepts a plain phrase for a relation that exists", () => {
+    const text = "Tu Venus y tu Urano tiran cada uno para un lado.";
+    expect(groundingProblems(text, bilbao)).toEqual([]);
+  });
+
+  it("rejects a plain phrase for a relation that does not exist", () => {
+    const text = "Tu Sol y tu Saturno tiran cada uno para un lado.";
+    const problems = groundingProblems(text, bilbao);
+    expect(problems.some((p) => /no presente/i.test(p))).toBe(true);
+  });
+
+  it("rejects the wrong FAMILY of relation between a real pair", () => {
+    // Venus-Urano is an opposition, so "van de la mano" is a false claim
+    // about a real pair — the subtle case a human reader would miss.
+    const text = "Tu Venus y tu Urano van de la mano.";
+    const problems = groundingProblems(text, bilbao);
+    expect(problems.some((p) => /no presente/i.test(p))).toBe(true);
+  });
+
+  it("accepts the right family for a real soft aspect", () => {
+    // Sol-Plutón is a trine, and "van de la mano" is the phrase for it.
+    expect(groundingProblems("Tu Sol y tu Plutón van de la mano.", bilbao)).toEqual([]);
+  });
+
+  it("ignores a sentence that names only one planet", () => {
+    expect(groundingProblems("Tu Venus va de la mano con lo que quieres.", bilbao)).toEqual([]);
+  });
+
+  it("still catches the technical vocabulary, for the teaser", () => {
+    const text = "Tu Sol y tu Saturno forman una oposición.";
+    expect(groundingProblems(text, bilbao).some((p) => /no presente/i.test(p))).toBe(true);
+  });
+});
+
+describe("validateSection flags the banned register", () => {
+  const brief = briefFor(3); // 200-250 words
+  // Long enough to clear the word floor, so only the register is under test.
+  const body = (tail: string) =>
+    Array.from({ length: 205 }, () => "palabra").join(" ") + ". " + tail;
+
+  it("flags a technical word as a problem, not as fatal", () => {
+    const v = validateSection(body("Hay una cuadratura muy cerrada ahí."), brief, bilbao);
+    expect(v.problems.some((p) => /jerga/i.test(p))).toBe(true);
+    expect(v.fatal.some((p) => /jerga/i.test(p))).toBe(false);
+  });
+
+  it("flags 'retrógrado' even when the planet really is retrograde", () => {
+    // Urano IS retrograde in bilbao. The word is still banned now, so this is
+    // a register violation rather than a grounding one.
+    const v = validateSection(body("tu Urano retrógrado lo complica."), brief, bilbao);
+    expect(v.problems.some((p) => /jerga/i.test(p))).toBe(true);
+    expect(v.fatal.some((p) => /retrogradación/i.test(p))).toBe(false);
+  });
+
+  it("flags a numbered house", () => {
+    const v = validateSection(body("todo eso pasa en tu casa tres."), brief, bilbao);
+    expect(v.problems.some((p) => /jerga/i.test(p))).toBe(true);
+  });
+
+  it("leaves clean plain prose alone", () => {
+    const v = validateSection(body("Tu Luna en Cáncer te pide un sitio tranquilo."), brief, bilbao);
+    expect(v.problems.some((p) => /jerga/i.test(p))).toBe(false);
+  });
+
+  it("does not flag a house named as a life area", () => {
+    const v = validateSection(body("en cómo hablas y te mueves por tu barrio."), brief, bilbao);
+    expect(v.problems.some((p) => /jerga/i.test(p))).toBe(false);
+  });
+
+  // "casa" alone is ordinary Spanish and the plain register uses it freely.
+  it("does not flag an unnumbered house", () => {
+    const v = validateSection(body("cuando llegas a casa y cierras la puerta."), brief, bilbao);
+    expect(v.problems.some((p) => /jerga/i.test(p))).toBe(false);
   });
 });
