@@ -183,21 +183,36 @@ scroll se lleva la portada**. Esa es la pregunta a resolver primero.
 
 ---
 
-## Por dónde empezaría la próxima sesión
+## Por dónde empieza la próxima sesión
 
-1. **Fijar el presupuesto de scroll de la portada** antes de discutir
-   bloques. Todo lo demás se deduce de ahí.
-2. Con ese número, elegir entre los cuatro **fuertes** (01, 02, 09, 10) y
-   decidir si 04 y 07 caben.
-3. Resolver la línea gratis/pago de la compatibilidad.
-4. Enmendar `2026-08-13-character-card-design.md`: el spec describe una
-   ficha de prosa que ya se ha descartado, y no contiene ni los
-   percentiles, ni la regla de «titular lo más raro», ni la
-   compatibilidad, ni la retirada de `oneIn`.
-5. Solo entonces, escribir el plan.
+**Decidido 2026-08-15: la ficha va ANTES que el plan 2.** No se construye
+el cobro hasta saber qué se está vendiendo (Addendum 19).
 
-**No escribir el plan antes de que Carlos apruebe un diseño.** Esta
-sesión gastó cinco iteraciones por saltarse ese orden.
+El punto de partida cambia respecto a lo que decía este documento cuando
+se escribió. La pregunta ya no es «cuáles de mis once bloques
+sobreviven», porque ese marco produjo cinco rechazos seguidos. Es:
+
+1. **¿Qué haría que alguien que no sabe nada de astrología hiciera una
+   captura y se la mandara a un amigo?** Diseñar desde ahí hacia atrás.
+   La ficha es la superficie de conversión y la viral (Addendum 19), no
+   un resumen fiel de la carta.
+2. **Aplicar la regla de los nombres de planeta** (Addendum 19): los
+   signos son vocabulario común, los planetas no. Todo bloque rechazado
+   en esta sesión empieza por un planeta; todo bloque aceptado empieza
+   por un signo o una palabra corriente.
+3. **Fijar el presupuesto de scroll de la portada.** Los once bloques
+   juntos son 2.643 px. Con ese número, elegir.
+4. Resolver la línea gratis/pago de la compatibilidad — que con el
+   Addendum 19 es una decisión de precio, no de interfaz.
+5. Enmendar `2026-08-13-character-card-design.md`: describe una ficha de
+   prosa ya descartada, y no contiene ni los percentiles, ni la regla de
+   «titular lo más raro», ni la compatibilidad, ni la retirada de
+   `oneIn`, ni la regla de los nombres de planeta.
+6. Solo entonces, escribir el plan.
+
+**No escribir el plan antes de que Carlos apruebe un diseño**, y
+**enseñar siempre la ficha entera**, nunca un recorte. Esta sesión gastó
+cinco iteraciones por saltarse esas dos cosas.
 
 ## Maquetas de esta sesión
 

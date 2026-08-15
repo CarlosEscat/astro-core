@@ -16,13 +16,18 @@ plan B, a methodological warning about re-checking battery output against
 the wrong chart, and the fact that the gender log is noise in both
 directions.
 
-**The paid character card (phase 2) was explored the same day and is
-BLOCKED ON A DESIGN DECISION, not on code.** Five iterations, all
+**NEXT SESSION: design the card.** Decided 2026-08-15 — the card goes
+before plan 2, because it is the conversion surface and plan 2 cannot
+describe a product that is not designed (Addendum 19).
+
+The paid character card (phase 2) was explored on 2026-08-15 and is
+**BLOCKED ON A DESIGN DECISION, not on code.** Five iterations, all
 rejected, zero code written. Everything learned — including measurements
-worth keeping — is in
+worth keeping and the two process rules that cost this session — is in
 `docs/superpowers/specs/2026-08-15-character-card-paid-exploration.md`
-and **Addendum 18**. Do not write a plan for it before Carlos approves a
-design.
+(start at "Por dónde empieza la próxima sesión") plus **Addenda 18 and
+19**. Do not write a plan before Carlos approves a design, and never show
+a trimmed card — always the whole thing.
 
 Before that, same day — **character card phase 1 BUILT, VERIFIED IN THE
 BROWSER, AND MERGED TO `main`.** 241 → 301 tests, 20 commits (branch
@@ -133,7 +138,10 @@ are not.
       gated after an invented retrogradation shipped), and CONFIRMED by
       a second battery run — Addendum 12's confirming-run table.
 - [ ] **Plan 2 — orders, payment, persistence** — PLAN WRITTEN
-      2026-08-10, not executed:
+      2026-08-10, not executed. **SEQUENCED BEHIND THE CARD as of
+      2026-08-15**: the card is the conversion surface (Addendum 19), and
+      this plan writes a product description into Stripe, so what is
+      being sold has to be settled first.
       `docs/superpowers/plans/2026-08-10-orders-payment-persistence.md`.
       Eight tasks, 215 → ~264 tests. Supabase schema (`orders`,
       `report_sections`, `entitlements`) behind RLS that denies
