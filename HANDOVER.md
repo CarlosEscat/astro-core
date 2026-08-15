@@ -2,17 +2,27 @@
 
 ## Estado actual (keep this section updated — it is the first thing read)
 
-Last updated: 2026-08-15 — **plain register (plan A) BUILT AND MEASURED**
-on branch `feat/plain-register`, 301 → **336 tests**, 7 commits. The paid
-report is now written in plain Spanish, the model receives no degree, orb
-or house number, and the battery says the prose holds up: 3/3 reports,
-92% first-attempt, zero Kimi escalations, zero grounding failures,
-**zero paragraphs over 200 words** against Addendum 13's five. Read
-**Addendum 17** before touching `src/sections.ts`, `src/report.ts` or
-`prompts/system-section.md` — it records the go for plan B, a
-methodological warning about re-checking battery output against the
-wrong chart, and the fact that the gender log is noise in both
-directions. **Not merged, not pushed.**
+Last updated: 2026-08-15 — **plain register (plan A) BUILT, MEASURED AND
+MERGED TO `main`.** 301 → **338 tests**, 9 commits (branch
+`feat/plain-register`). The paid report is now written in plain Spanish,
+the model receives no degree, orb or house number, and the battery says
+the prose holds up: 3/3 reports, 92% first-attempt, zero Kimi
+escalations, zero grounding failures, **zero paragraphs over 200 words**
+against Addendum 13's five. `npm test`, `npx tsc --noEmit`,
+`npm run example` and the `web` typecheck all green on the merged result.
+**Not pushed.** Read **Addendum 17** before touching `src/sections.ts`,
+`src/report.ts` or `prompts/system-section.md` — it records the go for
+plan B, a methodological warning about re-checking battery output against
+the wrong chart, and the fact that the gender log is noise in both
+directions.
+
+**The paid character card (phase 2) was explored the same day and is
+BLOCKED ON A DESIGN DECISION, not on code.** Five iterations, all
+rejected, zero code written. Everything learned — including measurements
+worth keeping — is in
+`docs/superpowers/specs/2026-08-15-character-card-paid-exploration.md`
+and **Addendum 18**. Do not write a plan for it before Carlos approves a
+design.
 
 Before that, same day — **character card phase 1 BUILT, VERIFIED IN THE
 BROWSER, AND MERGED TO `main`.** 241 → 301 tests, 20 commits (branch
@@ -179,10 +189,16 @@ plans 2 and 3, and plans 2 and 3 do not block it.
       deletion of `Readout`/`Elements`/`Signature`. Renders with zero LLM
       calls. **Read Addendum 15 before touching it** — the plan shipped
       four defects that only review or the browser caught.
-- [ ] **Character card, phase 2 (paid).** Blocked on plan A
-      (`RELATION_ES`) and plan B (glyphs, area copy). Needs its own plan
-      once those exist. Carries the ~126-entry trait table, the drafting
-      script, the seven planet rows and the provenance test.
+- [ ] **Character card, phase 2 (paid) — BLOCKED ON DESIGN, NOT CODE.**
+      Its two stated blockers are gone: `RELATION_ES` shipped with plan A
+      (and absorbed `relationPhrase()`), and plan B's glyph work died in
+      Addendum 15 when Noto Sans Symbols 2 turned out to be unsubsettable.
+      What stopped it on 2026-08-15 is that **five design iterations were
+      all rejected** — the card as specced is prose in a frame, and the
+      target reader knows no astrology and must understand it at a glance.
+      Full write-up, measurements and next steps:
+      `docs/superpowers/specs/2026-08-15-character-card-paid-exploration.md`
+      (Addendum 18). **Do not write a plan before a design is approved.**
 - [ ] PDF rendering (Puppeteer over the same report component) — own spec
 - [ ] Daily cron: transits once/day → 12 horoscopes → Supabase cache
 - [ ] Oracle chat (post-MVP): system-oracle.md, rolling window, quotas
@@ -1914,3 +1930,82 @@ test suite would not have caught, all recorded in the commit messages:
    the whole fragment into it, while also tripping an existing test banning
    `<!--` in composed prompts. Fixed by stripping notes from prompt bodies
    before substitution, the rule fragments already followed.
+
+---
+
+## Addendum 18: the paid card is blocked on design, and what was learned trying (2026-08-15)
+
+Full write-up: `docs/superpowers/specs/2026-08-15-character-card-paid-exploration.md`
+
+**Five design iterations, all rejected, zero code written.** This addendum
+records only what a future session must not rediscover; the reasoning and
+the mockup links are in the document above.
+
+### Why it stopped
+
+The card as the 2026-08-13 spec describes it renders traits as a name
+plus a sentence — which is prose in a frame, on a product whose main
+complaint is already a wall of text. The target buyer **knows nothing
+about astrology** and must understand the card **the first time they see
+it, without reading**. None of the five versions cleared that bar.
+
+The process error is worth naming: each iteration showed Carlos a
+*subset* rather than the whole, so he could not judge what was being
+lost. Assembling all eleven blocks at once is what finally exposed the
+real constraint — see below.
+
+### The finding that reframes the problem
+
+**All eleven proposed blocks together measure 2.643 px** — about 3,3
+phone screens before the report begins. The question is therefore not
+which block is weak but **how much scroll the opening screen gets**.
+Settle that number before discussing blocks again.
+
+### Three measurements worth keeping
+
+1. **Percentiles are cheap and they are what makes the card legible.**
+   `computeNatalChart` + `elementBalance` run at **0,57 ms/chart**, so
+   8.000 random charts take ~4,5 s and bake once into a constant table.
+   "Agua 12" means nothing without astrology; **"más agua que el 98% de
+   la gente"** needs no astrology at all.
+
+   On bilbao-2000 only **two of six** measures are notable (agua p98,
+   tierra p6,6 by absence); retrogrades, tie counts, tightest orb and
+   zone concentration all land mid-pack. So the card must **headline
+   whatever is rarest for that person** — the `selectFeature()` pattern,
+   applied to stats.
+
+2. **The compatibility material Carlos actually wants already exists.**
+   `compatibleSigns()`, `topMatches()` and `frictionSign()` have been in
+   `profile.ts` with tests and jargon-free reasons since the free-reading
+   redesign. This was the best-received part of the whole exploration.
+   The interaction that makes it work is **looking up your partner's
+   sign**, so all twelve must be listed, not just the podium. Open
+   decision: the free reading already shows the top three.
+
+3. **The spec's 63-entry trait batch would cover less than half.** It
+   prioritises pairs among the seven *displayed* planets, but
+   `selectTraits()` takes the tightest aspects, which usually involve
+   Urano, Neptuno or Plutón. Measured across the three battery charts:
+   6 of 14 rows written, 8 still on fallback. If the table is revived,
+   **priority must come from measured frequency**, not the spec's split.
+
+### Three smaller decisions taken
+
+- **"Retrógrado" is allowed on the card** (Carlos, explicitly). Note the
+  consequence: `copyProblems()` bans it as jargon, so the card's copy
+  test needs an explicit exemption.
+- **Zones are never numbered.** `AREA_CORTA_ES` already holds written
+  names; showing "2" and hoping it means something was the single least
+  understood element of any version.
+- **`oneIn: 1728` should be retired.** It is 12×12×12 and identical for
+  every human ever born — Addendum 14 flagged it, and the percentile
+  engine above makes a true rarity computable.
+
+### Also fixed this day, outside plan A's task list
+
+`relationPhrase()` in `profile.ts` returned the same three strings as
+`RELATION_ES`. The plain-language spec assigns the fold to plan A and the
+card spec makes the paid card depend on it; plan A's written tasks never
+listed it. Folded, with tests pinning the equivalence. There is now **one
+wording for the geometry** across free, paid and card.
