@@ -1,12 +1,13 @@
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { AspectType, NatalChart } from "./types";
-import type { AspectRef, SectionAllocation } from "./allocate";
+import type { NatalChart } from "./types";
+import type { SectionAllocation } from "./allocate";
 import { briefFor } from "./sections";
 import { relationshipProfile, selectFeature } from "./profile";
 import { AREA_ES } from "./copy/areas.es";
-import { SIGN_ES } from "./copy/signs.es";
+import { SIGN_ES, PLANET_ES } from "./copy/signs.es";
+import { RELATION_ES } from "./copy/relations.es";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -125,13 +126,39 @@ export interface SectionRequest {
   priorOpenings?: string[];
 }
 
-/** Plain-language rendering of an aspect for the brief. */
-function aspectLine(r: AspectRef): string {
-  const ES: Record<AspectType, string> = {
-    conjunction: "conjunción", opposition: "oposición", square: "cuadratura",
-    trine: "trígono", sextile: "sextil",
+/**
+ * Everything a paid section learns about the chart, already in plain Spanish.
+ *
+ * This is Addendum 6's governing principle applied to the paid tier: compute
+ * the structure, hand over one translated thing. The model cannot write a house
+ * number it never receives, cannot name an aspect it is never given, and cannot
+ * misstate an orb it never sees — which retires the invented retrogradation and
+ * the 1.29° "oposición exacta" that Addendum 12 found already delivered, rather
+ * than detecting them after the fact.
+ *
+ * Planets and signs survive because both tiers keep them: they are the two
+ * words every reader already owns.
+ */
+function sectionFacts(chart: NatalChart, mine: SectionAllocation) {
+  const place = (p: NatalChart["planets"][number]) => ({
+    planeta: `tu ${PLANET_ES[p.body]}`,
+    signo: SIGN_ES[p.sign],
+    zona: AREA_ES[p.house],
+  });
+
+  return {
+    posiciones: chart.planets.map(place),
+    asciende_en: SIGN_ES[chart.angles.ascendant.sign],
+    cara_publica_en: SIGN_ES[chart.angles.midheaven.sign],
+    // Relations carry the phrase and the pair, never the type or the orb.
+    tensiones_tuyas: mine.aspects.map((a) => ({
+      entre: [`tu ${PLANET_ES[a.a]}`, `tu ${PLANET_ES[a.b]}`],
+      relacion: RELATION_ES[a.type],
+    })),
+    no_son_tuyas: mine.reserved.map((a) => ({
+      entre: [`tu ${PLANET_ES[a.a]}`, `tu ${PLANET_ES[a.b]}`],
+    })),
   };
-  return `${r.a}-${r.b}: ${ES[r.type]} (orbe ${r.orb.toFixed(2)}°)`;
 }
 
 /**
@@ -144,20 +171,14 @@ export function buildSectionMessages(req: SectionRequest): ChatMessage[] {
   const mine = req.allocation[req.section];
 
   const parts = [
-    `Carta natal (JSON):\n${JSON.stringify(chartForLLM(req.chart))}`,
+    `Datos de la carta, ya en lenguaje llano:\n${JSON.stringify(sectionFacts(req.chart, mine))}`,
     `Sección: ${brief.title}`,
     `Extensión: entre ${brief.minWords} y ${brief.maxWords} palabras.`,
     `Encargo:\n${brief.brief}`,
   ];
 
-  if (mine.aspects.length) {
-    parts.push(`Aspectos que te pertenecen:\n${mine.aspects.map(aspectLine).join("\n")}`);
-  }
   if (mine.reserved.length) {
-    parts.push(
-      "No uses estos aspectos, pertenecen a otras secciones:\n" +
-      mine.reserved.map(aspectLine).join("\n"),
-    );
+    parts.push("Los pares que aparecen en `no_son_tuyas` pertenecen a otras secciones: no los desarrolles aquí ni los menciones de pasada.");
   }
   if (req.priorOpenings?.length) {
     parts.push(
