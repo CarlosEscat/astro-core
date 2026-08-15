@@ -1,0 +1,73 @@
+## Tu retrato esencial
+
+Lo más llamativo de tu cielo es que el Sol y la Luna comparten rincón: ambos hablan de dinero, de tus cosas y de lo que consideras tuyo. Tu Sol en Leo le da a todo lo que posees un aire de realeza: quieres que lo tuyo se note, que hable bien de ti, que te haga sentir grande. Tu Luna en Cáncer vuelve esa misma zona un refugio: las cosas no valen solo por lo que cuestan, sino por la historia que guardan y por a quién te recuerdan. Por eso lo material en ti nunca es frío ni indiferente; mezclas ganas de brillar con ganas de cuidar.
+
+Ese fuego de Leo no se ve de entrada, porque tu manera de presentarte y el cuerpo con el que vas por el mundo tienen piel de Cáncer, con tu Mercurio en ese mismo signo y en esa misma zona. Llegas con suavidad, con ojos que parecen retener lo que se dice, con un cuidado que invita a quedarse. No es que seas de quienes se guardan las cosas por frialdad; es que primero observas y luego decides si abrir la puerta. Cuando confías, el Sol en Leo aparece detrás, y la timidez se convierte en calidez, humor y ganas de que la gente se sienta especial.
+
+Con el Sol y la Luna en la zona de lo que tienes, todo lo que posees se convierte en una extensión de quién eres. No te importa reunir cosas bonitas, pero no por aparentar: las eliges porque te hacen sentir a salvo, porque acompañan, porque forman parte de una casa que quieres construir. A ratos te entra el impulso de darte un capricho para celebrar lo que eres, y a ratos te cuesta soltar algo que ya no usas porque guarda un recuerdo. No es contradicción, es que posees con el corazón.
+
+## El corazón de tu identidad
+
+En el centro de tu identidad tienes el Sol en Leo, situado en la zona del dinero, tus cosas y lo que consideras tuyo. Eso significa que no te da igual lo que posees: lo que es tuyo habla de ti, y necesitas que lleve tu huella, tu gusto y tu manera de hacer las cosas. No se trata solo de acumular, sino de sentir que lo que tienes te representa y te devuelve una imagen en la que te reconoces.
+
+Ese Sol en Leo va de la mano de tu Júpiter en Géminis, que vive en lo que pasa a puerta cerrada, contigo a solas. Por eso tu vitalidad no depende solo de lo que se ve: se alimenta de una conversación interior muy viva, de ideas, de lecturas y de planes que quizá no cuentas. Cuando esa charla privada se traduce en algo tangible, en un proyecto o en una forma de hacer las cosas que es tuya, tu brillo se vuelve inconfundible.
+
+Lo que te quita fuerza es convertir lo que tienes en un escaparate sin alma, o quedarte rumiando ideas a solas sin darles forma en tu día a día. Si solo te fijas en el valor de las cosas para sentir quién eres, se te apaga la chispa. Tu Sol en Leo te pide que lo tuyo sea juego, expresión y orgullo bien entendido, y que también escuches esa vida interior que te acompaña. Cuando ambos planos se juntan, todo lo que consideras tuyo cobra sentido.
+
+## Tu mundo emocional
+
+Lo tuyo es sentir desde las tripas, sin mediaciones. Tu Luna en Cáncer, puesta justo en la zona que habla de lo que tienes, de tu dinero y de lo que consideras tuyo, convierte cualquier cosa que tocas en algo profundamente personal. Cuando algo te importa, deja de ser un objeto o una cifra y se vuelve un pedacito de tu historia, casi de tu cuerpo. Por eso nunca entiendes a quienes pasan por la vida sin apegarse a nada: tú necesitas que lo que te rodea tenga peso y memoria. La seguridad no es para ti una palabra bonita, es el pulso que necesitas escuchar cada día para poder respirar tranquila.
+
+Lo curioso es que tu manera de sentir y tu manera de pensarlo todo van pegadas, como si la cabeza y el corazón usaran el mismo idioma. Tienes una memoria emocional bestial: recuerdas exactamente cómo olía la casa de tu abuela y también qué te dijo alguien un martes cualquiera que te dolió. No te cuesta nada conectar con lo que te pasa por dentro, lo que a veces te agota es no poder tomar distancia. Cuando te piden que seas racional, te sientes un poco en fuera de juego, porque para ti entender algo y sentirlo es casi el mismo gesto interno.
+
+Si algo te hiere, no eres de las que explotan sin más. Te retiras. Cierras filas alrededor de lo tuyo, de tu espacio, de tus personas, y levantas un caparazón que parece duro pero en realidad está hecho de pura sensibilidad a flor de piel. Cuidado con eso: a veces la armadura pesa más que la herida. Necesitas que te cuiden, pero te cuesta horrores soltar ese control emocional para que te vean frágil.
+
+En el fondo, tu forma de estar en casa es un estado interior más que un lugar. Te sientes a resguardo cuando puedes confiar plenamente en lo que tienes delante, cuando no hay sobresaltos y cuando sabes que lo que amas no va a salir volando. Ahí, solo ahí, te descalzas del todo.
+
+## La puerta por la que entras al mundo
+
+Tu puerta de entrada es Cáncer, y se nota: no la abres de golpe, sino que dejas que quien tienes delante se asome un poco antes de decidir si entras. Con tu Mercurio en Cáncer, precisamente en la zona que habla de cómo te presentas y del cuerpo con el que vas por el mundo, las primeras palabras y los gestos con los que llegas a un sitio llevan un punto de timidez, de escucha y de cuidado. La gente nota antes tu disponibilidad que tu opinión.
+
+Tu cara pública en Piscis añade otra capa: fuera de casa se te ve como alguien que se adapta al ambiente, que capta lo que no se dice y que no necesita imponerse para estar presente. Esa impresión de refugio, de escucha y de cierta ensoñación te abre conversaciones y confidencias sin que las busques.
+
+Con esa mezcla de Cáncer y Piscis, el papel que la vida te propone ensayar no es el de quien llega marcando territorio, sino el de quien crea un clima habitable. Tu manera de entrar en un lugar cambia la temperatura: primero observas, luego te dejas ver, y al final la gente se queda con la sensación de que contigo se puede hablar sin prisa. Ahí está tu fuerza de presentación, y también tu tarea: no confundir acoger con desaparecer.
+
+## Amor y vínculos
+
+El amor pide un escenario, y el tuyo se monta siempre en el mismo sitio: donde brillas, donde te miran, donde puedes ser generosa y expansiva sin que nadie te lo reproche. Con tu Venus en Leo en el terreno de la palabra y el encuentro cercano, te enamoras hablando, seduces contando historias y necesitas que quien tienes delante sepa reconocer lo especial que eres. Pero esa puesta en escena, que al principio lo ilumina todo, es también donde se empieza a torcer el guion. Porque entregas tanto y tan rápido que la otra persona se acostumbra a recibir, y tú, sin darte cuenta, acabas en un monólogo donde das y das, pero no llega nada de vuelta que te haga sentirte igual de vista.
+
+Y luego está lo que no dices. Con la Luna y Marte pegados en Cáncer, en la misma zona donde guardas lo que consideras tuyo, no quieres una relación: quieres una pertenencia. Buscas un vínculo que sea hogar, cobijo, memoria compartida. Pero ese deseo tan hondo viene con un contrato no escrito que pocas personas logran leer: tú das cuidado, ternura y una lealtad feroz, y esperas que te devuelvan exactamente lo mismo, sin tener que pedirlo. Marte ahí te vuelve protectora, pero también reactiva: la primera vez que sientes que no te cuidan como tú cuidas, te cierras. Y de puertas para dentro te quedas rumiando la ofensa, porque tu manera de luchar es dejar de hablar, replegarte al caparazón de quien decide que ya no necesita nada de nadie.
+
+La distancia entre lo que dices buscar y a quién eliges tiene un nombre, y ese nombre es Urano. Tu Venus en Leo tira hacia el romance cálido, el cortejo con brillo, la generosidad que no cuenta lo que da. Pero Urano en Acuario, en lo lejos que viajas y lo que crees, tira para el otro lado: te atrae la persona que no se deja atrapar, la que piensa distinto, la que está de paso. Y ahí está la trampa: proclamas que quieres un amor estable y reconocible, pero tu historia de vínculos está llena de gente que no estaba disponible del todo o que te obligaba a perseguirla. El chispazo inicial siempre es eléctrico, pero cuando llega el momento de construir algo cotidiano, esa libertad que tanto admirabas se convierte en distancia que no sabes franquear.
+
+Intimidad para ti no es el cuerpo: es la cocina de noche, las confesiones en voz baja y saber que puedes llorar sin que te juzguen. Tu Luna en Cáncer necesita que la intimidad sea un refugio donde no tengas que interpretar ningún papel, y eso solo ocurre cuando confías tanto en alguien que dejas caer el orgullo. El problema es que para soltar del todo, tienes que atravesar el miedo que Saturno, escondido en Tauro, te mete en el cuerpo: el miedo a que si te ven frágil, dejen de admirarte. Así que la intimidad profunda se te demora hasta que alguien demuestra, con paciencia de tierra, que no se va a aprovechar de lo que le entregues.
+
+Trabajar este patrón no es cambiar de pretendiente: es cambiar el foco. Pregúntate menos si te quieren y más si te dejan querer a tu manera, sin sentir que tu entrega es demasiado. Cuando dejes de elegir amores que te obligan a perseguir y empieces a elegir amores que se quedan, descubrirás que la verdadera generosidad no es dar hasta vaciarte, sino aprender a recibir sin que te dé vergüenza.
+
+## Vocación y propósito
+
+Hablar de tu vocación contigo es empezar por lo que consideras tuyo, porque ahí tienes el Sol en Leo, la Luna en Cáncer y Marte en Cáncer. No vienes a pasar de largo: vienes a levantar algo propio, un terreno donde te sientas a salvo y a la vez puedas brillar. Tu orgullo y tu instinto de cuidado se juntan alrededor de tus recursos, así que lo que construyes no es solo una forma de ganarte la vida, es una extensión de ti. Esa mezcla de orgullo y protección no es habitual: te da empuje, pero sin soltar lo que es tuyo. Saturno en Tauro, en lo que pasa a puerta cerrada, te da la constancia que no se ve: lo que sostienes en silencio, a solas, es lo que acaba teniendo raíz.
+
+En el día a día, Plutón en Sagitario te pide trabajar con intensidad y con un horizonte amplio: no te valen las rutinas vacías, necesitas que lo cotidiano tenga un porqué. Te presentas con Mercurio en Cáncer, es decir, desde una cercanía que hace que la gente confíe en ti antes de saber por qué. Y cuando hablas o escribes, tu Venus en Leo pone el calor y un punto de espectáculo: sabes comunicar lo tuyo de forma que no pase desapercibido. Júpiter en Géminis, en tu espacio a solas, alimenta tu curiosidad lejos de los focos, y Urano en Acuario, en lo que crees y estudias, te empuja a pensar distinto: tu manera de entender el mundo no es la de todo el mundo.
+
+Tu cara pública en Piscis es la de alguien que intuye lo que necesita el entorno, y eso conecta con Neptuno en Acuario en lo que compartes a fondo: tu trabajo gana fuerza cuando toca algo colectivo, cuando lo que haces transforma también a quien tienes delante. Saturno y Neptuno van de la mano, y esa es una de tus claves: no te limitas a soñar, le pones estructura; no te limitas a lo material, le pones alma. El reconocimiento que buscas no es el aplauso vacío: quieres que se note lo que has construido, que valoren esa mezcla tuya de cuidado, brillo y sentido. Te sostiene un ritmo propio, no impuesto: necesitas margen para lo que intuyes y para lo que estás construyendo. Y eso, cuando trabajas a tu manera, se acaba notando.
+
+## Tus luces y tus sombras
+
+Hablo de dos pares que en tu cielo van de la mano: tu Júpiter y tu Neptuno, y tu Marte y tu Saturno. Vistos de cerca, no son defectos; son motores que piden oficio.
+
+Tu Júpiter está en Géminis, en lo que pasa a puerta cerrada, contigo a solas, y tu Neptuno en Acuario, en lo que compartes a fondo con otra persona y lo que te transforma. Van de la mano, así que tu vida interior es amplia y un poco nebulosa: a solas piensas, imaginas, repasas conversaciones posibles y sueñas con vínculos que te cambien por dentro. El regalo es una imaginación fértil y una confianza poco común en lo que une a las personas. La sombra es confundir lo que intuyes con lo que de verdad sucede. Esa fuerza se canaliza cuando le das forma a lo imaginado: escribir, estudiar, hablar, poner en palabras lo que otros sienten y no dicen.
+
+Tu Marte está en Cáncer, en la zona del dinero, tus cosas y lo que consideras tuyo, y tu Saturno en Tauro, en lo que pasa a puerta cerrada, contigo a solas. También van de la mano. Se nota en que defiendes lo tuyo con una mezcla de arrebato y freno: el impulso te nace de las tripas, pero una voz interna te obliga a medir cada movimiento. La sombra es ese tira y afloja que te deja sin batería entre querer proteger algo y no atreverte a tocarlo. El regalo es una tenacidad de raíz: cuando algo te importa, no lo sueltas, lo cuidas y lo haces crecer despacio. Se canaliza convirtiendo el enfado en límites claros y la paciencia en método, a solas y sin prisa, hasta levantar una seguridad que no dependa del ánimo del día.
+
+La gracia está en juntarlas. La imaginación de Júpiter y Neptuno da dirección a la constancia de Marte y Saturno, y esa constancia le pone suelo a lo que sueñas. No hace falta acallar ninguna: te basta reconocer cuándo imaginas y cuándo construyes para que una misma fuerza te lleve de la idea a lo tangible.
+
+## Claves para tu camino
+
+Tu camino empieza por la puerta, y tu puerta es Cáncer. Tu Luna está en Cáncer, Marte está en Cáncer y Mercurio está en Cáncer. La primera invitación es que no te trates el umbral como un trámite: si tardas en dejar pasar a alguien, si primero necesitas sentir desde las tripas, no es que te falte decisión, es tu manera de reconocer lo que merece tu confianza. Date ese tiempo sin castigarte.
+
+El segundo hilo es el brillo. Tu Sol en Leo está en lo que consideras tuyo. Tu Venus en Leo está en cómo hablas y te mueves por tu barrio. Amor y vocación te piden un escenario, y no es por capricho: cuando alguien te mira, lo que consideras tuyo se confirma. La invitación práctica es elegir a quién enseñas lo que estás construyendo y dejar que te miren, no para pedir permiso, sino para comprobar que ese brillo cuenta.
+
+El tercer hilo va del día a día. Plutón en Sagitario está en la zona del trabajo cotidiano y tus rutinas. La invitación es dar a tus tareas un sentido más hondo: que ordenar tu espacio o cumplir una lista no sea solo mantenimiento, sino una forma de transformarte poco a poco. Eso conecta con lo que ya consideras tuyo: tus rutinas pueden ser el terreno donde lo que brilla se sostiene.
+
+Así que el camino no va de empujar la puerta ni de apagar tu luz: va de entrar como entras, de brillar donde ya te reconoces y de dejar que el tiempo de cada día te devuelva a lo tuyo. Eso es lo que toca cuidar.

@@ -2,12 +2,23 @@
 
 ## Estado actual (keep this section updated — it is the first thing read)
 
-Last updated: 2026-08-15 — **character card phase 1 BUILT, VERIFIED IN THE
-BROWSER, AND MERGED TO `main`.** 241 → **301 tests**, 20 commits (branch
+Last updated: 2026-08-15 — **plain register (plan A) BUILT AND MEASURED**
+on branch `feat/plain-register`, 301 → **336 tests**, 7 commits. The paid
+report is now written in plain Spanish, the model receives no degree, orb
+or house number, and the battery says the prose holds up: 3/3 reports,
+92% first-attempt, zero Kimi escalations, zero grounding failures,
+**zero paragraphs over 200 words** against Addendum 13's five. Read
+**Addendum 17** before touching `src/sections.ts`, `src/report.ts` or
+`prompts/system-section.md` — it records the go for plan B, a
+methodological warning about re-checking battery output against the
+wrong chart, and the fact that the gender log is noise in both
+directions. **Not merged, not pushed.**
+
+Before that, same day — **character card phase 1 BUILT, VERIFIED IN THE
+BROWSER, AND MERGED TO `main`.** 241 → 301 tests, 20 commits (branch
 `feat/character-card-free`, since deleted). `npm test`, `npm run build`,
 `npm run example` and the `web` typecheck were all green on the merged
-result, not just on the branch. **Not pushed** — `main` is ahead of
-`origin/main`.
+result, not just on the branch.
 
 The free reading now opens with a computed character card and **zero LLM
 calls**; `Readout`, `Elements` and `Signature` are deleted, absorbed by
@@ -142,16 +153,17 @@ are not.
 above, and was missing from this list until 2026-08-13. It does not block
 plans 2 and 3, and plans 2 and 3 do not block it.
 
-- [ ] **Plain register, plan A — the words.** Spec:
+- [x] **Plain register, plan A — the words** — **BUILT AND MEASURED
+      2026-08-15**, 301 → 336 tests. Spec:
       `docs/superpowers/specs/2026-08-10-paid-report-plain-language-design.md`
       (amended 2026-08-13). Plan:
-      `docs/superpowers/plans/2026-08-10-paid-report-plain-register.md`.
-      Eight briefs rewritten, `{{RULES_CHART}}` out of the report prompt,
-      `RELATION_ES` created, `buildSectionMessages` handing over
-      pre-translated data, `groundingProblems` rewritten against the new
-      vocabulary. **Ends by running `scripts/battery-sections.ts`** — the
-      prose-quality risk is real and only the battery measures it.
-      Nobody has ever asked V4 Pro for 3,000 words of plain Spanish.
+      `docs/superpowers/plans/2026-08-10-paid-report-plain-register.md`
+      (amended 2026-08-15 to absorb the paragraph fix). `RELATION_ES`,
+      `sectionFacts`, `jargonProblems`, the eight briefs rewritten with a
+      paragraph range each, `groundingProblems` extended to the plain
+      vocabulary. The prose-quality risk **did not materialise** — the
+      datum stayed in the sentence, it just changed clothes. Full results
+      and the six things the plan got wrong are in **Addendum 17**.
 - [ ] **Plain register, plan B — the presentation.** Per-section data
       strip, `HookCard`, `matchesFor`, decorated `ReportSection`, shared
       glyph handling. No LLM, no vendors, no network. Goes after A.
@@ -1746,3 +1758,159 @@ shipped behaviour; all three are traps for whoever edits these files next.
   `NextResponse.json` literal** — nothing would catch a future divergence.
   Harmless today, but the response has now visibly drifted from what is
   rendered, which is exactly the failure mode that gap invites.
+
+---
+
+## Addendum 17: the plain register lands, and the paragraph fix works (2026-08-15)
+
+Plan: `docs/superpowers/plans/2026-08-10-paid-report-plain-register.md`
+(amended 2026-08-15 to absorb the paragraph fix — see below).
+Spec: `docs/superpowers/specs/2026-08-10-paid-report-plain-language-design.md`
+Before-state preserved in `bakeoff-out/sections-technical-register/`.
+
+Plan A is **built and measured**. 301 → **336 tests**. Everything below is
+from one live battery run on 2026-08-15, not predicted.
+
+### The headline: both open questions came back yes
+
+| | Addendum 12 (first run) | Addendum 12 (confirming) | **This run** |
+|---|---|---|---|
+| Reports delivered | 2/3 | 3/3 | **3/3** |
+| Attempts / 24 sections | 39 (1.63) | — | **26 (1.08)** |
+| First-attempt rate | 14/24 (58%) | — | **22/24 (92%)** |
+| Escalations to Kimi | 4 | 0 | **0** |
+| Cost | $1.0338 | ~$0.12 | **$0.1258** |
+| Wall clock | 28.2 min | 5.4 min | **15.9 min** |
+
+Words: madrid 2745, buenosaires 2829, bilbao 2761. `parseReport` OK on
+all three.
+
+### 1. Does it still sound like the product, or like a magazine horoscope?
+
+**Like the product.** The feared failure — that removing data from the
+sentence would leave generic prose — did not happen, because the datum did
+not leave the sentence. It changed clothes:
+
+> "Con tu Venus en Leo en el terreno de la palabra y el encuentro cercano,
+> te enamoras hablando, seduces contando historias..."
+
+Planet, sign and life area are all still there and all still checkable; only
+"casa tres" became "el terreno de la palabra y el encuentro cercano". The
+"¿cómo lo sabe?" moment survives the translation intact. The canary's love
+section is the best prose this project has produced — "intimidad para ti no
+es el cuerpo: es la cocina de noche, las confesiones en voz baja" — and it
+is anchored on a real Luna en Cáncer.
+
+### 2. Did the paragraph counts land?
+
+**Both halves, which the plan was careful to separate.**
+
+- *The model obeyed the count*: **24/24 sections** came back inside their
+  asked paragraph range. Not one missed.
+- *The count worked*: **85 paragraphs, zero over 200 words.** The longest in
+  the whole battery is 193.
+
+Against Addendum 13's before-state — five paragraphs over 200, the worst a
+286-word section rendered as one unbroken block, 1.31 phone screens with no
+break. `Claves para tu camino`, the section that produced that block, now
+comes back as 67/60/80/55 on madrid.
+
+This settles Addendum 12's open item 3 and Addendum 13's open finding
+together, which is why the fix was folded into this plan rather than run as
+its own battery.
+
+### 3. Grounding
+
+**Clean: 24/24 delivered sections, zero false claims**, verified by replaying
+every delivered section through `groundingProblems` against its own chart —
+not by spot-reading, which is the mistake Addendum 12 records.
+
+The gate also demonstrably works on the new vocabulary: buenosaires section 3
+was **rejected on attempt 1** for `relación no presente: Sun-Venus
+(conjunction)` and came back clean on attempt 2. That is Task 2's plain-language
+grounding check catching an invented relation in the plain register — the exact
+defect class that shipped undetected before.
+
+Jargon: `grep` over all three reports for the banned vocabulary and numbered
+houses returns **nothing**.
+
+### A methodological warning, paid for during this run
+
+An earlier pass of this addendum reported one shipped grounding failure
+(`Moon-Neptune` on buenosaires). **That was wrong, and the cause is worth
+recording**: the replay script was written with buenosaires' birth data typed
+from memory (1985-11-03 18:45) instead of the fixture the battery actually
+uses (`scripts/battery-sections.ts:44` — 1985-11-02 11:20). A different chart
+produces different aspects, so correct prose was judged against the wrong sky.
+
+**Any script that re-checks battery output must read its charts from `CASES`,
+not restate them.** The same error class — restating a fixture instead of
+computing it — also produced three wrong assertions in the plan itself
+(Addendum's task notes below).
+
+### The gender log is not measuring what it says
+
+Logged: madrid 1, buenosaires 0, bilbao 3. Read against the prose, those
+numbers are wrong in **both directions**, tested directly:
+
+| Phrase (from bilbao) | Real? | `countGenderMarks` |
+|---|---|---|
+| `te vuelve protectora` | yes | flagged ✓ |
+| `estás construyendo` ×2 | no — gerund | **flagged ✗** |
+| `puedes ser generosa y expansiva` | yes | **missed ✗** |
+| `sentirte igual de vista` | yes | **missed ✗** |
+
+So the canary's real count is higher than 3, and two of its three logged marks
+are noise. Operationally harmless — the paid tier logs rather than gates
+(spec decision 6), and this run is more evidence for that decision, since
+gating on a detector this noisy would have burned retries on gerunds. But
+**do not read the logged number as a measurement**; `estás` + gerund needs the
+same exclusion the free tier already gives it (Addendum 7).
+
+### Two things that are slower or longer than hoped
+
+- **Wall clock is 15.9 min, against the 5.4 min confirming run in Addendum 12**
+  at the same cost ($0.1258 vs ~$0.12). Per-section latency ranged 16.6 s to
+  236.2 s for single first-attempt calls, and the diagnostics name different
+  providers per call (BaseTen, Baidu among them). Provider routing is the
+  leading explanation and Addendum 12 already observed it directly on V4 Pro —
+  but **this is not settled**, and it is worth re-measuring before anyone
+  quotes a generation time to a buyer.
+- **`Amor y vínculos` still overshoots**, now at 583-586 words against a 480
+  ceiling (552 with margin), and `Vocación y propósito` hit 489 against 402.
+  Both were accepted with a warning and neither cost a retry, which is the
+  Addendum 12 fix working as designed. The section is simply longer than its
+  brief admits; if that matters, raise the range rather than gate it.
+
+One empty completion: buenosaires section 5, from Baidu, `completion=4095
+reasoning=4094` — the whole budget spent on reasoning before emitting a word.
+Retried and succeeded. The emptiness check earns its keep.
+
+### Go/no-go for Plan B
+
+**Go.** The prose is good enough to build the presentation layer on, which is
+what this run existed to decide.
+
+### What executing the plan cost
+
+Tasks 1-5 landed in five commits. The plan carried five defects that a green
+test suite would not have caught, all recorded in the commit messages:
+
+1. **The plan's own test contradicted its regex.** It asserts "te gusta *ir*
+   de la mano" matches, but `/va(?:n)?\s+de\s+la\s+mano/` cannot match an
+   infinitive. Widened the detectors rather than relaxing the test — a missed
+   relation ships an invented claim; a false positive is filtered by the
+   two-planet gate.
+2. **A fixture fact was wrong**: the plan calls Sol-Plutón absent in bilbao.
+   It is a trine, orb 3.05. The absent-pair tests use Sol-Saturno.
+3. **The wrong chart backed task 4.** `tests/section-messages.test.ts` is
+   madrid, not bilbao, so the planned "Leo", "barrio" and "tiran cada uno"
+   assertions were all false there.
+4. **Two existing tests encoded the policies being reversed**, and the plan
+   said to keep every other test as-is.
+5. **The `SUPERSEDED` marker sabotaged itself.** The plan puts it in
+   `system-report.md` as an HTML comment mentioning `{{RULES_CHART}}` — and
+   `loadPrompt` substituted that placeholder *inside the comment*, injecting
+   the whole fragment into it, while also tripping an existing test banning
+   `<!--` in composed prompts. Fixed by stripping notes from prompt bodies
+   before substitution, the rule fragments already followed.
