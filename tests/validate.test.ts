@@ -211,9 +211,16 @@ describe("per-section validation", () => {
     expect(v.genderMarks.length).toBeGreaterThan(0);
   });
 
-  it("does not reject jargon, which the paid tier is allowed to use", () => {
+  // Reversed by plan A: the paid sections are now written in the plain
+  // register, so a technical word is a rule violation. It stays OUT of `fatal`,
+  // which is the invariant this test was really protecting — a register slip
+  // must never buy a Kimi escalation (Addendum 12).
+  it("flags jargon without making it fatal", () => {
     const text = words(210).replace("palabra.", "una conjunción de manual y un orbe estrechísimo.");
-    expect(validateSection(text, brief, bilbao).ok).toBe(true);
+    const v = validateSection(text, brief, bilbao);
+    expect(v.ok).toBe(false);
+    expect(v.problems.some((p) => /jerga/i.test(p))).toBe(true);
+    expect(v.fatal).toHaveLength(0);
   });
 
   it("countGenderMarks finds real marks and ignores clean prose", () => {
@@ -369,5 +376,47 @@ describe("groundingProblems on plain-language relations", () => {
   it("still catches the technical vocabulary, for the teaser", () => {
     const text = "Tu Sol y tu Saturno forman una oposición.";
     expect(groundingProblems(text, bilbao).some((p) => /no presente/i.test(p))).toBe(true);
+  });
+});
+
+describe("validateSection flags the banned register", () => {
+  const brief = briefFor(3); // 200-250 words
+  // Long enough to clear the word floor, so only the register is under test.
+  const body = (tail: string) =>
+    Array.from({ length: 205 }, () => "palabra").join(" ") + ". " + tail;
+
+  it("flags a technical word as a problem, not as fatal", () => {
+    const v = validateSection(body("Hay una cuadratura muy cerrada ahí."), brief, bilbao);
+    expect(v.problems.some((p) => /jerga/i.test(p))).toBe(true);
+    expect(v.fatal.some((p) => /jerga/i.test(p))).toBe(false);
+  });
+
+  it("flags 'retrógrado' even when the planet really is retrograde", () => {
+    // Urano IS retrograde in bilbao. The word is still banned now, so this is
+    // a register violation rather than a grounding one.
+    const v = validateSection(body("tu Urano retrógrado lo complica."), brief, bilbao);
+    expect(v.problems.some((p) => /jerga/i.test(p))).toBe(true);
+    expect(v.fatal.some((p) => /retrogradación/i.test(p))).toBe(false);
+  });
+
+  it("flags a numbered house", () => {
+    const v = validateSection(body("todo eso pasa en tu casa tres."), brief, bilbao);
+    expect(v.problems.some((p) => /jerga/i.test(p))).toBe(true);
+  });
+
+  it("leaves clean plain prose alone", () => {
+    const v = validateSection(body("Tu Luna en Cáncer te pide un sitio tranquilo."), brief, bilbao);
+    expect(v.problems.some((p) => /jerga/i.test(p))).toBe(false);
+  });
+
+  it("does not flag a house named as a life area", () => {
+    const v = validateSection(body("en cómo hablas y te mueves por tu barrio."), brief, bilbao);
+    expect(v.problems.some((p) => /jerga/i.test(p))).toBe(false);
+  });
+
+  // "casa" alone is ordinary Spanish and the plain register uses it freely.
+  it("does not flag an unnumbered house", () => {
+    const v = validateSection(body("cuando llegas a casa y cierras la puerta."), brief, bilbao);
+    expect(v.problems.some((p) => /jerga/i.test(p))).toBe(false);
   });
 });
