@@ -2,9 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** The eight paid sections stop being written in astrological vocabulary, and the model stops receiving the data it would need to write it — while grounding stays mechanically verifiable.
+**Goal:** The eight paid sections stop being written in astrological vocabulary, and the model stops receiving the data it would need to write it — while grounding stays mechanically verifiable. The same pass fixes paragraph granularity, because it rewrites the same eight briefs and is measured by the same battery run.
 
-**Architecture:** Three moves, in order. A closed set of plain relation phrases (`RELATION_ES`) so `groundingProblems()` can verify plain prose the way it verifies technical prose today. Then `buildSectionMessages` stops handing over raw chart JSON and hands over life-areas and pre-written relation phrases instead — no degrees, no orbs, no house numbers. Then the eight briefs and `system-section.md` are rewritten to match. Ends by running the live battery, which is the only thing that can answer whether V4 Pro writes good plain Spanish at this length.
+**Architecture:** Three moves, in order. A closed set of plain relation phrases (`RELATION_ES`) so `groundingProblems()` can verify plain prose the way it verifies technical prose today. Then `buildSectionMessages` stops handing over raw chart JSON and hands over life-areas and pre-written relation phrases instead — no degrees, no orbs, no house numbers. Then the eight briefs and `system-section.md` are rewritten to match, and each section gains a **paragraph count** alongside its word range. Ends by running the live battery, which is the only thing that can answer whether V4 Pro writes good plain Spanish at this length.
+
+**Amended 2026-08-15 — paragraph granularity folded in.** Addendum 13 measured the real defect in the delivered reports: five paragraphs over 200 words, the worst being a 286-word section rendered as **one unbroken block, 1.31 phone screens with no break**. It concluded the fix is to ask each brief for paragraphs, and left it open only because it "rewrites all eight briefs and needs its own battery run" — which is precisely what this plan already does. Folding it in here costs one extra field and one extra prompt line; running it separately would mean rewriting eight briefs twice and paying for two batteries. Task 5 carries the change, Task 6 measures it.
 
 **Tech Stack:** TypeScript (ESM, `"type": "module"`), vitest 4 via the repo-root config, DeepSeek V4 Pro through OpenRouter for the battery.
 
@@ -12,7 +14,7 @@
 
 ## Global Constraints
 
-- `npm test` must stay green from the repo root. Baseline **241 tests in 16 files** — trust the runner over this number.
+- `npm test` must stay green from the repo root. Baseline **301 tests** as of 2026-08-15, after the character card merged — trust the runner over this number. (This plan was written against 241; the card added 60.)
 - `npm run example` must still pass. Vitest passing does NOT prove the tsx path works (ESM interop) — CLAUDE.md.
 - **All prompt text is es-ES, "de tú".** Hand-written copy is held to the same gender discipline as model output (Addendum 6).
 - **`{{RULES}}` is universal; `{{RULES_CHART}}` may ONLY appear in a prompt that receives the raw chart JSON.** After this plan the section prompt receives neither raw JSON nor that fragment.
@@ -30,7 +32,7 @@
 | `src/copy/relations.es.ts` | **New.** The closed set of plain relation phrases, plus the regexes that detect them. One responsibility: the vocabulary of "how two planets get along". |
 | `src/validate.ts` | Modified. `groundingProblems()` learns the plain vocabulary alongside the technical one; `validateSection()` flags banned jargon. |
 | `src/report.ts` | Modified. New `sectionFacts()` builds the translated payload; `buildSectionMessages()` uses it instead of `chartForLLM()`. |
-| `src/sections.ts` | Modified. The eight briefs, rewritten in plain register. |
+| `src/sections.ts` | Modified. The eight briefs, rewritten in plain register, each gaining a paragraph range. |
 | `prompts/system-section.md` | Modified. Drops `{{RULES_CHART}}`, gains the ban list and the "name the planet and sign, never the number" rule. |
 | `prompts/system-report.md` | Modified — **header note only**, marking it the superseded single-call prompt. |
 
@@ -621,17 +623,22 @@ git commit -m "feat: sections receive pre-translated facts instead of chart JSON
 
 ---
 
-### Task 5: the briefs and the section prompt go plain
+### Task 5: the briefs and the section prompt go plain, and gain paragraphs
 
 **Files:**
-- Modify: `src/sections.ts` (all eight `brief` strings)
+- Modify: `src/sections.ts` (all eight `brief` strings, plus a new `paragraphs` field and `briefFor` scaling)
+- Modify: `src/report.ts` (one added line in the `parts` array from Task 4)
 - Modify: `prompts/system-section.md`
 - Modify: `prompts/system-report.md` (header note only)
-- Test: `tests/sections.test.ts`
+- Test: `tests/sections.test.ts`, `tests/report.test.ts`
 
 **Interfaces:**
 - Consumes: nothing new
-- Produces: `SECTION_BRIEFS` unchanged in shape. Word ranges are **not** changed by this plan.
+- Produces: `SECTION_BRIEFS` gains `paragraphs` (and `grownParagraphs` where a focus grows the section). Word ranges are **not** changed by this plan.
+
+**Why a structural count and not a word cap.** Addendum 7 established the rule this whole codebase now runs on: *word budgets are ignored; structural counts are obeyed.* Asking for "ningún párrafo de más de 120 palabras" is a word budget wearing a different hat and will be ignored the same way. Asking for "entre 3 y 4 párrafos" is a count, and counts land.
+
+**Why ranges, not single numbers.** Every section overshoots its word range — measured on both models and both architectures (Addenda 7, 8, 12). A paragraph count computed from the *nominal* range would therefore under-deliver by roughly a third on a section that runs long. The ranges below are set against **observed** lengths, so they still hold when the section overshoots. Section 6 gets a deliberately higher count: it is Addendum 13's repeat offender at 441-454 words in only 2-3 paragraphs on all three charts.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -664,16 +671,100 @@ describe("the briefs are written in the plain register", () => {
     expect(amor).toMatch(/agencia|se trabaja/i);
   });
 });
+
+describe("every section declares a paragraph range", () => {
+  it("gives each section a sane range", () => {
+    for (const b of SECTION_BRIEFS) {
+      const [lo, hi] = b.paragraphs;
+      expect(lo, `${b.title}`).toBeGreaterThanOrEqual(2);
+      expect(hi, `${b.title}`).toBeGreaterThanOrEqual(lo);
+    }
+  });
+
+  // The defect this fixes: a 286-word section delivered as ONE paragraph
+  // (Addendum 13). A floor of 2 is what makes that unrepresentable.
+  it("never lets a section be one block", () => {
+    for (const b of SECTION_BRIEFS) {
+      expect(b.paragraphs[0], `${b.title} admite un solo párrafo`).toBeGreaterThan(1);
+    }
+  });
+
+  // Set against OBSERVED lengths, not nominal: sections overshoot by ~30%
+  // (Addenda 7, 8, 12), so dividing maxWords would under-deliver paragraphs.
+  it("keeps paragraphs inside a readable band even when the section overruns", () => {
+    for (const b of SECTION_BRIEFS) {
+      const overrun = b.maxWords * 1.3;         // what the model actually writes
+      const worst = overrun / b.paragraphs[0];  // fewest paragraphs allowed
+      expect(worst, `${b.title} permite un párrafo de ${Math.round(worst)} palabras`)
+        .toBeLessThanOrEqual(170);
+    }
+  });
+
+  it("scales the paragraph range when a focus grows the section", () => {
+    const amor = briefFor(4, "amor");
+    expect(amor.maxWords).toBe(600);
+    expect(amor.paragraphs).toEqual(SECTION_BRIEFS[4].grownParagraphs);
+    expect(amor.paragraphs[1]).toBeGreaterThan(SECTION_BRIEFS[4].paragraphs[1]);
+  });
+});
 ```
+
+Note the third test is the one with teeth: it encodes *why* these numbers and not others, so a future edit that halves a paragraph count fails with a readable message instead of silently reintroducing the wall.
 
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/sections.test.ts`
 Expected: FAIL — several briefs name houses, aspects and the JSON.
 
-- [ ] **Step 3: Rewrite the eight briefs**
+- [ ] **Step 3: Add the paragraph field to `SectionBrief` and scale it in `briefFor`**
 
-In `src/sections.ts`, replace each `brief` string. Keep every `index`, `title`, `minWords`, `maxWords`, `growsOn` and `grownMax` exactly as they are, **including the comment above section 4 that records why its range is 350-480** — that comment exists so nobody "corrects" the range back.
+In `src/sections.ts`, extend the type. A tuple keeps the two numbers that always travel together in one field, so `briefFor` swaps one key rather than two:
+
+```ts
+  /** How many paragraphs this section is asked for. Structural counts are
+   *  obeyed where word budgets are ignored (Addendum 7); this is what stops
+   *  a section arriving as one 286-word block (Addendum 13). */
+  paragraphs: readonly [number, number];
+  /** Used instead of `paragraphs` when `growsOn` matches the focus. */
+  grownParagraphs?: readonly [number, number];
+```
+
+Then teach `briefFor` to swap it in the same branch that already swaps `maxWords`:
+
+```ts
+export function briefFor(index: number, focus?: Focus): SectionBrief {
+  const base = SECTION_BRIEFS[index];
+  if (!base) throw new RangeError(`No existe la sección ${index}`);
+  if (focus && base.growsOn === focus && base.grownMax) {
+    return {
+      ...base,
+      maxWords: base.grownMax,
+      // A longer section needs more paragraphs, not longer ones.
+      paragraphs: base.grownParagraphs ?? base.paragraphs,
+    };
+  }
+  return base;
+}
+```
+
+- [ ] **Step 4: Rewrite the eight briefs and set their paragraph ranges**
+
+In `src/sections.ts`, replace each `brief` string and add each `paragraphs`. Keep every `index`, `title`, `minWords`, `maxWords`, `growsOn` and `grownMax` exactly as they are, **including the comment above section 4 that records why its range is 350-480** — that comment exists so nobody "corrects" the range back.
+
+The paragraph ranges, with the arithmetic that produced them (word range ÷ paragraphs, then the same at a 30% overrun):
+
+| idx | Section | Words | Paragraphs | Nominal w/¶ | At +30% |
+|---|---|---|---|---|---|
+| 0 | Tu retrato esencial | 250-300 | 3-4 | 63-100 | 130 |
+| 1 | El corazón de tu identidad | 250-300 | 3-4 | 63-100 | 130 |
+| 2 | Tu mundo emocional | 250-300 | 3-4 | 63-100 | 130 |
+| 3 | La puerta por la que entras al mundo | 200-250 | 3-4 | 50-83 | 108 |
+| 4 | Amor y vínculos | 350-480 (600) | 4-5 (5-6) | 70-120 | 156 |
+| 5 | Vocación y propósito | 300-350 (450) | 3-4 (4-5) | 75-117 | 152 |
+| 6 | Tus luces y tus sombras | 300-350 | **4-5** | 60-88 | 114 |
+| 7 | Claves para tu camino | 200-250 | 3-4 | 50-83 | 108 |
+
+Two entries are deliberately not what the arithmetic alone would give. **Section 6** gets 4-5 rather than 3-4 because it is the measured repeat offender — 441-454 words in 2-3 paragraphs on all three charts. **Section 7** gets a floor of 3 on a 200-250 range because it is the section that produced the 286-word single block; a floor of 2 would still permit half of that.
 
 ```ts
   // index 0
@@ -729,7 +820,34 @@ In `src/sections.ts`, replace each `brief` string. Keep every `index`, `title`, 
 
 Two deliberate changes beyond vocabulary. Section 4 loses the "la lectura gratuita ya le ha dado tres cosas" opener (spec decision 9 — the report is read on its own). Section 3 loses "y su regente si su posición está en el JSON", because a ruler is jargon the reader does not have and the model no longer receives it.
 
-- [ ] **Step 4: Rewrite `prompts/system-section.md`**
+- [ ] **Step 5: Hand the paragraph count to the model**
+
+The count is worthless if it never reaches the prompt. In `src/report.ts`, add one line to the `parts` array Task 4 Step 4 rewrote, immediately after `Extensión:` so the two budgets sit together:
+
+```ts
+    `Extensión: entre ${brief.minWords} y ${brief.maxWords} palabras.`,
+    `Estructura: entre ${brief.paragraphs[0]} y ${brief.paragraphs[1]} párrafos.`,
+```
+
+It goes in the assembled prompt as its own labelled line rather than inside each brief's prose, for the same reason `Extensión` is: it is a budget, not part of the commission, and a labelled line is testable. Addendum 13 said "the brief needs to ask for paragraphs" — this is that, in the place the plan already keeps the section's other budget.
+
+Add to `tests/report.test.ts`, alongside the existing `buildSectionMessages` assertions:
+
+```ts
+it("tells the model how many paragraphs to write", () => {
+  const user = buildSectionMessages(req(7))[1].content;
+  expect(user).toMatch(/Estructura: entre 3 y 4 párrafos\./);
+});
+
+it("asks a grown section for more paragraphs", () => {
+  const user = buildSectionMessages({ ...req(4), focus: "amor" })[1].content;
+  expect(user).toMatch(/Estructura: entre 5 y 6 párrafos\./);
+});
+```
+
+Reuse the `req()` helper Task 4 Step 1 already established in that file rather than defining a second one.
+
+- [ ] **Step 6: Rewrite `prompts/system-section.md`**
 
 Replace the whole file with:
 
@@ -750,7 +868,9 @@ Cuando dos planetas tengan una relación entre ellos, te la doy ya escrita en `t
 
 # Qué vas a escribir
 
-Vas a escribir **una sola sección** de un informe más largo. Recibirás los datos de la carta ya en lenguaje llano, el encargo de esa sección y su extensión.
+Vas a escribir **una sola sección** de un informe más largo. Recibirás los datos de la carta ya en lenguaje llano, el encargo de esa sección, su extensión y su número de párrafos.
+
+Respeta el número de párrafos que te pido: sepáralos con una línea en blanco. Un párrafo desarrolla una idea y la cierra; cuando empieces otra, abre párrafo. Una sección de un solo bloque es ilegible en un móvil, por buena que sea la prosa.
 
 Devuelve **solo la prosa de esa sección, sin encabezado**: el título lo pone la interfaz. No escribas las demás secciones, no las resumas y no anuncies lo que vendrá después.
 
@@ -761,7 +881,7 @@ Cada interpretación tiene que apoyarse en algo que te he dado, y ese algo debe 
 
 Note there is no `{{RULES_CHART}}` — that is the point of the task.
 
-- [ ] **Step 5: Mark the legacy prompt**
+- [ ] **Step 7: Mark the legacy prompt**
 
 At the very top of `prompts/system-report.md`, above its first heading, add:
 
@@ -779,7 +899,7 @@ At the very top of `prompts/system-report.md`, above its first heading, add:
 
 HTML comments are stripped from fragments but **not** from prompt bodies, so keep this short — it costs tokens on the legacy path only.
 
-- [ ] **Step 6: Update the fragment-split test**
+- [ ] **Step 8: Update the fragment-split test**
 
 `tests/report.test.ts` has `"gives the chart-data rules to the prompts that receive the chart JSON"`, which iterates `[report(), teaser()]`. Both still receive raw JSON, so **that test is still correct and needs no change**. Verify it passes rather than assuming:
 
@@ -787,16 +907,26 @@ HTML comments are stripped from fragments but **not** from prompt bodies, so kee
 npx vitest run tests/report.test.ts
 ```
 
-- [ ] **Step 7: Run everything**
+- [ ] **Step 9: Run everything**
 
 Run: `npm test && npm run example`
 Expected: PASS. `npm run example` is not optional — vitest passing does not prove the tsx path works.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 10: Look at a real prompt again**
+
+Task 4 Step 6 printed a section prompt before the briefs changed. Print one now and read it as the model receives it — both budget lines present, no jargon, no numbers:
 
 ```bash
-git add src/sections.ts prompts/system-section.md prompts/system-report.md tests/sections.test.ts
-git commit -m "feat: the eight briefs and the section prompt go plain-register"
+npx tsx -e 'import {computeNatalChart} from "./src/chart.ts";import {resolveBirthUtc} from "./src/birthtime.ts";import {allocateFeatures} from "./src/allocate.ts";import {buildSectionMessages} from "./src/report.ts";const {utc}=resolveBirthUtc({year:2000,month:7,day:30,hour:4,minute:15},43.263,-2.935);const chart=computeNatalChart({utc,latitude:43.263,longitude:-2.935});const m=buildSectionMessages({chart,section:7,allocation:allocateFeatures(chart)});console.log(m[1].content);'
+```
+
+Section 7 is the one that produced the 286-word block, so it is the one worth reading.
+
+- [ ] **Step 11: Commit**
+
+```bash
+git add src/sections.ts src/report.ts prompts/system-section.md prompts/system-report.md tests/sections.test.ts tests/report.test.ts
+git commit -m "feat: the eight briefs and the section prompt go plain-register, in paragraphs"
 ```
 
 ---
@@ -848,7 +978,25 @@ wc -w bakeoff-out/sections/*.md
 
 Then actually read all three reports. Addendum 12 records an invented retrogradation that shipped because someone spot-checked 5 sections of 16 and declared the run clean. Read the whole thing.
 
-Judge these five, which are what the run exists to answer:
+Then measure paragraph granularity, which is the second thing this run exists to settle. Addendum 13's numbers are the before-state to beat: **5 paragraphs over 200 words, worst 286 as a single block.**
+
+```bash
+npx tsx -e '
+import {readFileSync,readdirSync} from "node:fs";
+for (const f of readdirSync("bakeoff-out/sections").filter(n=>n.endsWith(".md"))) {
+  const secs = readFileSync(`bakeoff-out/sections/${f}`,"utf8").split(/^##\s+/m).slice(1);
+  console.log(`\n${f}`);
+  for (const s of secs) {
+    const [title,...rest] = s.split("\n");
+    const paras = rest.join("\n").split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
+    const words = paras.map(p=>p.split(/\s+/).length);
+    const over = words.filter(w=>w>200).length;
+    console.log(`  ${title.trim().padEnd(38)} ${String(paras.length).padStart(2)}¶  ${words.join("/")}${over?`  <-- ${over} over 200`:""}`);
+  }
+}'
+```
+
+Judge these six, which are what the run exists to answer:
 
 1. **Does it still sound like the product, or like a magazine horoscope?** This is the main risk in the spec. Without data in the sentence, generic prose has nowhere to hide.
 2. **Does the reader still get the "¿cómo lo sabe?" moment** from planet + sign + life-area alone?
@@ -856,12 +1004,13 @@ Judge these five, which are what the run exists to answer:
    ```bash
    grep -niE "conjunci|oposici|cuadratura|trígono|sextil|orbe|retrógrad|casa (uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce)|casa [0-9]" bakeoff-out/sections/*.md
    ```
-4. **Section length.** The register change may move it; the briefs are unchanged, so any shift is the register's doing.
+4. **Section length.** The register change may move it; the word ranges are unchanged, so any shift is the register's doing.
 5. **Grounding.** The run reports `fatal` per section; confirm zero.
+6. **Did the paragraph counts land?** Compare against the table in Task 5 Step 4. Two distinct outcomes to tell apart: the model *obeyed* the count (paragraph totals inside the asked range) and the count *worked* (no paragraph over 200 words). Addendum 7's rule predicts the first; only this run demonstrates the second. If paragraph totals are obeyed but individual paragraphs still run over 200, the counts are too low, not the mechanism — raise the floors and note it rather than abandoning the approach.
 
 - [ ] **Step 5: Write the addendum**
 
-Add **Addendum 14** to `HANDOVER.md` and update the "Estado actual" block at the top. Record: the measured numbers (wall clock, cost, sections passing first attempt, escalations, fatal count), a verdict in plain words on questions 1 and 2 above, and any jargon leak with the exact phrase.
+Add the next free addendum number to `HANDOVER.md` — **Addenda 14, 15 and 16 are taken**, so this is Addendum 17 unless something landed first; check the file rather than trusting this line. Update the "Estado actual" block at the top. Record: the measured numbers (wall clock, cost, sections passing first attempt, escalations, fatal count), a verdict in plain words on questions 1 and 2 above, any jargon leak with the exact phrase, and the paragraph table from the script above against Addendum 13's before-state.
 
 State the go/no-go for Plan B explicitly. If the prose reads generic, **say so and stop** — the fix is the briefs, not the UI, and building the strip on top of prose we do not believe in is exactly the mistake Addendum 11 avoided by putting plan 1 first.
 
@@ -876,13 +1025,15 @@ git commit -m "test: plain-register battery run and what it measured"
 
 ## Done when
 
-The eight sections are written in plain Spanish, the model receives no degree, orb or house number, `groundingProblems()` verifies plain relation claims as strictly as it verifies technical ones, and HANDOVER records a measured verdict on whether the prose is good enough to build Plan B's presentation layer on.
+The eight sections are written in plain Spanish, the model receives no degree, orb or house number, every section is asked for a paragraph count and no delivered paragraph runs over 200 words, `groundingProblems()` verifies plain relation claims as strictly as it verifies technical ones, and HANDOVER records a measured verdict on whether the prose is good enough to build Plan B's presentation layer on.
 
 ---
 
 ## Self-Review
 
-**Spec coverage.** Decision 1 (register) → Tasks 4 and 5. Decision 2 (`{{RULES_CHART}}` out) → Task 5 Step 4. Decision 3 (pre-translated data) → Task 4. Decision 4 (`RELATION_ES`) → Task 1. Decision 5 (grounding rewrite) → Tasks 2 and 3; the table's three rows map to the surviving false-sign check (untouched), the retrograde row (Task 3's `jerga` flag) and the relation row (Task 2). Decisions 6, 8, 10 and 11 are the presentation layer and belong to Plan B, as the spec's execution-order section says. Decision 7 (no wheel) requires no code. Decision 9 (report reads alone) → Task 5 Step 3, section 4's brief.
+**Spec coverage.** Decision 1 (register) → Tasks 4 and 5. Decision 2 (`{{RULES_CHART}}` out) → Task 5 Step 6. Decision 3 (pre-translated data) → Task 4. Decision 4 (`RELATION_ES`) → Task 1. Decision 5 (grounding rewrite) → Tasks 2 and 3; the table's three rows map to the surviving false-sign check (untouched), the retrograde row (Task 3's `jerga` flag) and the relation row (Task 2). Decisions 6, 8, 10 and 11 are the presentation layer and belong to Plan B, as the spec's execution-order section says. Decision 7 (no wheel) requires no code. Decision 9 (report reads alone) → Task 5 Step 4, section 4's brief.
+
+**Amendment coverage (2026-08-15).** Paragraph granularity is not in the spec — it comes from HANDOVER Addendum 13, which measured it after the spec was written, and from Addendum 12's still-open item 3. It lands in Task 5 (the `paragraphs` field, the eight ranges, the prompt line, the `system-section.md` rule) and Task 6 (the measurement script and judging question 6). No other task is affected, and it changes no decision in the spec.
 
 **Deliberate deviation.** The spec says "the report prompt drops `{{RULES_CHART}}`". Applied to `system-section.md` only; `system-report.md` is the superseded single-call path and keeps it, with a header note added. Rewriting a prompt no longer in the product path would have doubled the diff for no gain.
 
