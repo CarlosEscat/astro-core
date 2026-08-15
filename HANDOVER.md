@@ -2009,3 +2009,69 @@ Settle that number before discussing blocks again.
 card spec makes the paid card depend on it; plan A's written tasks never
 listed it. Folded, with tests pinning the equivalence. There is now **one
 wording for the geometry** across free, paid and card.
+
+---
+
+## Addendum 19: the card IS the product — a positioning correction (2026-08-15)
+
+Carlos, at the end of the 2026-08-15 session, correcting how this
+document and the card spec are written:
+
+> "The card is very important because it's the visual part that will
+> carry the product. The product is not just the wall of text. The
+> product is a fun casual woah card that will actually be viral. What
+> we're actually doing now is having a really long wall of text that is
+> hard to read, a person that doesn't know about astrology doesn't
+> understand and won't buy."
+
+**This reverses a stated position.** Addendum 14 calls the card "a wow/
+share feature" and warns against treating it as the fix for the wall of
+text. The 2026-08-13 spec frames it as the report's first screen. Both
+put the 3.000-word report at the centre. The product's centre is the
+card; the report is what you get after you are convinced.
+
+Nothing built so far is wasted by this — the report still has to be good
+once bought, and the plain register merged today is what makes it
+readable. What changes is **priority and audience**: the card is the
+conversion surface and the viral surface, so it is judged by whether a
+stranger with no astrology knowledge finds it fun at a glance, not by
+whether it summarises the chart faithfully.
+
+### The concrete design rule this session produced
+
+**Planet names are jargon. Sign names are not.** The card spec asserts
+that planets and signs are *"las dos únicas palabras que todo el mundo
+reconoce"*. That is true of signs and false of planets: everyone knows
+their own sign and their partner's; nobody outside astrology knows what
+"tu Saturno" means.
+
+The evidence is this session's own feedback, and it is unanimous:
+
+| Well received | Leads with |
+|---|---|
+| Encajas con Capricornio · Busca el suyo · Aries te descoloca | **sign names** |
+| Eres agua, más que el 98% de la gente | **everyday word + comparison** |
+
+| Rejected | Leads with |
+|---|---|
+| Tu Júpiter y tu Neptuno van de la mano | **planet names** |
+| Qué parte de ti trabaja más (Sol 4, Marte 4…) | **planet names** |
+| Se te junta todo aquí | **planet names** in every row |
+
+Every rejected block leads with a planet; every accepted one leads with a
+sign or a plain word. **This is stricter than the plain-register rule
+merged today**, which deliberately keeps planet names in the paid prose
+(they are how a reader verifies a claim). The card is a different surface
+with a different job: it has to be understood by someone who will never
+verify anything, so it should reach for signs, everyday words and
+comparisons, and treat planet names as a cost to be justified.
+
+### What this implies for the roadmap, unresolved
+
+If the card converts and the report is the payload, then the free card is
+the advertisement and the paid card is part of the purchase. That makes
+the free/paid split of the compatibility block (Addendum 18) a pricing
+decision rather than a UI one, and it raises a question nobody has
+answered: **what exactly is being sold — the report, or the full card
+with the report attached?** Decide that before plan 2 fixes a product
+description in Stripe.
