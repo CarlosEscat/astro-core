@@ -176,6 +176,7 @@ describe("topMatches", () => {
 });
 
 import { chartFeatures, selectFeature, signature } from "../src/profile";
+import { RELATION_ES } from "../src/copy/relations.es";
 
 describe("chartFeatures", () => {
   it("finds a stellium of three planets sharing a house", () => {
@@ -232,5 +233,30 @@ describe("signature", () => {
     expect(s.moon).toBe("Cancer");
     expect(s.ascendant).toBe("Cancer");
     expect(s.oneIn).toBe(1728);
+  });
+});
+
+// One geometry, one wording. profile.ts used to carry its own relationPhrase()
+// returning the same three strings RELATION_ES holds; the card spec calls that
+// "one idea written twice" and makes the paid card depend on plan A folding
+// them together, so that a conjunction is never described two ways on one page.
+describe("relation wording comes from RELATION_ES", () => {
+  it("draws the tightest-aspect phrase from the shared table", () => {
+    for (const chart of [bilbao, bilbaoLater]) {
+      const f = chartFeatures(chart).find((x) => x.kind === "aspecto-estrecho");
+      if (!f) continue;
+      const tightest = chart.aspects[0];
+      expect(f.payload.relacion).toBe(RELATION_ES[tightest.type]);
+    }
+  });
+
+  it("uses no phrase outside the closed set", () => {
+    const allowed = new Set(Object.values(RELATION_ES));
+    for (const chart of [bilbao, bilbaoLater]) {
+      for (const f of chartFeatures(chart)) {
+        const r = (f.payload as { relacion?: string }).relacion;
+        if (r) expect(allowed, `"${r}"`).toContain(r);
+      }
+    }
   });
 });
