@@ -224,3 +224,89 @@ Todas con datos reales de bilbao-2000, para mirar, no para copiar:
 - v4, percentiles y `?` — `https://claude.ai/code/artifact/5b879022-77b2-4851-9fce-4dbca1500249`
 - v5, compatibilidad — `https://claude.ai/code/artifact/28711402-437f-4d35-b1cb-cbea7f473eb2`
 - completa, los once — `https://claude.ai/code/artifact/82f0b7ea-c724-4d44-9664-efce88e0281a`
+
+---
+
+## EL CONCEPTO (Carlos, 2026-08-15, al cierre de la sesión)
+
+Esto llegó después de todo lo anterior y **sustituye a la pregunta de
+partida**. Empezar por aquí.
+
+> El objetivo de la ficha es traducir la matemática astrológica a
+> conceptos de videojuego con tanta precisión y tanta gracia que la gente
+> se sienta **expuesta, validada, y con ganas de compartirlo
+> inmediatamente**.
+>
+> En vez de leer *«Tengo Mercurio en Leo y Luna en Cáncer»* — que no le
+> dice nada a sus amigos no astrólogos — leen: *«Mi personaje usa
+> monólogos dramáticos para comunicarse, se cura llorando en su cuarto, y
+> su punto débil es pagar impuestos.»*
+>
+> Sus amigos lo entienden al instante, se ríen, están de acuerdo, y
+> quieren generar su propia ficha para ver cuáles son sus **Buffs** y sus
+> **Bugs**. Es el *roast* y el *praise* hiperpersonalizado. La gente
+> comparte lo que le hace decir **«esto da miedo de lo preciso que es»**.
+
+### Por qué esto resuelve el problema de toda la sesión
+
+El bloqueo era que los nombres de planeta son jerga (Addendum 19). Este
+concepto **no los esquiva: los elimina de la superficie**. No se enseña
+el planeta, se enseña *lo que hace* el planeta, como mecánica de juego.
+
+**El planeta es la ranura. El signo es el sabor.**
+
+| Astrología | Ranura | Carta real de bilbao-2000 |
+|---|---|---|
+| Mercurio | cómo **habla** tu personaje | en Cáncer → habla en indirectas y silencios con intención |
+| Luna | cómo se **cura** | en Cáncer → se cura llorando en su cuarto |
+| Marte | cómo **ataca** | en Cáncer → ataca de lado, nunca de frente |
+| Venus | cómo **liga** | en Leo → liga montando un espectáculo |
+| Sol | quién **es** al descubierto | en Leo → clase ARTISTA |
+| Júpiter | dónde tiene **suerte** | en Géminis → se le da bien caer bien hablando |
+| Saturno | qué le **cuesta** | en Tauro → soltar lo que ya tiene |
+| Tierra al 4,9% (p6,6) | **punto débil** | pagar impuestos, montar muebles, cuadrar cuentas |
+| Trígonos y sextiles | **BUFFS** | Marte + Saturno → termina lo que empieza |
+| Cuadraturas y oposiciones | **BUGS** | Venus + Urano → se enamora de quien no se deja atrapar |
+
+El ejemplo de Carlos —«se cura llorando en su cuarto»— es literalmente lo
+que debería producir la Luna en Cáncer de bilbao. El mapeo no es forzado:
+es el significado astrológico de verdad, contado como juego.
+
+### Todos los datos ya existen
+
+Posiciones, `elementBalance`, el reparto armonioso/tenso de
+`selectTraits()`, y los percentiles medidos hoy. **No hay nada nuevo que
+calcular: esto es un problema de copia, no de ingeniería.**
+
+### Tres cosas que decidir antes de escribir 84 chistes
+
+1. **Fuera Urano, Neptuno y Plutón de las ranuras.** Están en un signo
+   entre 7 y 20 años, así que «tu personaje» diría el mismo chiste a
+   todos los nacidos en la misma década — lo contrario de
+   hiperpersonalizado. Solo aparecen en buffs y bugs, emparejados con un
+   planeta personal. **Siete ranuras, no diez.** (Es la misma regla que
+   ya justifica las siete filas del spec original.)
+
+2. **El presupuesto de copia es ~84 líneas** (7 planetas × 12 signos),
+   más las de punto débil por elemento y las de buff/bug. Cada una es un
+   chiste que tiene que funcionar. Ese es el coste real del producto, y
+   es de escritura, no de código. Comparar con el lote de rasgos del spec
+   original: aquel eran 126 entradas de pares, mucho menos rentables por
+   línea que estas 84, que son autónomas y cada una da titular.
+
+3. **El roast necesita una regla.** «Su punto débil es pagar impuestos»
+   es cariñoso; la misma mecánica se vuelve cruel enseguida, y un
+   producto de pago que hace sentir mal no se comparte. Propuesta: **se
+   ataca la conducta, nunca a la persona**, y toda línea pasa por
+   `copyProblems()` y `countGenderMarks()` como el resto de las tablas.
+   Ojo: la regla de género epicena aprieta mucho el humor en castellano y
+   hay que probarlo antes de dar por hecho que se puede.
+
+### Lo que esto deja obsoleto de este mismo documento
+
+Los once bloques de más arriba, el presupuesto de scroll y el veredicto
+por bloque siguen siendo información útil **sobre datos**, pero el marco
+ya no es «qué bloques enseño». Es «qué ranuras tiene el personaje». Los
+percentiles y la compatibilidad sobreviven porque encajan solos: la
+rareza es *«solo el 2% tiene esta build»* y la compatibilidad es *«contra
+qué clases juegas bien»*.
