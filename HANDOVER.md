@@ -2,7 +2,20 @@
 
 ## Estado actual (keep this section updated — it is the first thing read)
 
-Last updated: 2026-08-15 — **plain register (plan A) BUILT, MEASURED AND
+Last updated: 2026-08-15 — **THE PAID CARD IS DESIGNED AND THE DESIGN IS
+APPROVED.** Still 338 tests; nothing built yet, by intent. Spec:
+`docs/superpowers/specs/2026-08-15-character-card-game-mechanics-design.md`.
+It unblocks what five rejected iterations could not, by dropping the
+prose-card frame entirely: **the planet is the slot, the sign is the
+flavour**, and the card speaks in the third person about *tu personaje*.
+Read **Addendum 20** for the decisions and the measurements behind them.
+
+**NEXT SESSION: write the implementation plan** for that spec, then
+execute it. The card still goes before plan 2 (Addendum 19), and the
+spec answers the question plan 2 was waiting on: **what is sold is the
+full card plus the report.**
+
+Before that, same day — **plain register (plan A) BUILT, MEASURED AND
 MERGED TO `main`.** 301 → **338 tests**, 9 commits (branch
 `feat/plain-register`). The paid report is now written in plain Spanish,
 the model receives no degree, orb or house number, and the battery says
@@ -10,24 +23,19 @@ the prose holds up: 3/3 reports, 92% first-attempt, zero Kimi
 escalations, zero grounding failures, **zero paragraphs over 200 words**
 against Addendum 13's five. `npm test`, `npx tsc --noEmit`,
 `npm run example` and the `web` typecheck all green on the merged result.
-**Not pushed.** Read **Addendum 17** before touching `src/sections.ts`,
+Read **Addendum 17** before touching `src/sections.ts`,
 `src/report.ts` or `prompts/system-section.md` — it records the go for
 plan B, a methodological warning about re-checking battery output against
 the wrong chart, and the fact that the gender log is noise in both
 directions.
 
-**NEXT SESSION: design the card.** Decided 2026-08-15 — the card goes
-before plan 2, because it is the conversion surface and plan 2 cannot
-describe a product that is not designed (Addendum 19).
-
-The paid character card (phase 2) was explored on 2026-08-15 and is
-**BLOCKED ON A DESIGN DECISION, not on code.** Five iterations, all
-rejected, zero code written. Everything learned — including measurements
-worth keeping and the two process rules that cost this session — is in
+The 2026-08-15 exploration that preceded the approved design — five
+rejected iterations, zero code — is kept in
 `docs/superpowers/specs/2026-08-15-character-card-paid-exploration.md`
-(start at "Por dónde empieza la próxima sesión") plus **Addenda 18 and
-19**. Do not write a plan before Carlos approves a design, and never show
-a trimmed card — always the whole thing.
+plus **Addenda 18 and 19**. Its measurements still stand; its eleven-block
+frame does not. The two process rules it cost are permanent: never show a
+trimmed card, always the whole thing, and no plan before Carlos approves
+a design.
 
 Before that, same day — **character card phase 1 BUILT, VERIFIED IN THE
 BROWSER, AND MERGED TO `main`.** 241 → 301 tests, 20 commits (branch
@@ -197,16 +205,17 @@ plans 2 and 3, and plans 2 and 3 do not block it.
       deletion of `Readout`/`Elements`/`Signature`. Renders with zero LLM
       calls. **Read Addendum 15 before touching it** — the plan shipped
       four defects that only review or the browser caught.
-- [ ] **Character card, phase 2 (paid) — BLOCKED ON DESIGN, NOT CODE.**
-      Its two stated blockers are gone: `RELATION_ES` shipped with plan A
-      (and absorbed `relationPhrase()`), and plan B's glyph work died in
-      Addendum 15 when Noto Sans Symbols 2 turned out to be unsubsettable.
-      What stopped it on 2026-08-15 is that **five design iterations were
-      all rejected** — the card as specced is prose in a frame, and the
-      target reader knows no astrology and must understand it at a glance.
-      Full write-up, measurements and next steps:
+- [~] **Character card, phase 2 (paid) — DESIGNED AND APPROVED
+      2026-08-15, NOT BUILT. Plan not yet written.** Spec:
+      `docs/superpowers/specs/2026-08-15-character-card-game-mechanics-design.md`.
+      The planet is the slot, the sign is the flavour; third person about
+      *tu personaje*; ten blocks with the paywall after block 6; elements
+      become a percentile stat block; buffs/bugs/conjunctions are three
+      categories, never two. **The real cost is 256 lines of copy**, not
+      engineering. Decisions and measurements in **Addendum 20**.
+      The superseded exploration (five rejected iterations) is
       `docs/superpowers/specs/2026-08-15-character-card-paid-exploration.md`
-      (Addendum 18). **Do not write a plan before a design is approved.**
+      (Addenda 18 and 19) — its measurements stand, its frame does not.
 - [ ] PDF rendering (Puppeteer over the same report component) — own spec
 - [ ] Daily cron: transits once/day → 12 horoscopes → Supabase cache
 - [ ] Oracle chat (post-MVP): system-oracle.md, rolling window, quotas
@@ -2082,4 +2091,115 @@ the free/paid split of the compatibility block (Addendum 18) a pricing
 decision rather than a UI one, and it raises a question nobody has
 answered: **what exactly is being sold — the report, or the full card
 with the report attached?** Decide that before plan 2 fixes a product
-description in Stripe.
+description in Stripe. **Answered on the same day — Addendum 20.**
+
+---
+
+## Addendum 20: the card is game mechanics, and the design is approved (2026-08-15)
+
+Spec: `docs/superpowers/specs/2026-08-15-character-card-game-mechanics-design.md`
+
+Approved by Carlos. Nothing built; the plan comes next. This addendum
+records only what a future session must not re-derive.
+
+### What unblocked it
+
+The five rejected iterations all argued about *which blocks to show*.
+The concept that ended the exploration replaces the frame: **the planet
+is the slot, the sign is the flavour**. The card never prints a planet
+name on its surface — it prints what the planet does (*cómo habla, cómo
+se cura, cómo ataca, cómo liga, dónde tiene suerte, qué le cuesta*) —
+and puts the placement behind a `?` for anyone who wants the receipt.
+
+**The card speaks in the third person, about *tu personaje*.** That one
+choice solves three problems at once: Spanish third-person verbs carry no
+gender, so the epicene rule stops fighting the humour; the half-step of
+distance is what keeps the roast affectionate; and it *is* the game.
+The copy rule that falls out: **third person, an action, a concrete
+object — never an adjective.**
+
+### Decisions taken
+
+- **What is sold: the full card plus the report.** This closes Addendum
+  19's open question and unblocks plan 2's Stripe product description.
+- **The paywall sits at the fold**, after the buffs/bugs. The free half
+  is exactly one phone screen and exactly the 1080×1920 share export, so
+  the shareable unit and the paywall are the same line by construction.
+  A screenshot with a locked row in it does not get shared.
+- **The free reading keeps its existing top-3 love block** (`PARTNER_ES`,
+  unchanged). What is paid is *the twelve signs, each with its own
+  reason, plus the friction sign* — not "compatibility".
+- **Elements become a percentile stat block.** `AGUA 98` reads as an RPG
+  stat and needs no astrology; the raw four-element bar and the separate
+  punto débil both collapse into it.
+- **`oneIn: 1728` is retired**, as Addenda 14 and 18 wanted.
+- **Retrógrado is a per-planet modifier, not a per-sign rewrite** — 5
+  lines instead of 60.
+
+### The defect this found in shipped code
+
+`selectTraits()` **spills a conjunction into `tensiones` whenever
+`rasgos` is full.** Harmless under the old prose card; under a buff/bug
+frame it prints a conjunction as something working against you, which
+`card.ts`'s own comment already forbids in the opposite direction
+(*"calling it harmonious would invent a valence the geometry does not
+carry"*). bilbao is the proof: it has **zero tense personal aspects**, so
+today's code would render Júpiter conjunct Saturno as a bug.
+
+Fix: three buckets keyed by aspect type alone, no reassignment — *A
+favor* / *En contra* / *Viene en el mismo paquete* — capped at five rows.
+
+### Measurements worth keeping
+
+All on 2026-08-15, over populations of 5.000–8.000 generated charts.
+
+- **The pair distribution is FLAT.** The exploration document's plan to
+  "write the most frequent pairs first" does not work: the top key is 10%
+  of charts and everything else ~6%; 121 of 126 keys occur. 50 lines
+  cover 3,5% of charts fully; you need essentially all of them.
+- **Excluding outers from buffs/bugs halves the table for almost
+  nothing**: 126 → 63 keys (58 ever seen), 76,4% of charts still fill all
+  five rows, average 4,71 of 5. Same rule that already justifies seven
+  slots rather than ten.
+- **8,4% of charts have no tense personal aspect** and **5,8% have no
+  harmonious one**. The stat block is the guaranteed fallback: punto
+  débil fills the first case, punto fuerte the second. bilbao and madrid
+  are the two golden charts for these paths.
+- **Percentiles cost nothing**: 0,553 ms/chart, so 8.000 charts bake in
+  4,4 s to a constant table.
+- **Scroll budget solved**: free half 635–732 px, whole card
+  1.710–1.876 px, against 2.643 px for the rejected eleven blocks.
+- All seven slot planets reach all twelve signs across random birthdays,
+  so none of the 84-line table is wasted. Júpiter (~1 yr/sign) and
+  Saturno (~2,5) are age-correlated — still 1/12 of people, but your
+  same-age friends share the line. Accepted cost.
+
+### Two corrections made mid-session, recorded so they are not repeated
+
+- **8,4%, not 2%, of charts have no bugs.** The first measurement counted
+  conjunction-spillover as bugs — the very defect above.
+- **The copy budget is 256 lines, not 240.** The element fallback needs a
+  *punto fuerte* table as well as *punto débil* (8, not 4), and the
+  twelve friction paragraphs were missing from the earlier totals.
+
+### The real cost is writing
+
+256 lines: 84 habilidades (7 × 12, the Sun's twelve being the class
+gloss) + 84 compatibilidad (12 signos × 7 conexiones) + 63 pares (21 × 3
+tonos) + 12 fricción + 8 elementos + 5 retrógrados. **The card keeps
+phase 1's zero-LLM property** — every line is a static table entry chosen
+by computed geometry. An LLM may draft them offline; none is generated at
+request time.
+
+`compatibleSigns()`'s existing `reasons` cannot be used verbatim on the
+card: they name planets and they address the reader in the second person.
+The slot vocabulary rewrites them for free — *"tu Venus en Leo se lleva
+bien con Aries"* becomes *"Liga en el mismo idioma"*.
+
+### One thing to fix before the percentile table is baked
+
+The population used for these numbers samples **uniform lat/lon over the
+whole globe**, oceans and poles included. *"Más agua que el 98% de la
+gente"* should mean real people. All three battery charts came out
+weakest-in-Tierra, which may be real or may be an artifact of that
+sampling — check before baking.
