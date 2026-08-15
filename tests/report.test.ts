@@ -124,7 +124,9 @@ describe("validateTeaser", () => {
       chart,
     );
     expect(r.ok).toBe(false);
-    expect(r.problems.join(" ")).toContain("aspecto");
+    // "relación no presente" since the check covers both the technical and the
+    // plain vocabulary; matching on the stable half keeps this off the wording.
+    expect(r.problems.join(" ")).toContain("no presente");
   });
 });
 

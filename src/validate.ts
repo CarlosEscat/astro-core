@@ -2,6 +2,7 @@ import type { Body, NatalChart } from "./types";
 import type { FreeReading } from "./report";
 import type { SectionBrief } from "./sections";
 import { SIGN_ES } from "./copy/signs.es";
+import { RELATIONS } from "./copy/relations.es";
 
 /**
  * Mechanical output gate. Every check is verifiable against the chart or the
@@ -287,23 +288,33 @@ export function groundingProblems(text: string, chart: NatalChart): string[] {
     }
   }
 
-  // An aspect keyword in a sentence naming exactly two planets must match a
-  // real aspect of that type between them. Other counts are unattributable.
+  // A relation claim in a sentence naming exactly two planets must match a real
+  // aspect of that family between them. Two vocabularies are checked: the
+  // technical one (the teaser still writes it) and the plain one (the paid
+  // sections now write it). Other planet counts are unattributable.
   for (const sentence of sentencesOf(trimmed)) {
-    const types = Object.entries(ASPECT_ES)
-      .filter(([es]) => new RegExp(`${WORD_START}${es}${WORD_END}`, "iu").test(sentence))
-      .map(([, en]) => en);
-    if (types.length === 0) continue;
+    const types = new Set<string>();
+
+    for (const [es, en] of Object.entries(ASPECT_ES)) {
+      if (new RegExp(`${WORD_START}${es}${WORD_END}`, "iu").test(sentence)) types.add(en);
+    }
+    for (const relation of RELATIONS) {
+      if (relation.match.test(sentence)) for (const t of relation.types) types.add(t);
+    }
+    if (types.size === 0) continue;
+
     const mentioned = planetsIn(sentence);
     if (mentioned.length !== 2) continue;
     const [p1, p2] = mentioned;
     const matches = chart.aspects.some(
       (a) =>
-        types.includes(a.type) &&
+        types.has(a.type) &&
         ((a.a === p1 && a.b === p2) || (a.a === p2 && a.b === p1)),
     );
     if (!matches) {
-      problems.push(`aspecto no presente en la carta: ${p1}-${p2} (${types.join("/")})`);
+      problems.push(
+        `relación no presente en la carta: ${p1}-${p2} (${[...types].join("/")})`,
+      );
     }
   }
 
