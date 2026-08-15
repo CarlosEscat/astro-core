@@ -72,15 +72,19 @@ const FRAGMENTS: Record<string, string> = {
   "{{RULES_CHART}}": "rules-chart-data.md",
 };
 
-/** HTML comments in a fragment are notes to the next editor, not to the model. */
+/** HTML comments are notes to the next editor, not to the model. */
+const stripNotes = (text: string) => text.replace(/<!--[\s\S]*?-->/g, "");
+
 function fragment(file: string): string {
-  return readFileSync(join(ROOT, "prompts", file), "utf8")
-    .replace(/<!--[\s\S]*?-->/g, "")
-    .trim();
+  return stripNotes(readFileSync(join(ROOT, "prompts", file), "utf8")).trim();
 }
 
 function loadPrompt(name: string): string {
-  let body = readFileSync(join(ROOT, "prompts", name), "utf8");
+  // Notes are stripped from the body BEFORE substitution, for two reasons: a
+  // note costs tokens on every call, and a placeholder mentioned inside one
+  // would otherwise be replaced — a note explaining that this prompt keeps
+  // {{RULES_CHART}} would inject the whole fragment into the comment.
+  let body = stripNotes(readFileSync(join(ROOT, "prompts", name), "utf8")).trimStart();
   for (const [placeholder, file] of Object.entries(FRAGMENTS)) {
     if (!body.includes(placeholder)) continue;
     body = body.replace(placeholder, fragment(file));
@@ -174,6 +178,7 @@ export function buildSectionMessages(req: SectionRequest): ChatMessage[] {
     `Datos de la carta, ya en lenguaje llano:\n${JSON.stringify(sectionFacts(req.chart, mine))}`,
     `Sección: ${brief.title}`,
     `Extensión: entre ${brief.minWords} y ${brief.maxWords} palabras.`,
+    `Estructura: entre ${brief.paragraphs[0]} y ${brief.paragraphs[1]} párrafos.`,
     `Encargo:\n${brief.brief}`,
   ];
 

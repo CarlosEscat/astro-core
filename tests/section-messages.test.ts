@@ -47,10 +47,21 @@ describe("section message builder", () => {
     expect(user).toContain("Y luego así.");
   });
 
-  it("carries the universal rules and leaves no placeholder behind", () => {
+  it("carries the universal rules but NOT the chart-data vocabulary", () => {
     const system = build(0)[0].content;
     expect(system).toContain("No asumas ni indiques el género de la persona");
+    expect(system).not.toContain("figuren en la lista `aspects`");
+    expect(system).not.toContain('La palabra "retrógrado" solo puede aplicarse');
     expect(system).not.toMatch(/\{\{[A-Z_]+\}\}/);
+  });
+
+  it("tells the model how many paragraphs to write", () => {
+    expect(build(7)[1].content).toMatch(/Estructura: entre 3 y 4 párrafos\./);
+  });
+
+  it("asks a grown section for more paragraphs", () => {
+    expect(build(4, { focus: "amor" })[1].content)
+      .toMatch(/Estructura: entre 5 y 6 párrafos\./);
   });
 
   it("never asks the model to emit the heading", () => {
