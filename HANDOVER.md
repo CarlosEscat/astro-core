@@ -2,6 +2,89 @@
 
 ## Estado actual (keep this section updated — it is the first thing read)
 
+### ⇢ START HERE: the sequencing decision, 2026-08-22
+
+**Carlos's instruction, and it overrides the ordering further down this
+file:** nothing gets built until the *design* is finished and he is happy
+with it. Specifically —
+
+1. **Design the whole user flow, end to end**, from landing to delivered
+   report. Not screen-by-screen in isolation: the actual path a person
+   walks, including what happens when things go wrong or come back empty.
+2. **Finish the card designs** — free and paid.
+3. Only when the designs, the decisions behind them, **and how they are
+   to be implemented** are settled and approved: move to **Plan 2**
+   (orders/payment/persistence) and everything after it.
+
+**Plans 2, 3 and 4-phase-B are explicitly parked** until step 3 clears.
+Do not start them, do not "get a head start" on them, and do not treat
+their being written as permission to execute. Carlos's words: the rest
+does not matter until the user flow is right.
+
+The existing rule still stands and now matters more: **no plan before
+Carlos approves a design.**
+
+### Where the design actually stands
+
+A design canvas exists, published as an Artifact, seeded from
+`docs/design/clay/` (read that README first — it explains the artboards
+and how to regenerate). It covers, in Clay:
+
+- **Sistema** — the token system, type scale, object vocabulary, rules
+- **La app** — landing + form, free reading, paid report, post-payment
+  delivery, both share cards, and the card itself
+- **Estados** — loading, four error states, empty/thin-chart cases
+- **La carta** — the four rejected card directions, kept with the
+  reasoning for rejecting them on sticky notes
+
+**Direction B ("Bloques", the Clay axis) is the approved card design.**
+
+What the canvas does NOT yet cover, and what step 1 above needs:
+the flow *between* screens rather than the screens themselves — what a
+returning visitor sees, what happens on a second reading, the checkout
+step itself, what an expired or wrong `/informe/<token>` does, and the
+transitions that make it feel like one product rather than six screens.
+
+### Four spec defects to settle before any card is built
+
+Found by measurement this session; all still unresolved in
+`docs/superpowers/specs/2026-08-15-character-card-game-mechanics-design.md`:
+
+1. **The paywall contradicts itself.** Line 92 marks block 6 *Viene en el
+   mismo paquete* free (✓); line 276 says "Free: blocks 1–5. Paid: blocks
+   6–9." This decides what sits inside the 1080×1920 share export.
+2. **The zeros are wrong.** Line 263 says Cáncer, Leo and Acuario score 0
+   on bilbao. The engine says **Leo, Capricornio, Acuario** — Cáncer
+   scores 25, second-highest. Verified by running `compatibleSigns()`.
+   Someone would otherwise write punchlines for the wrong signs.
+3. **The share budget is 711px**, not the spec's 635–732. Measured at
+   400px wide with fonts loaded: the card came to 1107px, and 640px above
+   the fold after the stats block was tightened 218 → 168.
+4. **The realce should be permanent** — `selectFeature()` applied to
+   stats, headlining whatever is rarest — rather than a fallback that
+   only appears when an aspect bucket is empty. This also stops the
+   empty-bucket cases needing special-casing. Confirmed against the
+   engine: bilbao really is the empty-`En contra` case (8,4%),
+   madrid-1992 really is the empty-`A favor` mirror (5,8%).
+
+### Design decisions already taken (do not relitigate)
+
+- The card's fold: **clase + frase + stats + one realce** above it. A
+  cube does not fit — measured at ~85px + gap against 71px of headroom.
+- The **1080×1920 share image is its own render**, not a screenshot of
+  the DOM, so the web card can breathe and the export can scale type for
+  a thumbnail.
+- **Nothing signals the paywall inside the shareable frame** — no locked
+  rows, no counter. The spec's own finding: a screenshot with a locked
+  row does not get shared.
+- One behavioural fix the design assumes: **retry the reading only.** If
+  `/api/chart` succeeded and `/api/free` failed, the chart is already
+  computed and recomputing is free — the retry must not send the person
+  back through the form. Today all four error paths land in the same
+  place.
+
+---
+
 Last updated: 2026-08-22 — **THE CLAY RESKIN IS BUILT AND MERGED.** Still
 338 tests, because **no test in this repo asserts a class, colour or
 font** — they cannot catch a visual regression, and that fact is the
@@ -188,7 +271,9 @@ are not.
       gated after an invented retrogradation shipped), and CONFIRMED by
       a second battery run — Addendum 12's confirming-run table.
 - [ ] **Plan 2 — orders, payment, persistence** — PLAN WRITTEN
-      2026-08-10, not executed. **SEQUENCED BEHIND THE CARD as of
+      2026-08-10, not executed. **PARKED as of 2026-08-22 behind the
+      whole-flow design — see the sequencing decision at the top of this
+      file. Do not execute.** Previously **SEQUENCED BEHIND THE CARD as of
       2026-08-15**: the card is the conversion surface (Addendum 19), and
       this plan writes a product description into Stripe, so what is
       being sold has to be settled first.
@@ -204,7 +289,7 @@ are not.
       `payment_method_types` must NOT be set or Bizum can never appear.
       **Bizum is behind a Stripe early-access request**; the plan
       deliberately does not block on it.
-- [ ] **Plan 3 — queued generation pipeline.** Inngest two-wave fan-out,
+- [ ] **Plan 3 — queued generation pipeline.** **PARKED behind the design (2026-08-22).** Inngest two-wave fan-out,
       conditional `paid → generating` claim, per-section retry and Kimi
       escalation, Resend email.
 - [~] **Plan 4 — delivery UI** — `docs/superpowers/plans/2026-08-10-delivery-ui.md`.
@@ -214,7 +299,8 @@ are not.
       It answered the ~3,000-word question — **Addendum 13**. Three
       places where the plan was written against APIs this repo does not
       have are recorded there too; read it before executing phase B.
-      **Phase B NOT started** (`/informe/<token>`, 2 s polling,
+      **Phase B NOT started, and PARKED behind the design (2026-08-22)**
+      (`/informe/<token>`, 2 s polling,
       progressive rendering, wiring the CTA at `BirthForm.tsx:287`) —
       it needs plans 2 and 3.
 **The paid report's register** is a separate track from the four plans
