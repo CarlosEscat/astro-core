@@ -279,283 +279,303 @@ body {
 
 /* ── Reading ────────────────────────────────────────────────────── */
 
-.reading { margin-top: 2.5rem; }
+.reading { margin-top: 1.75rem; }
 
 /* ── Modules ────────────────────────────────────────────────────── */
 
-.module { margin-top: 2rem; }
+.module {
+  margin-top: 0.875rem;
+  background: var(--papel-alto);
+  border-radius: var(--radio-objeto);
+  padding: 1.25rem 1.375rem;
+}
 
 .module__title {
-  font-family: var(--font-mono);
-  font-weight: 400;
+  font-family: var(--font-body);
   font-size: 0.625rem;
-  letter-spacing: 0.22em;
+  font-weight: 700;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--slate);
+  color: var(--tinta-suave);
   margin: 0 0 0.85rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--ink-line);
 }
 
 .prose p {
   margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.1875rem;
+  color: var(--tinta-media);
+  font-size: 1rem;
   line-height: 1.6;
   text-wrap: pretty;
 }
 
-.prose p + p { margin-top: 1rem; }
+.prose p + p { margin-top: 0.85rem; }
 
-/* Prose still being written — the computed modules are already exact. */
+/* The block breathes, not the letters — in Clay the object is what pulses. */
 .writing {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.2em;
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--slate);
+  color: var(--tinta-suave);
+  text-align: center;
 }
 
-.writing span {
-  display: inline-block;
-  animation: pulse 1.6s ease-in-out infinite;
+.writing span { display: inline-block; animation: pulse 1.6s ease-in-out infinite; }
+
+.working {
+  margin-top: 1.75rem;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.working span { display: inline-block; animation: pulse 1.6s ease-in-out infinite; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .writing span, .working span { animation: none; opacity: 0.75; }
 }
 
 /* ── Love hook: the screenshot unit ─────────────────────────────── */
 
 .hook {
-  border: 1px solid var(--brass);
-  border-radius: 3px;
-  padding: 1.35rem 1.35rem 1rem;
-  background: var(--ink-raised);
-  margin-bottom: 1.25rem;
+  margin-top: 0.875rem;
+  background: var(--violeta);
+  border: none;
+  border-radius: var(--radio-objeto);
+  padding: 1.5rem 1.375rem;
 }
 
 .hook p {
-  margin: 0;
   font-family: var(--font-display);
-  font-size: 1.375rem;
-  line-height: 1.4;
+  font-weight: 600;
+  font-size: 1.4rem;
+  line-height: 1.24;
+  letter-spacing: -0.022em;
+  color: var(--papel-alto);
+  margin: 0;
   text-wrap: pretty;
 }
 
-/* Beneath the quote so a cropped screenshot still carries the mark. */
 .hook .mark {
   display: block;
-  margin-top: 0.9rem;
-  font-family: var(--font-mono);
-  font-size: 0.5625rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--brass);
+  margin-top: 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.62);
 }
 
 /* ── Matches ────────────────────────────────────────────────────── */
 
-.fit { padding: 0.95rem 0; border-bottom: 1px solid var(--ink-line); }
+.fit { padding: 0.85rem 0; border-bottom: 1px solid var(--pista); }
 .fit:last-child { border-bottom: none; }
 
-.fit__head {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-}
+.fit__head { display: flex; align-items: center; gap: 0.6rem; }
 
 .fit__rank {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  color: var(--slate);
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--tinta-suave);
+  min-width: 1.5rem;
 }
 
-.fit__sym { font-size: 1.125rem; color: var(--brass); line-height: 1; }
+.fit__sym { font-size: 1.125rem; color: var(--agua); line-height: 1; }
 
 .fit__name {
   font-family: var(--font-display);
   font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--tinta);
 }
 
 .fit__say {
-  margin: 0.4rem 0 0;
-  font-size: 0.9375rem;
-  line-height: 1.55;
+  margin: 0.4rem 0 0 2.1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--tinta-media);
   text-wrap: pretty;
 }
 
-/* The receipt: why this sign, in words with no jargon in them. */
 .fit__why {
-  margin: 0.35rem 0 0;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  line-height: 1.5;
-  color: var(--slate);
+  margin: 0.3rem 0 0 2.1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--tinta-suave);
   text-wrap: pretty;
 }
 
 .friction {
-  margin-top: 0.5rem;
-  padding-top: 1rem;
-  border-top: 1px dashed var(--ink-line);
+  margin-top: 1rem;
+  background: var(--pista);
+  border-radius: 18px;
+  padding: 0.85rem 1rem;
 }
 
 .friction .label {
   display: block;
-  font-family: var(--font-mono);
-  font-size: 0.5625rem;
-  letter-spacing: 0.2em;
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--copper);
+  color: var(--tinta-media);
+  margin-bottom: 0.4rem;
 }
 
 .friction .fit { border-bottom: none; padding-bottom: 0; }
 
 /* ── Element balance ────────────────────────────────────────────── */
 
-.bars { display: grid; gap: 0.5rem; }
+.bars { display: grid; gap: 0.6rem; }
 
 .bar {
-  display: flex;
+  display: grid;
+  grid-template-columns: 3.5rem 1fr 3.25rem;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.625rem;
 }
 
 .bar__name {
-  flex: 0 0 3.75rem;
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 0.6875rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--bone-dim);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--tinta);
 }
 
 .bar__track {
-  flex: 1 1 auto;
-  height: 0.5rem;
-  background: var(--ink-raised);
-  border: 1px solid var(--ink-line);
-  border-radius: 2px;
+  height: 6px;
+  background: var(--pista);
+  border-radius: var(--radio-pildora);
   overflow: hidden;
 }
 
-.bar__fill { display: block; height: 100%; background: var(--brass); }
-.bar__fill.low { background: var(--copper); }
+.bar__fill { display: block; height: 100%; background: var(--agua); }
+.bar__fill.low { background: var(--tierra); }
 
 .bar__val {
-  flex: 0 0 2rem;
-  text-align: right;
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 0.6875rem;
-  color: var(--bone-dim);
+  font-weight: 700;
+  color: var(--tinta-suave);
+  text-align: right;
 }
 
 .verdict {
-  margin: 1rem 0 0;
+  margin-top: 0.85rem;
   font-size: 0.9375rem;
-  line-height: 1.55;
+  font-weight: 600;
+  color: var(--tinta-media);
   text-wrap: pretty;
 }
 
-.verdict.punch { color: var(--bone); }
-.verdict.punch strong { color: var(--brass); font-weight: 400; }
+.verdict.punch { color: var(--tinta); }
+.verdict.punch strong { color: var(--agua); font-weight: 700; }
 
 /* ── Signature card ─────────────────────────────────────────────── */
 
 .card {
-  margin-top: 2rem;
-  border: 1px solid var(--ink-line);
-  border-radius: 3px;
-  background: var(--ink-raised);
-  padding: 1.35rem 1.1rem;
+  background: var(--papel-alto);
+  border: none;
+  border-radius: var(--radio-objeto);
+  padding: 1.25rem 1.375rem;
 }
 
 .sig { text-align: center; }
 
 .sig__label {
-  font-family: var(--font-mono);
-  font-size: 0.5625rem;
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--slate);
+  color: var(--tinta-suave);
 }
 
 .sig__combo {
-  margin: 0.7rem 0 0;
   font-family: var(--font-display);
-  font-size: 1.125rem;
-  color: var(--brass);
-  text-wrap: balance;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--tinta);
 }
 
 .sig__stat {
-  margin: 0.55rem 0 0;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  color: var(--bone-dim);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--agua);
 }
 
+/* The upsell is the page's ink object. */
 .next-step {
-  margin-top: 1.25rem;
-  padding: 1.15rem 1.35rem;
-  border: 1px dashed var(--ink-line);
-  border-radius: 3px;
+  margin-top: 0.875rem;
+  background: var(--tinta);
+  border: none;
+  border-radius: var(--radio-objeto);
+  padding: 1.5rem 1.375rem;
 }
 
 .next-step h2 {
   font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 1.25rem;
-  margin: 0 0 0.4rem;
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+  color: var(--papel-alto);
+  margin: 0 0 0.6rem;
 }
 
 .next-step p {
   margin: 0;
-  font-size: 0.9rem;
-  color: var(--bone-dim);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--tinta-inversa);
+  text-wrap: pretty;
 }
 
 .next-step .price {
-  font-family: var(--font-mono);
-  color: var(--brass);
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--aire);
 }
 
 .soon {
   margin-top: 0.9rem;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--slate);
-}
-
-/* ── Loading ────────────────────────────────────────────────────── */
-
-.working {
-  margin-top: 2.5rem;
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--slate);
-}
-
-.working span {
-  display: inline-block;
-  animation: pulse 1.6s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 1; }
+  color: var(--tinta-inversa-suave);
 }
 
 .foot {
-  margin-top: 4rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--ink-line);
-  font-size: 0.8125rem;
-  color: var(--slate);
-  text-align: center;
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--pista);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--tinta-suave);
+  text-align: left;
+  text-wrap: pretty;
 }
 
 /* ── The paid report ────────────────────────────────────────────── */
