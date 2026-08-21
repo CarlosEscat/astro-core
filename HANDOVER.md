@@ -2,7 +2,49 @@
 
 ## Estado actual (keep this section updated — it is the first thing read)
 
-Last updated: 2026-08-15 — **THE PAID CARD IS DESIGNED AND THE DESIGN IS
+Last updated: 2026-08-22 — **THE CLAY RESKIN IS BUILT AND MERGED.** Still
+338 tests, because **no test in this repo asserts a class, colour or
+font** — they cannot catch a visual regression, and that fact is the
+single most important thing to know before touching the visual layer
+again. Verification was done in the browser.
+
+The app is now light: warm paper (`--papel #faf7f2`), coloured objects,
+Bricolage Grotesque + Karla. Fraunces, IBM Plex and the ink/brass
+instrument palette are gone. The brass `#c9a227` survives, renamed
+`--aire`, as the colour of the Air element. Plan:
+`docs/superpowers/plans/2026-08-21-clay-reskin.md`, 8 tasks, 9 commits
+on `feat/clay-reskin`.
+
+**The reskin changed appearance only.** The design canvas that produced
+it also shows content changes the card spec wants — percentiles instead
+of `Agua 10 / 20,5`, a permanent *realce*, three aspect cubes, no
+`Bloqueado:` rows, a fold/share split — and **none of those were built.**
+They still need the spec amendment. Do not read the canvas as shipped.
+
+Two things the final review caught that per-task review structurally
+could not, both now fixed: `--tinta-suave` shipped at `#9a9284`
+(2.6–3.1:1, failing AA in all 21 uses, a regression from 7.45:1) and is
+now `#6f685c`; and the generated `@font-face` declared `font-weight:400`
+while carrying Bricolage 800 / Karla 600 bytes, which synthesised bold
+on the character card because an SVG `<style>` is document-scoped and
+leaks onto the page. **That leak is still there** — it is how
+`card-fonts.ts` reaches the on-screen card at all — so any future change
+to the embedded faces changes the page too.
+
+`ShareCard.tsx` had a silent bug the reskin fixed: it declared fonts via
+`var(--font-display, Georgia…)`, and custom properties cannot resolve
+inside a serialised standalone SVG, so its exported PNG had always
+fallen back to Georgia. It now uses the embedded subset like
+`CharacterCardShare` does.
+
+Known and deliberately deferred: dead CSS that got restyled (`.card`,
+`.sig*`, `.bars`, `.bar*` — unreferenced; `.verdict` and `.cc__bar*` are
+live), six unused palette tokens held for the parked card work, a
+`.next-step` container that inherits ink-on-ink (harmless today, every
+child sets its own colour), and `.soon` losing a specificity fight in a
+way that **produces the accessible result — do not "fix" it.**
+
+Before that, 2026-08-15 — **THE PAID CARD IS DESIGNED AND THE DESIGN IS
 APPROVED.** Still 338 tests; nothing built yet, by intent. Spec:
 `docs/superpowers/specs/2026-08-15-character-card-game-mechanics-design.md`.
 It unblocks what five rejected iterations could not, by dropping the
