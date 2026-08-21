@@ -52,7 +52,7 @@ export function ZodiacArc() {
       <path
         d={`M ${point(-SPAN, R)[0]} ${point(-SPAN, R)[1]} A ${R} ${R} 0 0 1 ${point(SPAN, R)[0]} ${point(SPAN, R)[1]}`}
         fill="none"
-        stroke="var(--ink-line)"
+        stroke="var(--pista)"
         strokeWidth="1"
       />
       {ticks}

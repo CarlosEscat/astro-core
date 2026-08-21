@@ -75,7 +75,7 @@ body {
   display: block;
   width: 100%;
   height: auto;
-  border-bottom: 1px solid var(--ink-line);
+  border-bottom: none;
 }
 
 /* On wide screens the arc would eat the fold; crop it instead of scaling. */
@@ -83,14 +83,14 @@ body {
   .instrument { height: 15rem; }
 }
 
-.tick { stroke: var(--slate); stroke-width: 1; }
-.tick--sign { stroke: var(--brass); stroke-width: 1.5; }
+.tick { stroke: var(--linea); stroke-width: 1; }
+.tick--sign { stroke: var(--aire); stroke-width: 1.5; }
 .glyph {
-  fill: var(--brass);
+  fill: var(--aire);
   font-family: var(--font-body);
   font-size: 26px;
   text-anchor: middle;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 /* ── Page frame ─────────────────────────────────────────────────── */
@@ -583,89 +583,113 @@ body {
 .report { max-width: var(--measure); margin: 0 auto; }
 
 .report__greeting {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--bone-dim);
-  border-bottom: 1px solid var(--ink-line);
-  padding-bottom: 1.25rem;
-  margin-bottom: 2.5rem;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--tinta-suave);
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 1.75rem;
+  text-wrap: pretty;
 }
 
-.report__section { margin: 0 0 3.5rem; scroll-margin-top: 2rem; }
+.report__section { margin: 0 0 2.75rem; scroll-margin-top: 2rem; }
 
 .report__title {
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2rem);
-  font-weight: 400;
-  line-height: 1.15;
-  color: var(--bone);
-  margin: 0 0 1.25rem;
+  font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  color: var(--tinta);
+  margin: 0 0 1.1rem;
+  text-wrap: balance;
 }
 
-/* A brass rule under each title: the engraved-instrument language, and it
-   gives the eye a rung to find when scrolling a 15-minute read. */
+/* Was a brass hairline. A short colour bar is the Clay equivalent, and
+   it is the only wayfinding in a fifteen-minute read. */
 .report__title::after {
   content: "";
   display: block;
-  width: 2.5rem;
-  height: 1px;
+  width: 2.125rem;
+  height: 5px;
+  border-radius: var(--radio-pildora);
   margin-top: 0.75rem;
-  background: var(--brass);
+  background: var(--agua);
 }
 
-.report__p { margin: 0 0 1.15rem; text-wrap: pretty; }
+.report__p {
+  margin: 0 0 1rem;
+  color: var(--tinta-lectura);
+  line-height: 1.62;
+  text-wrap: pretty;
+}
+
 .report__p:last-child { margin-bottom: 0; }
 
 .rindex {
   max-width: var(--measure);
-  margin: 0 auto 3.5rem;
-  border: 1px solid var(--ink-line);
-  border-radius: 3px;
-  background: var(--ink-raised);
-  padding: 1.5rem 1.25rem;
+  margin: 0 auto 2.5rem;
+  border: none;
+  border-radius: var(--radio-objeto);
+  background: var(--papel-alto);
+  padding: 1.25rem 1.375rem;
 }
 
 .rindex__list { list-style: none; margin: 0; padding: 0; }
-.rindex__item + .rindex__item { border-top: 1px solid var(--ink-line); }
+.rindex__item + .rindex__item { border-top: 1px solid var(--pista); }
 
 .rindex__link {
   display: flex;
-  gap: 0.9rem;
-  align-items: baseline;
+  gap: 0.75rem;
+  align-items: center;
   padding: 0.6rem 0;
-  color: var(--bone);
+  min-height: 44px;
+  color: var(--tinta);
   text-decoration: none;
 }
-.rindex__link:hover .rindex__name { color: var(--brass); }
+
+.rindex__link:hover .rindex__name { color: var(--agua); }
 
 .rindex__num {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--slate);
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--agua);
+  min-width: 1.25rem;
 }
-.rindex__name { font-family: var(--font-display); font-size: 1.0625rem; }
+
+.rindex__name {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-wrap: pretty;
+}
 
 .report__meta {
   max-width: var(--measure);
-  margin: 0 auto 1.5rem;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
+  margin: 0 auto 1.25rem;
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--slate);
+  color: var(--tinta-suave);
 }
 
-.share { max-width: var(--measure); margin: 0 auto 3rem; text-align: center; }
+.share { max-width: var(--measure); margin: 0 auto 2.5rem; text-align: center; }
 
 .share__card {
   display: block;
   width: min(280px, 70vw);
   height: auto;
   margin: 0 auto 1rem;
-  border: 1px solid var(--ink-line);
-  border-radius: 4px;
+  border: none;
+  border-radius: 18px;
 }
 
 @media (prefers-reduced-motion: reduce) {
