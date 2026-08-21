@@ -1,25 +1,19 @@
 import type { Metadata } from "next";
-import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Karla } from "next/font/google";
 import "./globals.css";
 
-// Fraunces carries the tarotista voice (old-style, a little wonky);
-// Plex Sans/Mono carry the instrument — degrees, coordinates, labels.
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+// Bricolage Grotesque titles and carries the numbers; Karla is
+// everything that gets read. Weight does the work the serif used to.
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
-  axes: ["SOFT", "WONK", "opsz"],
+  weight: ["600", "800"],
 });
 
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-plex-sans",
+const karla = Karla({
+  variable: "--font-karla",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
-
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -32,7 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es-ES"
-      className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable}`}
+      className={`${bricolage.variable} ${karla.variable}`}
     >
       <body>{children}</body>
     </html>

@@ -1,24 +1,45 @@
 @import "tailwindcss";
 
 /*
-  Destiny Reports — "precision as mysticism".
-  The visual world is the astronomer's instrument (ink, brass, engraved
-  ticks, ephemeris tables), not the purple fog of the category. Warm
-  voice, exact data: Fraunces carries the voice, Plex Mono the data.
+  Destiny Reports — Clay.
+  Coloured objects on warm paper. No borders, no shadows: weight and
+  colour carry the hierarchy. Element colour is the only colour with a
+  fixed meaning.
 */
 :root {
-  --ink: #10131c;
-  --ink-raised: #171b27;
-  --ink-line: #262c3c;
-  --bone: #ece6da;
-  --bone-dim: #a9a496;
-  --brass: #c9a227;
-  --copper: #b4653a;
-  --slate: #6e7689;
+  --papel: #faf7f2;
+  --papel-alto: #ffffff;
+  --pista: #f0ece4;
+  --tinta: #14120e;
+  --tinta-media: #4a4438;
+  --tinta-suave: #9a9284;
 
-  --font-display: var(--font-fraunces), Georgia, serif;
-  --font-body: var(--font-plex-sans), system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --agua: #0e6b85;
+  --fuego: #e2571e;
+  --aire: #c9a227;
+  --tierra: #8a6240;
+
+  --favor-bg: #d6ef8f;
+  --favor-tinta: #23300a;
+  --contra-bg: #ffb59e;
+  --contra-tinta: #4a1707;
+  --paquete-bg: #e6e0d4;
+  --paquete-tinta: #3c362b;
+
+  --linea: #ded7c9;
+  --pista-alta: #e9e4da;
+  --agua-honda: #0b5568;
+  --violeta: #7c3aed;
+  --tinta-lectura: #2f2b23;
+  --tinta-inversa: #cfc8bb;
+  --tinta-inversa-suave: #6d675c;
+
+  --radio-objeto: 28px;
+  --radio-campo: 16px;
+  --radio-pildora: 999px;
+
+  --font-display: var(--font-bricolage), "Helvetica Neue", sans-serif;
+  --font-body: var(--font-karla), "Helvetica Neue", system-ui, sans-serif;
 
   --measure: 34rem;
 }
@@ -26,26 +47,26 @@
 * { box-sizing: border-box; }
 
 html {
-  background: var(--ink);
+  background: var(--papel);
   -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
-  background: var(--ink);
-  color: var(--bone);
+  background: var(--papel);
+  color: var(--tinta);
   font-family: var(--font-body);
   font-size: 1.0625rem;
-  line-height: 1.65;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
-::selection { background: var(--brass); color: var(--ink); }
+::selection { background: var(--aire); color: var(--tinta); }
 
 :focus-visible {
-  outline: 2px solid var(--brass);
+  outline: 2px solid var(--agua);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 /* ── Instrument: the zodiac arc ─────────────────────────────────── */
