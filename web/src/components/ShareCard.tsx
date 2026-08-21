@@ -87,7 +87,7 @@ export function ShareCard({
         <rect x="48" y="48" width={W - 96} height={H - 96} fill="none"
               stroke="#f0ece4" strokeWidth="2" />
 
-        <text x={W / 2} y="300" textAnchor="middle" fill="#9a9284"
+        <text x={W / 2} y="300" textAnchor="middle" fill="#6f685c"
               className="cc-mono" fontSize="34" letterSpacing="10">
           TU COMBINACIÓN
         </text>
@@ -102,7 +102,7 @@ export function ShareCard({
                   className="cc-display" fontSize="72">
               {SIGN_ES[r.sign]}
             </text>
-            <text x={W / 2} y="150" textAnchor="middle" fill="#9a9284"
+            <text x={W / 2} y="150" textAnchor="middle" fill="#6f685c"
                   className="cc-mono" fontSize="30" letterSpacing="6">
               {r.label.toUpperCase()}
             </text>
@@ -114,12 +114,12 @@ export function ShareCard({
           1 de {sig.oneIn.toLocaleString("es-ES")} combinaciones
         </text>
         {firstName && (
-          <text x={W / 2} y="1570" textAnchor="middle" fill="#9a9284"
+          <text x={W / 2} y="1570" textAnchor="middle" fill="#6f685c"
                 className="cc-mono" fontSize="32">
             La carta de {firstName}
           </text>
         )}
-        <text x={W / 2} y="1790" textAnchor="middle" fill="#9a9284"
+        <text x={W / 2} y="1790" textAnchor="middle" fill="#6f685c"
               className="cc-mono" fontSize="30" letterSpacing="8">
           DESTINY REPORTS
         </text>

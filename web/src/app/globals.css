@@ -12,7 +12,7 @@
   --pista: #f0ece4;
   --tinta: #14120e;
   --tinta-media: #4a4438;
-  --tinta-suave: #9a9284;
+  --tinta-suave: #6f685c;
 
   --agua: #0e6b85;
   --fuego: #e2571e;
@@ -259,6 +259,7 @@ body {
   letter-spacing: 0;
   text-transform: none;
   cursor: pointer;
+  transition: background 140ms ease;
 }
 
 .submit:hover:not(:disabled) { background: var(--agua-honda); }
@@ -373,12 +374,12 @@ body {
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.62);
+  color: rgba(255, 255, 255, 0.82);
 }
 
 /* ── Matches ────────────────────────────────────────────────────── */
 
-.fit { padding: 0.85rem 0; border-bottom: 1px solid var(--pista); }
+.fit { padding: 0.85rem 0; border-bottom: 1px solid var(--linea); }
 .fit:last-child { border-bottom: none; }
 
 .fit__head { display: flex; align-items: center; gap: 0.6rem; }
@@ -569,7 +570,7 @@ body {
 .foot {
   margin-top: 2.5rem;
   padding-top: 1.25rem;
-  border-top: 1px solid var(--pista);
+  border-top: 1px solid var(--linea);
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.45;
@@ -639,7 +640,7 @@ body {
 }
 
 .rindex__list { list-style: none; margin: 0; padding: 0; }
-.rindex__item + .rindex__item { border-top: 1px solid var(--pista); }
+.rindex__item + .rindex__item { border-top: 1px solid var(--linea); }
 
 .rindex__link {
   display: flex;
@@ -737,9 +738,9 @@ body {
 }
 
 .cc__name { color: var(--tinta-suave); font-size: .8125rem; font-weight: 600; margin: .35rem 0 0; }
-.cc__head { border-bottom: 1px solid var(--pista); padding-bottom: 1rem; }
+.cc__head { border-bottom: 1px solid var(--linea); padding-bottom: 1rem; }
 .cc__rows { margin: 1rem 0; }
-.cc__row { padding: .6rem 0; border-bottom: 1px solid var(--pista); }
+.cc__row { padding: .6rem 0; border-bottom: 1px solid var(--linea); }
 .cc__row:last-child { border-bottom: 0; }
 
 .cc__row dt {
@@ -785,8 +786,8 @@ body {
 .cc__combo { color: var(--tinta); font-size: .9375rem; font-weight: 600; margin: 1rem 0 0; }
 .cc__rarity { color: var(--tierra); font-size: .8125rem; font-weight: 700; margin: .25rem 0 0; }
 
-/* Visually hidden but screen-reader-visible: the lock emoji above is
-   decorative CSS content, which is not reliably announced, so the locked
+/* Visually hidden but screen-reader-visible: the tinted lock chip above is
+   decorative, which is not reliably announced, so the locked
    state needs a real text signal too — these rows are the pitch. */
 .cc__sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
           overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
