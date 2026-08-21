@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { SIGN_ES, SIGN_GLYPH } from "@core/copy/signs.es";
+import { CARD_FONT_CSS } from "@/lib/card-fonts";
 import type { ChartResponse } from "./types";
 
 const W = 1080;
@@ -9,16 +10,13 @@ const H = 1920; // 9:16 — Instagram Stories and TikTok native
 
 /**
  * Fonts travel with the card. The page's faces arrive as next/font CSS
- * variables on <html>, which a serialised standalone SVG cannot see — so the
- * export would silently fall back to a default face. Declaring them inside the
- * SVG means the rules serialise with it, and the var() fallbacks are what the
- * exported PNG actually renders with.
+ * variables on <html>, which a serialised standalone SVG cannot see — so a
+ * var(--font-display, …) rule silently falls back to its fallback family the
+ * instant the SVG is serialised standalone (this shipped that way for a
+ * while: every exported PNG rendered in Georgia). CARD_FONT_CSS carries real
+ * embedded font bytes instead — the same faces CharacterCardShare uses — so
+ * the rules still work once the SVG is on its own.
  */
-const CARD_CSS = `
-  .sc-display { font-family: var(--font-display, Georgia, "Times New Roman", serif); }
-  .sc-mono { font-family: var(--font-mono, ui-monospace, "Courier New", monospace); }
-  .sc-body { font-family: var(--font-body, system-ui, sans-serif); }
-`;
 
 /**
  * The shareable "cosmic signature". The statistic is genuinely computed by
@@ -84,45 +82,45 @@ export function ShareCard({
         role="img"
         aria-label="Tu combinación astral"
       >
-        <style>{CARD_CSS}</style>
-        <rect width={W} height={H} fill="#10131c" />
+        <style>{CARD_FONT_CSS}</style>
+        <rect width={W} height={H} fill="#faf7f2" />
         <rect x="48" y="48" width={W - 96} height={H - 96} fill="none"
-              stroke="#262c3c" strokeWidth="2" />
+              stroke="#f0ece4" strokeWidth="2" />
 
-        <text x={W / 2} y="300" textAnchor="middle" fill="#a9a496"
-              className="sc-mono" fontSize="34" letterSpacing="10">
+        <text x={W / 2} y="300" textAnchor="middle" fill="#6f685c"
+              className="cc-mono" fontSize="34" letterSpacing="10">
           TU COMBINACIÓN
         </text>
 
         {rows.map((r, i) => (
           <g key={r.label} transform={`translate(0 ${560 + i * 240})`}>
-            <text x={W / 2} y="0" textAnchor="middle" fill="#c9a227"
-                  className="sc-display" fontSize="120">
+            <text x={W / 2} y="0" textAnchor="middle" fill="#0e6b85"
+                  className="cc-display" fontSize="120">
               {SIGN_GLYPH[r.sign]}
             </text>
-            <text x={W / 2} y="96" textAnchor="middle" fill="#ece6da"
-                  className="sc-display" fontSize="72">
+            <text x={W / 2} y="96" textAnchor="middle" fill="#14120e"
+                  className="cc-display" fontSize="72">
               {SIGN_ES[r.sign]}
             </text>
-            <text x={W / 2} y="150" textAnchor="middle" fill="#6e7689"
-                  className="sc-mono" fontSize="30" letterSpacing="6">
+            <text x={W / 2} y="150" textAnchor="middle" fill="#6f685c"
+                  className="cc-mono" fontSize="30" letterSpacing="6">
               {r.label.toUpperCase()}
             </text>
           </g>
         ))}
 
-        <text x={W / 2} y="1500" textAnchor="middle" fill="#b4653a"
-              className="sc-mono" fontSize="36">
+        <text x={W / 2} y="1500" textAnchor="middle" fill="#8a6240"
+              className="cc-mono" fontSize="36">
           1 de {sig.oneIn.toLocaleString("es-ES")} combinaciones
         </text>
         {firstName && (
-          <text x={W / 2} y="1570" textAnchor="middle" fill="#6e7689"
-                className="sc-body" fontSize="32">
+          <text x={W / 2} y="1570" textAnchor="middle" fill="#6f685c"
+                className="cc-mono" fontSize="32">
             La carta de {firstName}
           </text>
         )}
-        <text x={W / 2} y="1790" textAnchor="middle" fill="#a9a496"
-              className="sc-mono" fontSize="30" letterSpacing="8">
+        <text x={W / 2} y="1790" textAnchor="middle" fill="#6f685c"
+              className="cc-mono" fontSize="30" letterSpacing="8">
           DESTINY REPORTS
         </text>
       </svg>
@@ -138,7 +136,7 @@ export function ShareCard({
 /**
  * SVG → PNG via canvas. The SVG is serialised from the live DOM and loaded as
  * a blob, so it must be self-contained: no external references, and its fonts
- * declared inline (see CARD_CSS). Nothing external is fetched, so the canvas
+ * declared inline (see CARD_FONT_CSS). Nothing external is fetched, so the canvas
  * stays untainted and toBlob works.
  */
 async function rasterise(svg: SVGSVGElement): Promise<Blob> {

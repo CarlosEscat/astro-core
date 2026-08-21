@@ -10,7 +10,7 @@
  * fixture charts happen to contain: the card renders a first name the user
  * types.
  *
- * Only two faces ship (Fraunces display, IBM Plex Mono). A third face — Noto
+ * Only two faces ship (Bricolage Grotesque display, Karla body). A third face — Noto
  * Sans Symbols 2, for the zodiac glyphs U+2648-2653 — was tried and dropped:
  * its `text=`-subsetted `kit=` URL returns HTTP 400 (verified reproducibly:
  * curl and fetch, with and without UA, single glyph and the full set, retried
@@ -38,8 +38,8 @@ const REST = "0123456789 .,:;·—–-()«»\"'%°′";
 const TEXT = LETTERS + SPANISH + REST;
 
 const FACES = [
-  { name: "CardDisplay", family: "Fraunces:opsz,wght@9..144,400", text: TEXT },
-  { name: "CardMono", family: "IBM+Plex+Mono:wght@400", text: TEXT },
+  { name: "CardDisplay", family: "Bricolage+Grotesque:opsz,wght@12..96,800", text: TEXT, weight: 800 },
+  { name: "CardBody", family: "Karla:wght@600", text: TEXT, weight: 600 },
 ];
 
 // A modern UA string is required, or Google serves legacy TTF instead of woff2.
@@ -47,7 +47,7 @@ const UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 " +
   "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
-async function face(name: string, family: string, text: string): Promise<string> {
+async function face(name: string, family: string, text: string, weight: number): Promise<string> {
   // `family` is deliberately NOT encodeURIComponent'd: its literal `+`
   // (space), `,` (axis list separator) and `@` (axis tuple marker) are
   // Google's required css2 syntax, not characters that need escaping —
@@ -86,11 +86,11 @@ async function face(name: string, family: string, text: string): Promise<string>
   }
 
   console.log(`${name}: ${(bytes.length / 1024).toFixed(1)} KB`);
-  return `@font-face{font-family:"${name}";font-style:normal;font-weight:400;` +
+  return `@font-face{font-family:"${name}";font-style:normal;font-weight:${weight};` +
     `src:url(data:font/woff2;base64,${bytes.toString("base64")}) format("woff2");}`;
 }
 
-const rules = await Promise.all(FACES.map((f) => face(f.name, f.family, f.text)));
+const rules = await Promise.all(FACES.map((f) => face(f.name, f.family, f.text, f.weight)));
 
 await writeFile(
   new URL("../web/src/lib/card-fonts.ts", import.meta.url),
@@ -98,9 +98,9 @@ await writeFile(
   `// Regenerate only when the card's typefaces or character set change.\n` +
   `export const CARD_FONT_CSS = ${JSON.stringify(
     rules.join("") +
-    `.cc-display{font-family:"CardDisplay",Georgia,serif;}` +
-    `.cc-mono{font-family:"CardMono",ui-monospace,monospace;}` +
-    `.cc-glyph{font-family:"CardDisplay",serif;}`,
+    `.cc-display{font-family:"CardDisplay","Helvetica Neue",sans-serif;}` +
+    `.cc-mono{font-family:"CardBody","Helvetica Neue",sans-serif;}` +
+    `.cc-glyph{font-family:"CardDisplay",sans-serif;}`,
   )};\n`,
   "utf8",
 );

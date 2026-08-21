@@ -65,13 +65,13 @@ export function CharacterCardShare({
             neither the page's custom properties nor its next/font faces, so
             without this the PNG rasterises in Georgia (Addendum 13). */}
         <style>{CARD_FONT_CSS}</style>
-        <rect width={W} height={H} fill="#10131c" />
+        <rect width={W} height={H} fill="#faf7f2" />
         <rect x="48" y="48" width={W - 96} height={H - 96} fill="none"
-              stroke="#262c3c" strokeWidth="2" />
+              stroke="#f0ece4" strokeWidth="2" />
 
-        <text x={W / 2} y="250" textAnchor="middle" fill="#a9a496"
+        <text x={W / 2} y="250" textAnchor="middle" fill="#6f685c"
               className="cc-mono" fontSize="32" letterSpacing="10">CLASE</text>
-        <text x={W / 2} y="380" textAnchor="middle" fill="#c9a227"
+        <text x={W / 2} y="380" textAnchor="middle" fill="#0e6b85"
               className="cc-display" fontSize="104">{card.clase.nombre}</text>
 
         {[
@@ -79,44 +79,44 @@ export function CharacterCardShare({
           { label: "POR DENTRO", sign: card.porDentro.sign },
         ].map((r, i) => (
           <g key={r.label} transform={`translate(0 ${600 + i * 260})`}>
-            <text x={W / 2} y="0" textAnchor="middle" fill="#c9a227"
+            <text x={W / 2} y="0" textAnchor="middle" fill="#0e6b85"
                   className="cc-glyph" fontSize="104">{SIGN_GLYPH[r.sign]}</text>
-            <text x={W / 2} y="86" textAnchor="middle" fill="#ece6da"
+            <text x={W / 2} y="86" textAnchor="middle" fill="#14120e"
                   className="cc-display" fontSize="64">{SIGN_ES[r.sign]}</text>
-            <text x={W / 2} y="140" textAnchor="middle" fill="#6e7689"
+            <text x={W / 2} y="140" textAnchor="middle" fill="#6f685c"
                   className="cc-mono" fontSize="28" letterSpacing="6">{r.label}</text>
           </g>
         ))}
 
-        <text x="140" y="1240" fill="#a9a496" className="cc-mono"
+        <text x="140" y="1240" fill="#6f685c" className="cc-mono"
               fontSize="30" letterSpacing="8">AFINIDAD</text>
         {ranked.map((k, i) => (
           <g key={k} transform={`translate(140 ${1310 + i * 76})`}>
-            <text x="0" y="26" fill="#a9a496" className="cc-mono" fontSize="30">{k}</text>
-            <rect x="220" y="6" width="480" height="24" fill="#262c3c" />
+            <text x="0" y="26" fill="#6f685c" className="cc-mono" fontSize="30">{k}</text>
+            <rect x="220" y="6" width="480" height="24" fill="#f0ece4" />
             <rect x="220" y="6" width={(card.afinidad.totals[k] / max) * 480}
-                  height="24" fill="#c9a227" />
+                  height="24" fill="#0e6b85" />
             {/* Weighted sum, not an independently checkable score — printed
                 against `card.afinidad.total` so it reads as a share of a
                 whole, same reasoning as CharacterCard.tsx's bars. Font size
                 dropped from 30 to 24 for this row only: "9,5 / 20,5" is
                 roughly 3x wider than the old bare "9,5", and at 30px the
                 widest case would run past the 1032 inner border edge. */}
-            <text x="740" y="26" fill="#a9a496" className="cc-mono" fontSize="24">
+            <text x="740" y="26" fill="#6f685c" className="cc-mono" fontSize="24">
               {n(card.afinidad.totals[k])} / {n(card.afinidad.total)}
             </text>
           </g>
         ))}
 
-        <text x={W / 2} y="1700" textAnchor="middle" fill="#b4653a"
+        <text x={W / 2} y="1700" textAnchor="middle" fill="#8a6240"
               className="cc-mono" fontSize="34">
           1 de {card.rareza.oneIn.toLocaleString("es-ES")} combinaciones
         </text>
         {firstName && (
-          <text x={W / 2} y="1760" textAnchor="middle" fill="#6e7689"
+          <text x={W / 2} y="1760" textAnchor="middle" fill="#6f685c"
                 className="cc-display" fontSize="32">La ficha de {firstName}</text>
         )}
-        <text x={W / 2} y="1840" textAnchor="middle" fill="#a9a496"
+        <text x={W / 2} y="1840" textAnchor="middle" fill="#6f685c"
               className="cc-mono" fontSize="28" letterSpacing="8">DESTINY REPORTS</text>
       </svg>
 

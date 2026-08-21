@@ -80,6 +80,13 @@ back to these names.
 | `--favor-bg` / `--favor-tinta` | `#d6ef8f` / `#23300a` | — |
 | `--contra-bg` / `--contra-tinta` | `#ffb59e` / `#4a1707` | — |
 | `--paquete-bg` / `--paquete-tinta` | `#e6e0d4` / `#3c362b` | — |
+| `--linea` | `#ded7c9` | hairlines and instrument ticks on paper |
+| `--pista-alta` | `#e9e4da` | field hover |
+| `--agua-honda` | `#0b5568` | primary-action hover |
+| `--violeta` | `#7c3aed` | the love hook — the one accent outside the element set |
+| `--tinta-lectura` | `#2f2b23` | long-form report body |
+| `--tinta-inversa` | `#cfc8bb` | body text on an ink block |
+| `--tinta-inversa-suave` | `#6d675c` | muted text on an ink block |
 | `--radio-objeto` | `28px` | `border-radius: 3px` |
 | `--radio-campo` | `16px` | — |
 | `--radio-pildora` | `999px` | — |
@@ -137,6 +144,14 @@ In `web/src/app/globals.css`, replace the comment and `:root` block
   --contra-tinta: #4a1707;
   --paquete-bg: #e6e0d4;
   --paquete-tinta: #3c362b;
+
+  --linea: #ded7c9;
+  --pista-alta: #e9e4da;
+  --agua-honda: #0b5568;
+  --violeta: #7c3aed;
+  --tinta-lectura: #2f2b23;
+  --tinta-inversa: #cfc8bb;
+  --tinta-inversa-suave: #6d675c;
 
   --radio-objeto: 28px;
   --radio-campo: 16px;
@@ -416,7 +431,7 @@ reference: the **Landing + formulario** artboard.
 .field input[type="time"] { font-family: var(--font-body); }
 
 .field input::placeholder { color: var(--tinta-suave); }
-.field input:hover { background: #e9e4da; }
+.field input:hover { background: var(--pista-alta); }
 
 .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 ```
@@ -478,7 +493,7 @@ reference: the **Landing + formulario** artboard.
   cursor: pointer;
 }
 
-.submit:hover:not(:disabled) { background: #0b5568; }
+.submit:hover:not(:disabled) { background: var(--agua-honda); }
 .submit:disabled { opacity: 0.5; cursor: progress; }
 
 /* Validation lives with the field it belongs to, not as a banner. */
@@ -611,7 +626,7 @@ stay exactly as they are.
 ```css
 .hook {
   margin-top: 0.875rem;
-  background: #7c3aed;
+  background: var(--violeta);
   border: none;
   border-radius: var(--radio-objeto);
   padding: 1.5rem 1.375rem;
@@ -806,7 +821,7 @@ stay exactly as they are.
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.45;
-  color: #cfc8bb;
+  color: var(--tinta-inversa);
   text-wrap: pretty;
 }
 
@@ -823,7 +838,7 @@ stay exactly as they are.
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #6d675c;
+  color: var(--tinta-inversa-suave);
 }
 
 .foot {
@@ -1058,7 +1073,7 @@ git commit -m "feat(clay): restyle character card and tokenise its literal hex"
 
 .report__p {
   margin: 0 0 1rem;
-  color: #2f2b23;
+  color: var(--tinta-lectura);
   line-height: 1.62;
   text-wrap: pretty;
 }
@@ -1152,7 +1167,7 @@ In `globals.css`:
   .instrument { height: 15rem; }
 }
 
-.tick { stroke: #ded7c9; stroke-width: 1; }
+.tick { stroke: var(--linea); stroke-width: 1; }
 .tick--sign { stroke: var(--aire); stroke-width: 1.5; }
 
 .glyph {
@@ -1169,7 +1184,7 @@ In `web/src/components/ZodiacArc.tsx`, the arc `<path>` has
 one attribute to:
 
 ```tsx
-        stroke="#ded7c9"
+        stroke="var(--pista)"
 ```
 
 Change nothing else in that file — the geometry, glyphs and the
