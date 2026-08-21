@@ -269,58 +269,6 @@ body {
 
 .reading { margin-top: 2.5rem; }
 
-/* Each placement carries a plain-language gloss, so the three read as rows
-   rather than columns — a gloss sentence has nowhere to go in a 125px column. */
-.readout {
-  border: 1px solid var(--ink-line);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.readout > div {
-  padding: 0.9rem 1.1rem;
-  border-bottom: 1px solid var(--ink-line);
-}
-.readout > div:last-child { border-bottom: none; }
-
-.readout .rt {
-  display: flex;
-  align-items: baseline;
-  gap: 0.55rem;
-}
-
-.readout .role {
-  font-family: var(--font-mono);
-  font-size: 0.5625rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--slate);
-  flex: 0 0 5.5rem;
-}
-
-.readout .sym {
-  font-size: 1.25rem;
-  color: var(--brass);
-  line-height: 1;
-}
-
-.readout .sign { font-size: 0.9375rem; }
-
-.readout .deg {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  color: var(--bone-dim);
-  margin-left: auto;
-}
-
-.readout .gloss {
-  margin: 0.35rem 0 0 6.05rem;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: var(--bone-dim);
-  text-wrap: pretty;
-}
-
 /* ── Modules ────────────────────────────────────────────────────── */
 
 .module { margin-top: 2rem; }
