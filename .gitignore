@@ -4,3 +4,7 @@ dist/
 .env
 .DS_Store
 .superpowers/
+
+# Seeded design-canvas payload — build artifact, ~2.3 MB of baked-in
+# editor code. Regenerate from docs/design/clay/ instead of committing.
+astrocard-directions.html

@@ -1,0 +1,160 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&amp;family=Karla:wght@400;600;700&amp;display=swap">
+  <style>
+    body { margin: 0; font-family: Karla, "Helvetica Neue", system-ui, sans-serif; }
+    a { color: #0e6b85; } a:hover { color: #094c5f; }
+
+    /* El latido del sistema anterior sobrevive, pero aplicado al objeto
+       entero en vez de al texto: en Clay lo que respira es el bloque. */
+    @keyframes clay-latido { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+    .latido { animation: clay-latido 1.6s ease-in-out infinite; }
+    .latido-2 { animation: clay-latido 1.6s ease-in-out 0.2s infinite; }
+    .latido-3 { animation: clay-latido 1.6s ease-in-out 0.4s infinite; }
+
+    @keyframes clay-punto { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+    .punto-1 { animation: clay-punto 1.2s ease-in-out infinite; }
+    .punto-2 { animation: clay-punto 1.2s ease-in-out 0.15s infinite; }
+    .punto-3 { animation: clay-punto 1.2s ease-in-out 0.3s infinite; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .latido, .latido-2, .latido-3,
+      .punto-1, .punto-2, .punto-3 { animation: none; opacity: 0.7; }
+    }
+  </style>
+</helmet>
+
+<div style="width: 400px; background: #faf7f2; padding: 22px 18px 26px; display: flex; flex-direction: column; gap: 22px; box-sizing: border-box; color: #14120e;">
+
+  <div style="display: flex; flex-direction: column; gap: 5px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284;">Destiny Reports</div>
+    <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-weight: 800; font-size: 30px; line-height: 0.98; letter-spacing: -0.035em;">Estados de espera</div>
+  </div>
+
+  <!-- 1 -->
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #9a9284;">1 · Calculando posiciones</div>
+    <div style="background: #ffffff; border-radius: 28px; padding: 18px 20px; display: flex; align-items: center; gap: 12px; min-height: 60px; box-sizing: border-box;">
+      <div style="display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+        <div class="punto-1" style="width: 8px; height: 8px; border-radius: 999px; background: #0e6b85;"></div>
+        <div class="punto-2" style="width: 8px; height: 8px; border-radius: 999px; background: #e2571e;"></div>
+        <div class="punto-3" style="width: 8px; height: 8px; border-radius: 999px; background: #c9a227;"></div>
+      </div>
+      <div style="font-family: Karla, sans-serif; font-size: 14.5px; font-weight: 700; color: #14120e;">Calculando posiciones</div>
+    </div>
+    <div style="font-family: Karla, sans-serif; font-size: 12px; font-weight: 600; line-height: 1.4; color: #9a9284; padding: 0 4px; text-wrap: pretty;">El cálculo tarda 0,553 ms. Esto no se llega a leer — es el viaje de red, no la carta. Candidato a borrarse.</div>
+  </div>
+
+  <!-- 2 -->
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #9a9284;">2 · Leyendo tu carta — la llamada al modelo</div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <!-- el esqueleto es el mismo vocabulario de objetos, en color pista -->
+      <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 6px;">
+        <div class="latido" style="width: 74px; height: 10px; border-radius: 999px; background: #e6e0d4;"></div>
+        <div class="latido" style="width: 205px; height: 40px; border-radius: 12px; background: #e6e0d4;"></div>
+        <div class="latido-2" style="width: 260px; height: 13px; border-radius: 999px; background: #ece7dd;"></div>
+      </div>
+
+      <div class="latido-2" style="background: #cfe3ea; border-radius: 28px; padding: 26px 22px; display: flex; flex-direction: column; gap: 9px;">
+        <div style="height: 15px; border-radius: 999px; background: rgba(14,107,133,0.22);"></div>
+        <div style="height: 15px; border-radius: 999px; background: rgba(14,107,133,0.22);"></div>
+        <div style="width: 62%; height: 15px; border-radius: 999px; background: rgba(14,107,133,0.22);"></div>
+      </div>
+
+      <div style="background: #ffffff; border-radius: 28px; padding: 16px 20px 17px; display: flex; flex-direction: column; gap: 10px;">
+        <sc-for list="{{skeleton}}" as="s" hint-placeholder-count="4">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 54px; height: 10px; border-radius: 999px; background: #e6e0d4;"></div>
+            <div style="flex-grow: 1; height: 6px; background: #f0ece4; border-radius: 999px; overflow: hidden; display: flex;">
+              <div class="{{s.beat}}" style="width: {{s.pct}}; background: #ded7c9;"></div>
+            </div>
+            <div style="width: 24px; height: 14px; border-radius: 4px; background: #e6e0d4;"></div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display: flex; align-items: center; justify-content: center; gap: 9px; padding-top: 2px;">
+        <div style="display: flex; align-items: center; gap: 4px;">
+          <div class="punto-1" style="width: 6px; height: 6px; border-radius: 999px; background: #9a9284;"></div>
+          <div class="punto-2" style="width: 6px; height: 6px; border-radius: 999px; background: #9a9284;"></div>
+          <div class="punto-3" style="width: 6px; height: 6px; border-radius: 999px; background: #9a9284;"></div>
+        </div>
+        <div style="font-family: Karla, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #9a9284;">Leyendo tu carta</div>
+      </div>
+    </div>
+
+    <div style="font-family: Karla, sans-serif; font-size: 12px; font-weight: 600; line-height: 1.4; color: #9a9284; padding: 0 4px; text-wrap: pretty;">El esqueleto usa los objetos reales en color pista, así que la carta no salta al llegar: se rellena donde ya estaba.</div>
+  </div>
+
+  <!-- 3 -->
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #9a9284;">3 · El informe llega por secciones</div>
+
+    <div style="background: #ffffff; border-radius: 28px; padding: 20px 20px; display: flex; flex-direction: column; gap: 13px;">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px;">
+        <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284;">Escribiendo tu informe</div>
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 800; letter-spacing: -0.03em; color: #0e6b85;">3 / 8</div>
+      </div>
+
+      <div style="height: 6px; background: #f0ece4; border-radius: 999px; overflow: hidden; display: flex;">
+        <div style="width: 37.5%; background: #0e6b85;"></div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <sc-for list="{{secciones}}" as="s" hint-placeholder-count="5">
+          <div style="display: flex; align-items: center; gap: 11px; padding: 8px 0; min-height: 40px; box-sizing: border-box;">
+            <div style="width: 18px; height: 18px; border-radius: 999px; background: {{s.dot}}; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+              <sc-if value="{{s.done}}" hint-placeholder-val="{{ true }}">
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="2,6.5 4.8,9 10,3.5"></polyline>
+                </svg>
+              </sc-if>
+            </div>
+            <div style="flex-grow: 1; font-family: Karla, sans-serif; font-size: 14px; font-weight: {{s.weight}}; line-height: 1.3; color: {{s.ink}}; text-wrap: pretty;">{{s.title}}</div>
+            <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: {{s.tagInk}}; white-space: nowrap; flex-shrink: 0;">{{s.tag}}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="font-family: Karla, sans-serif; font-size: 12px; font-weight: 600; line-height: 1.4; color: #9a9284; padding: 0 4px; text-wrap: pretty;">Una sección por llamada, ~1,8 min el informe entero. La barra es honesta porque el backend ya va sección a sección — y lo que ya está escrito se puede leer mientras el resto llega.</div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":400,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const hecho = { dot: '#0e6b85', ink: '#14120e', weight: '600', tag: '', tagInk: '#9a9284', done: true };
+    const ahora = { dot: '#c9a227', ink: '#14120e', weight: '700', tag: 'escribiendo', tagInk: '#a8801c', done: false };
+    const luego = { dot: '#f0ece4', ink: '#b3ab9c', weight: '600', tag: '', tagInk: '#9a9284', done: false };
+    return {
+      skeleton: [
+        { pct: '78%', beat: 'latido' },
+        { pct: '52%', beat: 'latido-2' },
+        { pct: '34%', beat: 'latido-3' },
+        { pct: '20%', beat: 'latido' }
+      ],
+      secciones: [
+        Object.assign({ title: 'Tu retrato esencial' }, hecho),
+        Object.assign({ title: 'El corazón de tu identidad' }, hecho),
+        Object.assign({ title: 'Tu mundo emocional' }, hecho),
+        Object.assign({ title: 'La puerta por la que entras al mundo' }, ahora),
+        Object.assign({ title: 'Amor y vínculos' }, luego)
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

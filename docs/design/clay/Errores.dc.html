@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&amp;family=Karla:wght@400;600;700&amp;display=swap">
+  <style>
+    body { margin: 0; font-family: Karla, "Helvetica Neue", system-ui, sans-serif; }
+    a { color: #0e6b85; } a:hover { color: #094c5f; }
+  </style>
+</helmet>
+
+<div style="width: 400px; background: #faf7f2; padding: 22px 18px 26px; display: flex; flex-direction: column; gap: 22px; box-sizing: border-box; color: #14120e;">
+
+  <div style="display: flex; flex-direction: column; gap: 7px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284;">Destiny Reports</div>
+    <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-weight: 800; font-size: 30px; line-height: 0.98; letter-spacing: -0.035em;">Estados de error</div>
+    <div style="font-family: Karla, sans-serif; font-size: 13.5px; font-weight: 600; line-height: 1.42; color: #4a4438; text-wrap: pretty;">Dos clases distintas, y no deberían parecerse: <strong style="font-weight: 700;">lo que arregla la persona</strong> vive pegado al campo; <strong style="font-weight: 700;">lo que falló por nuestra parte</strong> es un objeto aparte con su reintento.</div>
+  </div>
+
+  <!-- 1 · Validación -->
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #9a9284;">1 · Validación — la persona lo arregla</div>
+
+    <div style="background: #ffffff; border-radius: 28px; padding: 20px; display: flex; flex-direction: column; gap: 8px;">
+      <div style="font-family: Karla, sans-serif; font-size: 13px; font-weight: 700; color: #14120e;">Lugar de nacimiento</div>
+      <div style="background: #ffe9e1; border-radius: 16px; padding: 14px 16px; min-height: 48px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+        <div style="font-family: Karla, sans-serif; font-size: 15px; font-weight: 600; color: #14120e;">Bilb</div>
+        <div style="width: 20px; height: 20px; border-radius: 999px; background: #c2410c; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+            <line x1="6" y1="2.5" x2="6" y2="7"></line>
+            <line x1="6" y1="9.4" x2="6" y2="9.5"></line>
+          </svg>
+        </div>
+      </div>
+      <div style="display: flex; align-items: flex-start; gap: 8px; padding-top: 2px;">
+        <div style="width: 4px; height: 4px; border-radius: 999px; background: #c2410c; flex-shrink: 0; margin-top: 7px;"></div>
+        <div style="font-family: Karla, sans-serif; font-size: 13.5px; font-weight: 600; line-height: 1.4; color: #7d2c11; text-wrap: pretty;">Elige tu lugar de nacimiento de la lista para calcular la carta.</div>
+      </div>
+    </div>
+
+    <div style="font-family: Karla, sans-serif; font-size: 12px; font-weight: 600; line-height: 1.4; color: #9a9284; padding: 0 4px; text-wrap: pretty;">No es un bloque: vive dentro del campo que falla, porque lo que hay que hacer está ahí mismo.</div>
+  </div>
+
+  <!-- 2 · Fallo del cálculo -->
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #9a9284;">2 · No se pudo calcular la carta</div>
+
+    <div style="background: #ffb59e; border-radius: 28px; padding: 22px 20px; display: flex; flex-direction: column; gap: 13px;">
+      <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-size: 21px; font-weight: 600; line-height: 1.2; letter-spacing: -0.022em; color: #4a1707; text-wrap: pretty;">No hemos podido calcular tu carta.</div>
+      <div style="font-family: Karla, sans-serif; font-size: 13.5px; font-weight: 600; line-height: 1.42; color: #6d2a12; text-wrap: pretty;">Revisa la fecha, la hora y el lugar. Si están bien, es cosa nuestra.</div>
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <div style="background: #4a1707; color: #ffffff; border-radius: 999px; padding: 13px 22px; min-height: 46px; box-sizing: border-box; display: flex; align-items: center; font-family: Karla, sans-serif; font-size: 14px; font-weight: 700;">Probar otra vez</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 · Fallo de la lectura -->
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #9a9284;">3 · Falló la lectura, no el cálculo</div>
+
+    <div style="background: #ffffff; border-radius: 28px; padding: 20px; display: flex; flex-direction: column; gap: 13px;">
+      <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-size: 20px; font-weight: 600; line-height: 1.2; letter-spacing: -0.022em; color: #14120e; text-wrap: pretty;">Algo ha fallado. Inténtalo de nuevo.</div>
+      <div style="font-family: Karla, sans-serif; font-size: 13.5px; font-weight: 600; line-height: 1.42; color: #4a4438; text-wrap: pretty;">Tu carta sí se calculó. Lo que no salió es la lectura, así que no hay que volver a escribir nada.</div>
+
+      <div style="background: #f0ece4; border-radius: 18px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;">
+        <div style="width: 34px; height: 34px; border-radius: 12px; background: #0e6b85; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="2.5,6 5.5,6 5.5,3"></polyline>
+            <path d="M3.2 9.4a5 5 0 1 0 1.1-4.2"></path>
+          </svg>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 1px;">
+          <div style="font-family: Karla, sans-serif; font-size: 13.5px; font-weight: 700; color: #14120e;">Volver a leer la carta</div>
+          <div style="font-family: Karla, sans-serif; font-size: 12px; font-weight: 600; color: #7a7466;">Sin volver a meter tus datos</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="font-family: Karla, sans-serif; font-size: 12px; font-weight: 600; line-height: 1.4; color: #9a9284; padding: 0 4px; text-wrap: pretty;">Este es el que más importa: el cálculo ya está hecho y es gratis repetirlo. Reintentar sólo la lectura ahorra el formulario entero.</div>
+  </div>
+
+  <!-- 4 · Sin conexión -->
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #9a9284;">4 · Sin conexión</div>
+
+    <div style="background: #e6e0d4; border-radius: 28px; padding: 20px; display: flex; align-items: center; gap: 14px;">
+      <div style="width: 40px; height: 40px; border-radius: 14px; background: #6b6355; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M2.5 7.5a13 13 0 0 1 15 0"></path>
+          <path d="M5.5 11a8.5 8.5 0 0 1 9 0"></path>
+          <line x1="10" y1="15.5" x2="10" y2="15.6"></line>
+          <line x1="3" y1="17" x2="17" y2="3"></line>
+        </svg>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 3px;">
+        <div style="font-family: Karla, sans-serif; font-size: 15px; font-weight: 700; color: #14120e;">No hay conexión con el servidor.</div>
+        <div style="font-family: Karla, sans-serif; font-size: 13px; font-weight: 600; line-height: 1.35; color: #4a4438;">Inténtalo de nuevo cuando vuelvas a tener red.</div>
+      </div>
+    </div>
+
+    <div style="font-family: Karla, sans-serif; font-size: 12px; font-weight: 600; line-height: 1.4; color: #9a9284; padding: 0 4px; text-wrap: pretty;">Neutro y sin alarma: no ha fallado nada nuestro y no hay nada que reintentar todavía.</div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":400,"height":1240}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

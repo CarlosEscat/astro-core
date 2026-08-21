@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&amp;family=Karla:wght@400;600;700&amp;display=swap">
+  <style>
+    body { margin: 0; font-family: Karla, "Helvetica Neue", system-ui, sans-serif; }
+    a { color: #0e6b85; } a:hover { color: #094c5f; }
+  </style>
+</helmet>
+
+<div style="width: 400px; background: #faf7f2; padding: 22px 18px 26px; display: flex; flex-direction: column; gap: 22px; box-sizing: border-box; color: #14120e;">
+
+  <div style="display: flex; flex-direction: column; gap: 7px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284;">Destiny Reports</div>
+    <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-weight: 800; font-size: 30px; line-height: 0.98; letter-spacing: -0.035em;">Cartas flacas</div>
+    <div style="font-family: Karla, sans-serif; font-size: 13.5px; font-weight: 600; line-height: 1.42; color: #4a4438; text-wrap: pretty;">Ninguna pantalla se queda en blanco. La regla es del spec: <strong style="font-weight: 700;">el bloque de stats es el suelo garantizado</strong>, porque toda carta tiene un elemento más fuerte y uno más débil.</div>
+  </div>
+
+  <!-- 1 -->
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #9a9284;">1 · madrid-1992 — sólo dos filas en toda la carta</div>
+
+    <div style="background: #ffffff; border-radius: 28px; padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-weight: 800; font-size: 36px; line-height: 0.94; letter-spacing: -0.04em;">COMBATIENTE</div>
+        <div style="font-family: Karla, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #9a9284;">Sol en Aries · Ascendente en Géminis</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 9px;">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px;">
+          <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284;">De qué está hecho</div>
+          <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #9a9284;">peso</div>
+        </div>
+        <sc-for list="{{madrid}}" as="s" hint-placeholder-count="4">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 54px; font-family: Karla, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #14120e;">{{s.name}}</div>
+            <div style="flex-grow: 1; height: 6px; background: #f0ece4; border-radius: 999px; overflow: hidden; display: flex;">
+              <div style="width: {{s.pct}}; background: {{s.color}};"></div>
+            </div>
+            <div style="width: 38px; text-align: right; font-family: 'Bricolage Grotesque', sans-serif; font-size: 21px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: {{s.color}};">{{s.value}}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="background: #14120e; border-radius: 28px; padding: 20px; display: flex; flex-direction: column; gap: 9px;">
+      <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #c9a227;">Su punto fuerte</div>
+      <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-size: 25px; font-weight: 600; line-height: 1.16; letter-spacing: -0.025em; color: #ffffff; text-wrap: pretty;">Encuentra las palabras antes que nadie en la sala.</div>
+      <div style="font-family: Karla, sans-serif; font-size: 12px; font-weight: 600; color: #8d8579;">Aire es su elemento dominante</div>
+    </div>
+
+    <div style="background: #ffb59e; border-radius: 28px; padding: 18px; display: flex; flex-direction: column; gap: 11px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 19px; height: 19px; border-radius: 999px; background: #c2410c; color: #ffffff; font-family: Karla, sans-serif; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; line-height: 1; flex-shrink: 0;">−</div>
+        <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #4a1707;">En contra</div>
+      </div>
+      <div style="font-family: Karla, sans-serif; font-size: 14px; font-weight: 600; line-height: 1.36; color: #4a1707; text-wrap: pretty;">Dice una cosa y siente otra en la misma frase.</div>
+      <div style="font-family: Karla, sans-serif; font-size: 14px; font-weight: 600; line-height: 1.36; color: #4a1707; text-wrap: pretty;">Quiere que le quieran y se aparta cuando pasa.</div>
+    </div>
+
+    <div style="font-family: Karla, sans-serif; font-size: 12px; font-weight: 600; line-height: 1.4; color: #9a9284; padding: 0 4px; text-wrap: pretty;">Comprobado en el motor: sin trígonos, sin sextiles y sin conjunciones entre planetas personales. Un solo cubo y el realce. Aun así la carta llena la pantalla, porque clase, frase y stats no dependen de los aspectos. Los números aquí son el peso bruto, no el percentil — esa población todavía no está horneada.</div>
+  </div>
+
+  <!-- 2 -->
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #9a9284;">2 · El suelo — cero aspectos de cualquier tipo</div>
+    <div style="background: #e6e0d4; border-radius: 28px; padding: 20px; display: flex; flex-direction: column; gap: 10px;">
+      <div style="font-family: Karla, sans-serif; font-size: 14px; font-weight: 700; color: #3c362b;">Sin ningún cubo, la carta sigue siendo:</div>
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <sc-for list="{{suelo}}" as="x" hint-placeholder-count="4">
+          <div style="display: flex; align-items: center; gap: 9px;">
+            <div style="width: 6px; height: 6px; border-radius: 999px; background: #6b6355; flex-shrink: 0;"></div>
+            <div style="font-family: Karla, sans-serif; font-size: 13.5px; font-weight: 600; color: #3c362b;">{{x.text}}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-family: Karla, sans-serif; font-size: 12.5px; font-weight: 600; line-height: 1.4; color: #6b6355; text-wrap: pretty;">Nunca se enseña un hueco, ni un «no hay datos». Se enseña menos carta.</div>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #9a9284;">3 · Compatibilidad cero — es un chiste, no un blanco</div>
+
+    <div style="background: #ffffff; border-radius: 28px; padding: 20px; display: flex; flex-direction: column; gap: 13px;">
+      <sc-for list="{{ceros}}" as="z" hint-placeholder-count="2">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="flex-grow: 1; font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: #14120e;">{{z.sign}}</div>
+            <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -0.03em; color: #b3ab9c;">{{z.score}}</div>
+          </div>
+          <div style="font-family: Karla, sans-serif; font-size: 13.5px; font-weight: 600; line-height: 1.4; color: #4a4438; text-wrap: pretty;">{{z.text}}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="font-family: Karla, sans-serif; font-size: 12px; font-weight: 600; line-height: 1.4; color: #9a9284; padding: 0 4px; text-wrap: pretty;">En bilbao los ceros reales son Leo, Capricornio y Acuario — el spec dice Cáncer, Leo y Acuario, pero Cáncer saca 25. Conviene corregirlo antes de escribir las tablas.</div>
+  </div>
+
+  <!-- 4 -->
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #9a9284;">4 · El buscador no encuentra el sitio</div>
+
+    <div style="background: #ffffff; border-radius: 28px; padding: 20px; display: flex; flex-direction: column; gap: 8px;">
+      <div style="font-family: Karla, sans-serif; font-size: 13px; font-weight: 700; color: #14120e;">Lugar de nacimiento</div>
+      <div style="background: #f0ece4; border-radius: 16px; padding: 14px 16px; min-height: 48px; box-sizing: border-box; display: flex; align-items: center; font-family: Karla, sans-serif; font-size: 15px; font-weight: 600; color: #14120e;">Villaverde de Trucíos</div>
+      <div style="background: #f6f2ea; border-radius: 18px; padding: 15px 16px; display: flex; flex-direction: column; gap: 5px;">
+        <div style="font-family: Karla, sans-serif; font-size: 13.5px; font-weight: 700; color: #14120e;">No encontramos ese sitio.</div>
+        <div style="font-family: Karla, sans-serif; font-size: 13px; font-weight: 600; line-height: 1.4; color: #7a7466; text-wrap: pretty;">Prueba con la ciudad grande más cercana. A menos de 50 km la carta no cambia.</div>
+      </div>
+    </div>
+
+    <div style="font-family: Karla, sans-serif; font-size: 12px; font-weight: 600; line-height: 1.4; color: #9a9284; padding: 0 4px; text-wrap: pretty;">Da la salida, no sólo la mala noticia — y la salida es verdad: el índice de GeoNames va por población, y a esa distancia el desplazamiento no mueve las casas de forma perceptible.</div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":400,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      // Pesos reales de elementBalance() sobre madrid-1992.
+      madrid: [
+        { name: 'AIRE',   value: 9,   pct: '44%', color: '#c9a227' },
+        { name: 'FUEGO',  value: 7,   pct: '34%', color: '#e2571e' },
+        { name: 'AGUA',   value: 2.5, pct: '12%', color: '#0e6b85' },
+        { name: 'TIERRA', value: 2,   pct: '10%', color: '#8a6240' }
+      ],
+      suelo: [
+        { text: 'La clase y su frase de una línea' },
+        { text: 'La frase que se comparte' },
+        { text: 'Los cuatro stats' },
+        { text: 'El realce con lo más raro de la persona' }
+      ],
+      ceros: [
+        { sign: 'Leo', score: 0,
+          text: 'El mismo número, el mismo escenario. Alguien tiene que sentarse a mirar y ninguno de los dos ha venido a eso.' },
+        { sign: 'Acuario', score: 0,
+          text: 'Uno habla en indirectas y el otro contesta con teorías. Se caen bien y no se enteran de nada.' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+{
+  "artboards": [
+    {
+      "file": "Sistema.dc.html",
+      "title": "Sistema Clay",
+      "page": "sistema",
+      "x": 0,
+      "y": 0,
+      "w": 760,
+      "h": 1180
+    },
+    {
+      "file": "Entrada.dc.html",
+      "title": "Landing + formulario",
+      "page": "app",
+      "x": 0,
+      "y": 0,
+      "w": 400,
+      "h": 900
+    },
+    {
+      "file": "Gratis.dc.html",
+      "title": "Lectura gratuita",
+      "page": "app",
+      "x": 470,
+      "y": 0,
+      "w": 400,
+      "h": 900
+    },
+    {
+      "file": "Informe.dc.html",
+      "title": "Informe de pago",
+      "page": "app",
+      "x": 940,
+      "y": 0,
+      "w": 400,
+      "h": 1080
+    },
+    {
+      "file": "Bloques.dc.html",
+      "title": "La carta (B · Clay)",
+      "page": "app",
+      "x": 1410,
+      "y": 0,
+      "w": 400,
+      "h": 1085
+    },
+    {
+      "file": "Compartir.dc.html",
+      "title": "Compartir 1080×1920",
+      "page": "app",
+      "x": 1880,
+      "y": 0,
+      "w": 400,
+      "h": 711
+    },
+    {
+      "file": "Main.dc.html",
+      "title": "A · Pegatina",
+      "page": "carta",
+      "x": 0,
+      "y": 0,
+      "w": 400,
+      "h": 860
+    },
+    {
+      "file": "Consola.dc.html",
+      "title": "C · Consola",
+      "page": "carta",
+      "x": 470,
+      "y": 0,
+      "w": 400,
+      "h": 860
+    },
+    {
+      "file": "Crepusculo.dc.html",
+      "title": "D · Crepúsculo",
+      "page": "carta",
+      "x": 940,
+      "y": 0,
+      "w": 400,
+      "h": 860
+    },
+    {
+      "file": "Bronce.dc.html",
+      "title": "E · Bronce",
+      "page": "carta",
+      "x": 1410,
+      "y": 0,
+      "w": 400,
+      "h": 860
+    },
+    {
+      "file": "Espera.dc.html",
+      "title": "Espera",
+      "page": "estados",
+      "x": 0,
+      "y": 0,
+      "w": 400,
+      "h": 1180
+    },
+    {
+      "file": "Errores.dc.html",
+      "title": "Errores",
+      "page": "estados",
+      "x": 470,
+      "y": 0,
+      "w": 400,
+      "h": 1240
+    },
+    {
+      "file": "Vacios.dc.html",
+      "title": "Cartas flacas",
+      "page": "estados",
+      "x": 940,
+      "y": 0,
+      "w": 400,
+      "h": 1500
+    },
+    {
+      "file": "Entrega.dc.html",
+      "title": "Entrega",
+      "page": "app",
+      "x": 2350,
+      "y": 0,
+      "w": 400,
+      "h": 1420
+    },
+    {
+      "file": "Firma.dc.html",
+      "title": "Firma del informe 1080×1920",
+      "page": "app",
+      "x": 2820,
+      "y": 0,
+      "w": 400,
+      "h": 711
+    }
+  ],
+  "annotations": [
+    {
+      "id": "note-sistema",
+      "page": "sistema",
+      "x": 0,
+      "y": -330,
+      "w": 420,
+      "text": "SISTEMA CLAY — la base de todo lo demás\n\nEsto sustituye la capa de tokens de globals.css (721\nlíneas, todas montadas sobre tinta y latón). No es un\nreskin: cambian los colores, las dos familias\ntipográficas, los radios y la idea de profundidad.\n\nLo que se conserva del mundo anterior:\n· el latón #c9a227, ahora como color de AIRE\n· la disciplina de que el acento significa algo\n\nLo que desaparece: Fraunces, Plex, el fondo de tinta,\nel arco zodiacal grabado y las reglas de latón."
+    },
+    {
+      "id": "note-b",
+      "x": 1410,
+      "y": -430,
+      "w": 400,
+      "text": "B · BLOQUES — el eje Clay · DIRECCIÓN ELEGIDA\n\nPor qué: cada bloque es un objeto de color con su propio\nsitio, sobre papel cálido. Sin bordes ni sombras: el peso\ntipográfico y el color hacen todo.\n\nLOS TRES CUBOS, Y QUÉ PASA CUANDO UNO SE VACÍA\nUsa el selector «caso» encima del artboard.\n\n· A favor (+, verde) · En contra (−, coral)\n· Viene en el mismo paquete (=, arena) — neutro a\n  propósito: la geometría no le da valencia, así que\n  tampoco se la da el color.\n\nCuando un cubo se queda vacío NO se deja hueco: sube un\nrealce en tinta a sangre, que es un objeto de otra clase\n— titular, no parche.\n\n· sin-en-contra → sube el PUNTO DÉBIL (8,4% de las\n  cartas; bilbao-2000 es una de ellas, comprobado)\n· sin-a-favor → sube el PUNTO FUERTE (5,8%;\n  madrid-1992, comprobado)\n· los-tres → los tres cubos, sin realce\n\nMáximo cinco filas repartidas entre los cubos.\n\nEL CORTE\nLa raya de puntos marca 711px = 1080×1920 a 400 de\nancho. Encima: clase, frase, stats y UN realce — eso es\nlo que se ve sin scroll y lo que se captura. Debajo: los\ncubos enteros y la barra de pago.\nEl realce ya no aparece sólo cuando falta un cubo: está\nsiempre, titulando lo más raro de la persona.\n\nMEDIDO A 400 DE ANCHO\nclase 117 · frase 174 · stats 168 · realce 121\n+ gaps y padding = 640 sobre un presupuesto de 711.\nQuedan 71px de aire. La carta entera: 1085.\n(stats bajó de 218 a 168 al poner nombre, barra y\nnúmero en la misma línea.)\n\nOJO: los tres casos se dibujan sobre la carta de bilbao\npara comparar maquetación. Sólo «sin-en-contra» es real\npara este personaje.",
+      "page": "app"
+    },
+    {
+      "id": "note-compartir",
+      "x": 1880,
+      "y": -430,
+      "w": 400,
+      "text": "B · COMPARTIR — el render propio, 1080×1920\n\nNo es una captura del DOM: mismos datos, composición\naparte. El tipo sube de escala para que se lea en\nminiatura y el cuadro se llena exacto a 9:16.\n\nQué entra: clase, frase, stats compactas, realce.\nQué NO entra: CTA, candados, filas bloqueadas, contador\nde lo que falta. El spec es tajante — una captura con\nuna fila bloqueada no se comparte.\n\nLo único que no es carta es la firma del pie.\n[TU DOMINIO] está por rellenar.",
+      "page": "app"
+    },
+    {
+      "id": "note-app",
+      "page": "app",
+      "x": 0,
+      "y": -430,
+      "w": 420,
+      "text": "LA APP EN CLAY\n\nCopy real, sacada del código: el hero y el formulario de\napp/page.tsx y BirthForm.tsx, los signos de PARTNER_ES,\nlos ocho títulos de SECTION_BRIEFS.\n\nPendiente de decidir en cada pantalla:\n· El precio del muro de pago — [PRECIO] sin rellenar.\n· El violeta de «En el amor» es el único color fuera\n  del set de elementos. Está a propósito: es el módulo\n  que más se comparte del tier gratis y quería su\n  propio sitio. Si sobra, cae.\n· El informe usa el color del índice como única señal\n  de sitio en una lectura de quince minutos."
+    },
+    {
+      "id": "note-a",
+      "x": 0,
+      "y": -300,
+      "w": 400,
+      "text": "A · PEGATINA — el eje Duolingo\n\nPor qué: no hay ninguna duda de que esto es un juego.\nTodo es una pegatina — borde negro de 3px, sombra dura,\nesquinas gordas. El color hace el trabajo emocional y el\ncuerpo de texto se queda tranquilo para que la frase\nse lea.\n\nA cambio: es el más joven de los tres. Puede restar\ncredibilidad al «esto da miedo de lo preciso que es».",
+      "page": "carta"
+    },
+    {
+      "id": "note-c",
+      "x": 470,
+      "y": -300,
+      "w": 400,
+      "text": "C · CONSOLA — el eje Busuu, con un hilo del instrumento\n\nPor qué: portada en degradado cálido (ámbar→coral, nunca\nmorado) y luego un cuerpo tranquilo donde se lee. El\nemblema circular lleva las doce marcas del arco zodiacal\nque ya existe en globals.css, y Plex Mono sobrevive como\nla cara de los datos.\n\nA cambio: es el más silencioso. Aquí la gracia la carga\ncasi entera la copy.",
+      "page": "carta"
+    },
+    {
+      "id": "note-d",
+      "x": 940,
+      "y": -300,
+      "w": 400,
+      "text": "D · CREPÚSCULO — Passionfroot\n\nPor qué: pergamino cálido (#f8f7f2), serif editorial en\npeso 400 — autoridad por contención, no por negrita — y\nel color como confeti funcional: cada elemento coge un\ntono del set arcoíris, ninguno manda sobre los demás.\nRadios de 12px, sombras cálidas, bordes de 1px.\nEs el único que conserva un serif, así que es el puente\nmás corto desde lo que ya está construido.\n\nA cambio: el degradado de Passionfroot es violeta, justo\nel color del que huía «precisión como misticismo». Aquí\nfunciona como confeti, no como niebla — pero es la\ndecisión que hay que tomar mirándolo.\nY el rosa para TIERRA es el eslabón flojo del mapeo.",
+      "page": "carta"
+    },
+    {
+      "id": "note-e",
+      "x": 1410,
+      "y": -300,
+      "w": 400,
+      "text": "E · BRONCE — Mesh\n\nPor qué: obsidiana (#0f0f10), condensada 800 a 76px para\nimpacto de portada, y bronce (#f2b98b) usado SOLO como\ncontorno y regla, nunca como relleno — la misma\ndisciplina de la marca grabada que ya tiene globals.css.\nEl resplandor ámbar sube desde el pie. Sin sombras: la\nprofundidad es puro apilado.\n\nA cambio: es oscuro, que es de donde veníamos. Lo pongo\nporque lo pediste — vale la pena verlo al lado de los\nclaros para decidir si el juego pide luz o solo pedía\nmenos solemnidad.",
+      "page": "carta"
+    },
+    {
+      "id": "note-estados",
+      "page": "estados",
+      "x": 1410,
+      "y": 0,
+      "w": 400,
+      "text": "ESTADOS\n\nDos velocidades, no una:\n· El cálculo de la carta son 0,553 ms. El estado\n  «Calculando posiciones» no se llega a leer — sólo\n  tapa el viaje de red. Vale la pena plantearse\n  borrarlo en vez de rediseñarlo.\n· La llamada al modelo son segundos, con hasta 2\n  reintentos del gate. Ese sí necesita esqueleto.\n· El informe son ~1,8 min, y el backend ya va sección\n  a sección: la barra 3/8 es honesta, no decorativa,\n  y lo ya escrito se puede leer mientras llega el resto.\n\nEl esqueleto reutiliza los objetos reales en color\npista, así que al llegar los datos nada salta de sitio.\n\nERRORES — dos clases que no deben parecerse:\n· Validación → dentro del campo. Lo arregla la persona.\n· Fallo del sistema → objeto aparte, con reintento.\n\nEl caso 3 es el que más importa: si la carta ya se\ncalculó y lo que falló fue la lectura, reintentar sólo\nla lectura ahorra volver a rellenar el formulario.\nHoy el código manda a la persona al mismo sitio en los\ncuatro casos.\n\nEl latido respeta prefers-reduced-motion."
+    },
+    {
+      "id": "note-entrega",
+      "page": "app",
+      "x": 2350,
+      "y": -430,
+      "w": 400,
+      "text": "ENTREGA — /informe/<token>\n\nLa arquitectura ya está decidida en el HANDOVER: Stripe\ncon Bizum, webhook que encola la generación, Resend para\nel correo, polling de 2 s, render progresivo. Sin\ncuentas y sin contraseña.\n\nESO MANDA EN EL DISEÑO. Si el enlace es el acceso,\nperder el enlace es perder lo comprado. Por eso «guarda\neste enlace» es un bloque de primera clase y no un\npie de página: copiar + correo, en el momento en que\nla persona todavía está mirando.\n\nEl estado 2 no es una espera muerta: el backend ya va\nsección a sección, así que lo escrito se lee mientras\nllega el resto.\n\n[TU CORREO] y el dominio están por rellenar."
+    },
+    {
+      "id": "note-firma",
+      "page": "app",
+      "x": 2820,
+      "y": -430,
+      "w": 400,
+      "text": "FIRMA DEL INFORME — el ShareCard que ya existe\n\nMismo contenido que components/ShareCard.tsx: los Tres\nGrandes y la estadística de signature() — 1 de 1.728,\nque es 12×12×12 y está calculada, nunca inventada.\n\nLO QUE CAMBIA: fuera los glifos del zodiaco en Fraunces.\nCada bloque toma el color de su ELEMENTO, así que la\ntarjeta es un retrato de color de la persona. bilbao\nsale dos tercios azul — y eso concuerda con su AGUA 98.\nEl color dice algo verdadero en vez de adornar.\n\nEl Sol manda porque es la clase; Luna y Ascendente\ncomparten fila.\n\nCUIDADO AL CONSTRUIR: el PNG se rasteriza desde un SVG\nserializado, así que las fuentes tienen que ir\ndeclaradas dentro del SVG (CARD_CSS lo hace hoy). Que\nel export saliera por fin en Fraunces costó trabajo\n—Addendum 13—; cambiar a Bricolage y Karla obliga a\nrehacerlo. No es un cambio de CSS."
+    }
+  ],
+  "launch": {
+    "view": "canvas",
+    "page": "estados"
+  },
+  "pages": [
+    {
+      "id": "sistema",
+      "name": "Sistema"
+    },
+    {
+      "id": "app",
+      "name": "La app"
+    },
+    {
+      "id": "estados",
+      "name": "Estados"
+    },
+    {
+      "id": "carta",
+      "name": "La carta"
+    }
+  ]
+}

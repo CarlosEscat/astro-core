@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&amp;family=Karla:wght@400;600;700&amp;display=swap">
+  <style>
+    body { margin: 0; font-family: Karla, "Helvetica Neue", system-ui, sans-serif; }
+    a { color: #0e6b85; } a:hover { color: #094c5f; }
+  </style>
+</helmet>
+
+<div style="width: 400px; background: #faf7f2; padding: 22px 18px 26px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box; color: #14120e;">
+
+  <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #9a9284; padding: 4px 6px 0;">Destiny Reports</div>
+
+  <!-- Héroe: el único bloque a sangre de la pantalla -->
+  <div style="background: {{accent}}; border-radius: 28px; padding: 28px 22px 26px; display: flex; flex-direction: column; gap: 14px;">
+    <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-weight: 800; font-size: 40px; line-height: 0.96; letter-spacing: -0.042em; color: #ffffff; text-wrap: balance;">Tu carta natal, leída de verdad.</div>
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 15px; font-weight: 600; line-height: 1.45; color: rgba(255,255,255,0.88); text-wrap: pretty;">Calculamos tu carta con precisión astronómica y la leemos con una regla estricta: cada frase nombra la posición exacta que la sustenta. Nada que valga para cualquiera.</div>
+  </div>
+
+  <!-- El formulario -->
+  <div style="background: #ffffff; border-radius: 28px; padding: 22px 20px; display: flex; flex-direction: column; gap: 16px;">
+
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284;">Datos de nacimiento</div>
+
+    <div style="display: flex; flex-direction: column; gap: 7px;">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px;">
+        <div style="font-family: Karla, sans-serif; font-size: 13px; font-weight: 700; color: #14120e;">Tu nombre de pila</div>
+        <div style="font-family: Karla, sans-serif; font-size: 11px; font-weight: 600; color: #9a9284;">Opcional</div>
+      </div>
+      <div style="background: #f0ece4; border-radius: 16px; padding: 14px 16px; min-height: 48px; box-sizing: border-box; display: flex; align-items: center; font-family: Karla, sans-serif; font-size: 15px; font-weight: 600; color: #14120e;">Carlos</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <div style="font-family: Karla, sans-serif; font-size: 13px; font-weight: 700; color: #14120e;">Fecha</div>
+        <div style="background: #f0ece4; border-radius: 16px; padding: 14px 14px; min-height: 48px; box-sizing: border-box; display: flex; align-items: center; font-family: Karla, sans-serif; font-size: 15px; font-weight: 600; color: #14120e;">28 / 07 / 2000</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <div style="font-family: Karla, sans-serif; font-size: 13px; font-weight: 700; color: #14120e;">Hora</div>
+        <div style="background: #f0ece4; border-radius: 16px; padding: 14px 14px; min-height: 48px; box-sizing: border-box; display: flex; align-items: center; font-family: Karla, sans-serif; font-size: 15px; font-weight: 600; color: #14120e;">22:45</div>
+      </div>
+    </div>
+
+    <div style="font-family: Karla, sans-serif; font-size: 13px; font-weight: 600; line-height: 1.4; color: #7a7466; margin-top: -6px; text-wrap: pretty;">La hora mueve el Ascendente. Si no la sabes exacta, aproxímala lo más que puedas.</div>
+
+    <!-- El combo, abierto: el momento más frágil del formulario -->
+    <div style="display: flex; flex-direction: column; gap: 7px;">
+      <div style="font-family: Karla, sans-serif; font-size: 13px; font-weight: 700; color: #14120e;">Lugar de nacimiento</div>
+      <div style="background: #f0ece4; border-radius: 16px; padding: 14px 16px; min-height: 48px; box-sizing: border-box; display: flex; align-items: center; font-family: Karla, sans-serif; font-size: 15px; font-weight: 600; color: #14120e;">Bilbao</div>
+
+      <div style="background: #ffffff; border-radius: 18px; padding: 6px; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 6px 22px rgba(70, 58, 40, 0.13);">
+        <sc-for list="{{lugares}}" as="p" hint-placeholder-count="3">
+          <div style="background: {{p.bg}}; border-radius: 13px; padding: 11px 13px; display: flex; flex-direction: column; gap: 2px; min-height: 44px; box-sizing: border-box; justify-content: center;">
+            <div style="font-family: Karla, sans-serif; font-size: 15px; font-weight: 700; color: #14120e;">{{p.name}}</div>
+            <div style="font-family: Karla, sans-serif; font-size: 12px; font-weight: 600; color: #9a9284;">{{p.where}}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="background: {{accent}}; color: #ffffff; border-radius: 999px; padding: 16px 24px; min-height: 52px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-family: Karla, sans-serif; font-size: 16px; font-weight: 700;">Ver mi lectura gratuita</div>
+
+  </div>
+
+  <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 12px; font-weight: 600; line-height: 1.45; color: #9a9284; padding: 2px 6px; text-wrap: pretty;">Tu fecha y tu lugar de nacimiento no salen de este servidor: la carta se calcula aquí y solo viajan las posiciones ya calculadas.</div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#0e6b85","options":["#0e6b85","#c2410c","#4d7c0f","#7c3aed"],"section":"Tema"},"$preview":{"width":400,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      accent: this.props.accent ?? '#0e6b85',
+      lugares: [
+        { name: 'Bilbao',       where: 'País Vasco · ES', bg: '#f0ece4' },
+        { name: 'Bilbao',       where: 'Cundinamarca · CO', bg: '#ffffff' },
+        { name: 'Bilbao Nuevo', where: 'Zulia · VE', bg: '#ffffff' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

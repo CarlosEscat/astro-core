@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&amp;family=Karla:wght@400;600;700&amp;display=swap">
+  <style>
+    body { margin: 0; font-family: Karla, "Helvetica Neue", system-ui, sans-serif; }
+    a { color: #0e6b85; } a:hover { color: #094c5f; }
+  </style>
+</helmet>
+
+<div style="width: 400px; background: #faf7f2; padding: 22px 18px 26px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box; color: #14120e;">
+
+  <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #9a9284; padding: 4px 6px 0;">Destiny Reports · tu lectura</div>
+
+  <!-- La carta va aquí arriba (ver artboard «B · Bloques») -->
+  <div style="background: #ffffff; border-radius: 28px; padding: 18px 20px; display: flex; align-items: center; gap: 13px;">
+    <div style="width: 42px; height: 42px; border-radius: 14px; background: {{accent}}; flex-shrink: 0;"></div>
+    <div style="display: flex; flex-direction: column; gap: 3px;">
+      <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #9a9284;">Arriba va la carta</div>
+      <div style="font-family: Karla, sans-serif; font-size: 13px; font-weight: 600; line-height: 1.35; color: #4a4438;">Clase, frase, stats y realce — el artboard «B · Bloques».</div>
+    </div>
+  </div>
+
+  <!-- En el amor: la unidad que se captura del tier gratis -->
+  <div style="background: #7c3aed; border-radius: 28px; padding: 24px 22px; display: flex; flex-direction: column; gap: 12px;">
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.7);">En el amor</div>
+    <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-size: 23px; font-weight: 600; line-height: 1.24; letter-spacing: -0.022em; color: #ffffff; text-wrap: pretty;">Te engancha quien tiene luz propia y no la esconde.</div>
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.62);">Venus en Leo · 19°06′</div>
+  </div>
+
+  <!-- Con quién encajas -->
+  <div style="background: #ffffff; border-radius: 28px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px;">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px;">
+      <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284;">Con quién encajas</div>
+      <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #9a9284;">afinidad</div>
+    </div>
+
+    <sc-for list="{{matches}}" as="m" hint-placeholder-count="3">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 22px; height: 22px; border-radius: 999px; background: {{m.tint}}; color: {{m.ink}}; font-family: 'Bricolage Grotesque', sans-serif; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; line-height: 1; flex-shrink: 0;">{{m.rank}}</div>
+          <div style="flex-grow: 1; font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: #14120e;">{{m.sign}}</div>
+          <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -0.03em; color: {{m.ink}};">{{m.score}}</div>
+        </div>
+        <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 13.5px; font-weight: 600; line-height: 1.4; color: #4a4438; padding-left: 32px; text-wrap: pretty;">{{m.say}}</div>
+      </div>
+    </sc-for>
+
+    <div style="background: #f0ece4; border-radius: 18px; padding: 13px 15px; display: flex; flex-direction: column; gap: 4px;">
+      <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #7a7466;">El que te desordena</div>
+      <div style="font-family: Karla, sans-serif; font-size: 13.5px; font-weight: 600; line-height: 1.4; color: #4a4438; text-wrap: pretty;">Aries entra por donde tú rodeas.</div>
+    </div>
+  </div>
+
+  <!-- El muro de pago -->
+  <div style="background: #14120e; border-radius: 28px; padding: 24px 22px; display: flex; flex-direction: column; gap: 13px;">
+    <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-size: 24px; font-weight: 600; line-height: 1.18; letter-spacing: -0.025em; color: #ffffff; text-wrap: pretty;">Esto es solo la superficie.</div>
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 14px; font-weight: 600; line-height: 1.45; color: #cfc8bb; text-wrap: pretty;">La carta entera trae las seis habilidades, los doce signos uno a uno y el informe completo.</div>
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <div style="background: {{accent}}; color: #ffffff; border-radius: 999px; padding: 15px 24px; min-height: 50px; box-sizing: border-box; display: flex; align-items: center; font-family: Karla, sans-serif; font-size: 15px; font-weight: 700;">Ver la carta entera</div>
+      <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.03em; color: #c9a227;">[PRECIO]</div>
+    </div>
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #6d675c;">Disponible muy pronto</div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#0e6b85","options":["#0e6b85","#c2410c","#4d7c0f","#7c3aed"],"section":"Tema"},"$preview":{"width":400,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      accent: this.props.accent ?? '#0e6b85',
+      matches: [
+        { rank: 1, sign: 'Sagitario', score: 24, tint: '#d6ef8f', ink: '#3f5410',
+          say: 'Te engancha quien te hace reír hablando y no repite conversación.' },
+        { rank: 2, sign: 'Tauro', score: 22, tint: '#e6e0d4', ink: '#6b6355',
+          say: 'Necesitas calma y cero drama. Que las cosas vayan despacio, pero que vayan.' },
+        { rank: 3, sign: 'Aries', score: 20, tint: '#ffb59e', ink: '#c2410c',
+          say: 'Te tira la gente con arranque, que decide rápido y no le da mil vueltas.' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

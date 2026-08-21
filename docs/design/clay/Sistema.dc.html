@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&amp;family=Karla:wght@400;600;700&amp;display=swap">
+  <style>
+    body { margin: 0; font-family: Karla, "Helvetica Neue", system-ui, sans-serif; }
+    a { color: #0e6b85; } a:hover { color: #094c5f; }
+  </style>
+</helmet>
+
+<div style="width: 760px; background: #faf7f2; padding: 34px 32px 40px; display: flex; flex-direction: column; gap: 30px; box-sizing: border-box; color: #14120e;">
+
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284;">Destiny Reports</div>
+    <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-weight: 800; font-size: 44px; line-height: 0.94; letter-spacing: -0.04em;">Sistema Clay</div>
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 15px; font-weight: 600; line-height: 1.4; color: #4a4438; max-width: 520px; text-wrap: pretty;">Objetos de color sobre papel cálido. Sin bordes, sin sombras: el peso tipográfico y el color hacen todo el trabajo. Reemplaza la capa de tinta y latón de <span style="font-family: 'Bricolage Grotesque', monospace; font-weight: 600;">globals.css</span>, no la decora.</div>
+  </div>
+
+  <!-- Color -->
+  <div style="display: flex; flex-direction: column; gap: 13px;">
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284; border-bottom: 1px solid #e6e0d4; padding-bottom: 7px;">Color</div>
+
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #4a4438;">Superficie y tinta</div>
+    <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px;">
+      <sc-for list="{{superficie}}" as="c" hint-placeholder-count="5">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="height: 54px; border-radius: 14px; background: {{c.hex}}; border: 1px solid rgba(20,18,14,0.08);"></div>
+          <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 11px; font-weight: 700; color: #14120e;">{{c.name}}</div>
+          <div style="font-family: 'Bricolage Grotesque', monospace; font-size: 10px; font-weight: 600; color: #9a9284;">{{c.hex}}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #4a4438; padding-top: 4px;">Los cuatro elementos — el único color con significado fijo</div>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;">
+      <sc-for list="{{elementos}}" as="c" hint-placeholder-count="4">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="height: 54px; border-radius: 14px; background: {{c.hex}};"></div>
+          <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 11px; font-weight: 700; color: #14120e;">{{c.name}}</div>
+          <div style="font-family: 'Bricolage Grotesque', monospace; font-size: 10px; font-weight: 600; color: #9a9284;">{{c.hex}}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #4a4438; padding-top: 4px;">Los tres cubos — «mismo paquete» es neutro a propósito</div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;">
+      <sc-for list="{{cubos}}" as="c" hint-placeholder-count="3">
+        <div style="background: {{c.bg}}; border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 7px;">
+          <div style="display: flex; align-items: center; gap: 7px;">
+            <div style="width: 19px; height: 19px; border-radius: 999px; background: {{c.chip}}; color: #ffffff; font-family: Karla, sans-serif; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; line-height: 1; flex-shrink: 0;">{{c.sign}}</div>
+            <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: {{c.ink}};">{{c.name}}</div>
+          </div>
+          <div style="font-family: 'Bricolage Grotesque', monospace; font-size: 10px; font-weight: 600; color: {{c.ink}}; opacity: 0.65;">{{c.bg}}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- Tipografía -->
+  <div style="display: flex; flex-direction: column; gap: 13px;">
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284; border-bottom: 1px solid #e6e0d4; padding-bottom: 7px;">Tipografía</div>
+    <div style="display: flex; flex-direction: column; gap: 11px;">
+      <sc-for list="{{escala}}" as="t" hint-placeholder-count="5">
+        <div style="display: flex; align-items: baseline; gap: 16px;">
+          <div style="width: 118px; flex-shrink: 0; font-family: 'Bricolage Grotesque', monospace; font-size: 10px; font-weight: 600; color: #9a9284;">{{t.spec}}</div>
+          <div style="font-family: {{t.family}}; font-size: {{t.size}}; font-weight: {{t.weight}}; letter-spacing: {{t.tracking}}; line-height: 1.1; color: #14120e; text-transform: {{t.transform}};">{{t.sample}}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 13px; font-weight: 600; line-height: 1.45; color: #4a4438; max-width: 560px; text-wrap: pretty;">Bricolage Grotesque para todo lo que titula y para los números. Karla para todo lo que se lee. Fraunces y Plex desaparecen: la voz editorial la lleva ahora el peso, no el serif.</div>
+  </div>
+
+  <!-- Objetos -->
+  <div style="display: flex; flex-direction: column; gap: 13px;">
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284; border-bottom: 1px solid #e6e0d4; padding-bottom: 7px;">Objetos</div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;">
+
+      <div style="background: #ffffff; border-radius: 28px; padding: 18px 20px; display: flex; flex-direction: column; gap: 9px;">
+        <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #9a9284;">Bloque claro</div>
+        <div style="font-family: Karla, sans-serif; font-size: 13px; font-weight: 600; line-height: 1.4; color: #4a4438;">Papel elevado, radio 28. Para datos que se leen: stats, listas, formulario.</div>
+      </div>
+
+      <div style="background: #14120e; border-radius: 28px; padding: 18px 20px; display: flex; flex-direction: column; gap: 9px;">
+        <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #c98a5e;">Bloque tinta</div>
+        <div style="font-family: Karla, sans-serif; font-size: 13px; font-weight: 600; line-height: 1.4; color: #cfc8bb;">Otra clase de objeto. Sólo para titulares y para el muro de pago — nunca dos seguidos.</div>
+      </div>
+
+      <div style="background: #0e6b85; border-radius: 28px; padding: 18px 20px; display: flex; flex-direction: column; gap: 9px;">
+        <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.7);">Bloque a sangre</div>
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 19px; font-weight: 600; line-height: 1.25; letter-spacing: -0.02em; color: #ffffff;">El dominante. Uno por pantalla, y se lleva la frase.</div>
+      </div>
+
+      <div style="background: #ffffff; border-radius: 28px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px;">
+        <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #9a9284;">Controles</div>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <div style="background: #0e6b85; color: #ffffff; border-radius: 999px; padding: 13px 22px; font-family: Karla, sans-serif; font-size: 14px; font-weight: 700; min-height: 44px; display: flex; align-items: center; box-sizing: border-box;">Píldora</div>
+          <div style="background: #f0ece4; color: #14120e; border-radius: 999px; padding: 13px 22px; font-family: Karla, sans-serif; font-size: 14px; font-weight: 700; min-height: 44px; display: flex; align-items: center; box-sizing: border-box;">Secundaria</div>
+        </div>
+        <div style="background: #f0ece4; border-radius: 16px; padding: 13px 16px; font-family: Karla, sans-serif; font-size: 15px; font-weight: 600; color: #9a9284; min-height: 48px; display: flex; align-items: center; box-sizing: border-box;">Campo de texto</div>
+      </div>
+
+    </div>
+
+    <div style="background: #ffffff; border-radius: 28px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px;">
+      <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #9a9284;">Barra de stat</div>
+      <sc-for list="{{barras}}" as="s" hint-placeholder-count="2">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 54px; font-family: Karla, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #14120e;">{{s.name}}</div>
+          <div style="flex-grow: 1; height: 6px; background: #f0ece4; border-radius: 999px; overflow: hidden; display: flex;">
+            <div style="width: {{s.pct}}; background: {{s.color}};"></div>
+          </div>
+          <div style="width: 38px; text-align: right; font-family: 'Bricolage Grotesque', sans-serif; font-size: 21px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: {{s.color}};">{{s.value}}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- Reglas -->
+  <div style="display: flex; flex-direction: column; gap: 13px;">
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284; border-bottom: 1px solid #e6e0d4; padding-bottom: 7px;">Reglas</div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 22px;">
+      <sc-for list="{{reglas}}" as="r" hint-placeholder-count="6">
+        <div style="display: flex; align-items: flex-start; gap: 9px;">
+          <div style="width: 5px; height: 5px; border-radius: 999px; background: #c9a227; flex-shrink: 0; margin-top: 7px;"></div>
+          <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 13px; font-weight: 600; line-height: 1.4; color: #4a4438; text-wrap: pretty;">{{r.text}}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":760,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      superficie: [
+        { name: 'Papel',      hex: '#faf7f2' },
+        { name: 'Papel alto', hex: '#ffffff' },
+        { name: 'Pista',      hex: '#f0ece4' },
+        { name: 'Tinta',      hex: '#14120e' },
+        { name: 'Tinta suave',hex: '#9a9284' }
+      ],
+      elementos: [
+        { name: 'Agua',   hex: '#0e6b85' },
+        { name: 'Fuego',  hex: '#e2571e' },
+        { name: 'Aire',   hex: '#c9a227' },
+        { name: 'Tierra', hex: '#8a6240' }
+      ],
+      cubos: [
+        { name: 'A favor',   sign: '+', bg: '#d6ef8f', ink: '#23300a', chip: '#4d7c0f' },
+        { name: 'En contra', sign: '−', bg: '#ffb59e', ink: '#4a1707', chip: '#c2410c' },
+        { name: 'Mismo paquete', sign: '=', bg: '#e6e0d4', ink: '#3c362b', chip: '#6b6355' }
+      ],
+      escala: [
+        { spec: 'Bricolage 800 · 48', family: "'Bricolage Grotesque', sans-serif", size: '44px', weight: '800', tracking: '-0.04em', transform: 'none', sample: 'ARTISTA' },
+        { spec: 'Bricolage 600 · 25', family: "'Bricolage Grotesque', sans-serif", size: '25px', weight: '600', tracking: '-0.02em', transform: 'none', sample: 'Habla en indirectas' },
+        { spec: 'Bricolage 800 · 21', family: "'Bricolage Grotesque', sans-serif", size: '21px', weight: '800', tracking: '-0.03em', transform: 'none', sample: '98' },
+        { spec: 'Karla 600 · 15',     family: 'Karla, sans-serif', size: '15px', weight: '600', tracking: '0', transform: 'none', sample: 'La hora mueve el Ascendente.' },
+        { spec: 'Karla 700 · 10',     family: 'Karla, sans-serif', size: '10px', weight: '700', tracking: '0.2em', transform: 'uppercase', sample: 'De qué está hecho' }
+      ],
+      barras: [
+        { name: 'AGUA',   value: 98, pct: '98%', color: '#0e6b85' },
+        { name: 'TIERRA', value: 6,  pct: '6%',  color: '#8a6240' }
+      ],
+      reglas: [
+        { text: 'Sin sombras y sin bordes. La jerarquía es color, peso y tamaño.' },
+        { text: 'Radio 28 en objetos, 16 en campos, 999 en píldoras. Nada intermedio.' },
+        { text: 'Un solo bloque a sangre por pantalla. Dos compiten y no gana ninguno.' },
+        { text: 'El color de elemento significa algo. El resto del color es decorativo y va con moderación.' },
+        { text: 'Objetivo táctil mínimo 44px en todo lo que se toca.' },
+        { text: 'Nada de emoji como icono — ni el candado del muro de pago.' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&amp;family=Barlow:wght@400;600;700&amp;display=swap">
+  <style>
+    body { margin: 0; font-family: Barlow, "Helvetica Neue", system-ui, sans-serif; }
+    a { color: #f2b98b; } a:hover { color: #ffaf7c; }
+  </style>
+</helmet>
+
+<div style="width: 400px; min-height: 860px; background: #0f0f10; background-image: linear-gradient(0deg, rgba(212,144,101,0.22) 0%, rgba(15,15,16,0) 38%); padding: 26px 22px 28px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; color: #fefef7;">
+
+  <!-- Block 1 — la clase, impacto de portada de revista -->
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div style="font-family: Barlow, sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.167em; text-transform: uppercase; color: #868f97;">Tu personaje</div>
+    <div style="font-family: 'Barlow Condensed', 'Helvetica Neue', sans-serif; font-weight: 800; font-size: 76px; line-height: 0.86; letter-spacing: -0.005em; text-transform: uppercase; color: #fefef7; overflow-wrap: break-word;">Artista</div>
+    <div style="font-family: Barlow, sans-serif; font-size: 15px; font-weight: 400; line-height: 1.45; color: #cccccc; text-wrap: pretty;">necesita público hasta para estar en su casa</div>
+    <div style="display: flex; align-items: center; gap: 9px; padding-top: 3px;">
+      <div style="height: 1px; width: 22px; background: #f2b98b;"></div>
+      <div style="font-family: Barlow, sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.167em; text-transform: uppercase; color: #f2b98b;">Sol en Leo · Asc en Piscis</div>
+    </div>
+  </div>
+
+  <!-- Block 2 — la frase -->
+  <div style="border-top: 1px solid #1d1d1f; border-bottom: 1px solid #1d1d1f; padding: 18px 0;">
+    <div style="font-family: Barlow, sans-serif; font-size: 20px; font-weight: 400; line-height: 1.44; color: #fefef7; text-wrap: pretty;">Tu personaje <span style="font-weight: 700; border-bottom: 1px solid #f2b98b;">habla en indirectas</span>, <span style="font-weight: 700; border-bottom: 1px solid #f2b98b;">se cura llorando en su cuarto</span> y su punto débil es <span style="font-weight: 700; border-bottom: 1px solid #f2b98b;">pagar impuestos</span>.</div>
+  </div>
+
+  <!-- Block 3 — stats como reglas grabadas, nunca rellenos -->
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px;">
+      <div style="font-family: Barlow, sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.167em; text-transform: uppercase; color: #868f97;">De qué está hecho</div>
+      <div style="font-family: Barlow, sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.167em; text-transform: uppercase; color: #868f97;">percentil</div>
+    </div>
+
+    <sc-for list="{{stats}}" as="s" hint-placeholder-count="4">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="width: 56px; font-family: Barlow, sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #cccccc;">{{s.name}}</div>
+        <div style="flex-grow: 1; height: 7px; border: 1px solid #43423e; display: flex;">
+          <div style="width: {{s.pct}}; background: {{accent}};"></div>
+        </div>
+        <div style="width: 42px; text-align: right; font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 700; color: #fefef7;">{{s.value}}</div>
+      </div>
+    </sc-for>
+
+    <div style="font-family: Barlow, sans-serif; font-size: 13px; font-weight: 400; color: #868f97;">Más agua que el 98% de la gente.</div>
+  </div>
+
+  <!-- Blocks 4 y 5 — filas con regla, sin tarjetas -->
+  <div style="display: flex; flex-direction: column; gap: 16px;">
+
+    <div style="display: flex; flex-direction: column; gap: 9px;">
+      <div style="font-family: Barlow, sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.167em; text-transform: uppercase; color: #f2b98b;">A favor</div>
+      <sc-for list="{{favor}}" as="f" hint-placeholder-count="2">
+        <div style="display: flex; align-items: flex-start; gap: 11px; border-top: 1px solid #1d1d1f; padding-top: 9px;">
+          <div style="font-family: Barlow, sans-serif; font-size: 13px; font-weight: 700; color: #f2b98b; line-height: 1.5; flex-shrink: 0;">+</div>
+          <div style="font-family: Barlow, sans-serif; font-size: 14.5px; font-weight: 400; line-height: 1.5; color: #cccccc; text-wrap: pretty;">{{f.text}}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 9px;">
+      <div style="font-family: Barlow, sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.167em; text-transform: uppercase; color: #868f97;">En contra</div>
+      <sc-for list="{{contra}}" as="c" hint-placeholder-count="2">
+        <div style="display: flex; align-items: flex-start; gap: 11px; border-top: 1px solid #1d1d1f; padding-top: 9px;">
+          <div style="font-family: Barlow, sans-serif; font-size: 13px; font-weight: 700; color: #868f97; line-height: 1.5; flex-shrink: 0;">−</div>
+          <div style="font-family: Barlow, sans-serif; font-size: 14.5px; font-weight: 400; line-height: 1.5; color: #cccccc; text-wrap: pretty;">{{c.text}}</div>
+        </div>
+      </sc-for>
+    </div>
+
+  </div>
+
+  <!-- el borde del muro de pago: el acento como contorno, nunca como relleno -->
+  <div style="margin-top: auto; display: flex; flex-direction: column; gap: 12px; align-items: center; padding-top: 10px;">
+    <div style="font-family: Barlow, sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.167em; text-transform: uppercase; color: #868f97; text-align: center;">Quedan 6 habilidades y 12 signos</div>
+    <div style="border: 1px solid {{accent}}; color: {{accent}}; border-radius: 999px; padding: 12px 28px; font-family: Barlow, sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.06em;">Ver la carta entera</div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#f2b98b","options":["#f2b98b","#ffaf7c","#c9a227","#b4653a"],"section":"Tema"},"$preview":{"width":400,"height":860}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      accent: this.props.accent ?? '#f2b98b',
+      stats: [
+        { name: 'AGUA',   value: 98, pct: '98%' },
+        { name: 'FUEGO',  value: 54, pct: '54%' },
+        { name: 'AIRE',   value: 12, pct: '12%' },
+        { name: 'TIERRA', value: 6,  pct: '6%'  }
+      ],
+      favor: [
+        { text: 'Le salen bien las cosas justo cuando deja de planearlas.' },
+        { text: 'Cae bien antes de abrir la boca.' }
+      ],
+      contra: [
+        { text: 'Se enamora de lo que no se queda quieto.' },
+        { text: 'Se le desdibuja el plan en cuanto aparece público.' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

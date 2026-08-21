@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&amp;family=Nunito+Sans:wght@400;600;700&amp;display=swap">
+  <style>
+    body { margin: 0; font-family: "Nunito Sans", "Avenir Next", system-ui, sans-serif; }
+    a { color: #b26bf5; } a:hover { color: #8f4bd0; }
+  </style>
+</helmet>
+
+<div style="width: 400px; min-height: 860px; background: #f8f7f2; display: flex; flex-direction: column; box-sizing: border-box; color: #1d1d1c;">
+
+  <!-- Cielo de crepúsculo: violeta profundo sangrando en coral -->
+  <div style="background: linear-gradient(168deg, #190922 0%, {{accent}} 58%, #ff9147 100%); padding: 30px 26px 32px; border-radius: 0 0 12px 12px; display: flex; flex-direction: column; gap: 12px;">
+    <div style="font-family: 'Nunito Sans', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.7);">Tu personaje</div>
+    <div style="font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; font-size: 46px; line-height: 1.02; letter-spacing: -0.022em; color: #ffffff; overflow-wrap: break-word;">ARTISTA</div>
+    <div style="font-family: 'DM Serif Display', Georgia, serif; font-style: italic; font-size: 17px; line-height: 1.35; color: rgba(255,255,255,0.92); text-wrap: pretty;">necesita público hasta para estar en su casa</div>
+    <div style="font-family: 'Nunito Sans', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: rgba(255,255,255,0.66);">Sol en Leo · Ascendente en Piscis</div>
+  </div>
+
+  <div style="padding: 20px 18px 24px; display: flex; flex-direction: column; gap: 14px; flex-grow: 1;">
+
+    <!-- Block 2 — la frase, en la voz editorial -->
+    <div style="background: #ffffff; border: 1px solid #d8d6ce; border-radius: 12px; padding: 22px 20px; box-shadow: 0 2px 10px rgba(120, 100, 80, 0.07);">
+      <div style="font-family: 'DM Serif Display', Georgia, serif; font-size: 25px; font-weight: 400; line-height: 1.28; letter-spacing: -0.014em; color: #1d1d1c; text-wrap: pretty;">Tu personaje habla en indirectas, se cura llorando en su cuarto y su punto débil es pagar impuestos.</div>
+    </div>
+
+    <!-- Block 3 — stats, el color como confeti funcional -->
+    <div style="background: #ffffff; border: 1px solid #d8d6ce; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 13px; box-shadow: 0 2px 10px rgba(120, 100, 80, 0.07);">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px;">
+        <div style="font-family: 'Nunito Sans', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #99978f;">De qué está hecho</div>
+        <div style="font-family: 'Nunito Sans', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #99978f;">percentil</div>
+      </div>
+
+      <sc-for list="{{stats}}" as="s" hint-placeholder-count="4">
+        <div style="display: flex; align-items: center; gap: 11px;">
+          <div style="width: 56px; font-family: 'Nunito Sans', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #43423e;">{{s.name}}</div>
+          <div style="flex-grow: 1; height: 10px; background: #edeae4; border-radius: 999px; overflow: hidden; display: flex;">
+            <div style="width: {{s.pct}}; background: {{s.color}}; border-radius: 999px;"></div>
+          </div>
+          <div style="width: 40px; text-align: right; font-family: 'DM Serif Display', Georgia, serif; font-size: 21px; color: #1d1d1c;">{{s.value}}</div>
+        </div>
+      </sc-for>
+
+      <div style="font-family: 'Nunito Sans', sans-serif; font-size: 13px; font-weight: 600; color: #7a7974;">Más agua que el 98% de la gente.</div>
+    </div>
+
+    <!-- Blocks 4 y 5 — pastillas pastel -->
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+
+      <div style="background: #e8f7e2; border: 1px solid #cfe5c6; border-radius: 12px; padding: 15px 17px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="background: #4ad5e8; color: #10333a; border-radius: 999px; padding: 3px 10px; font-family: 'Nunito Sans', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;">A favor</div>
+        </div>
+        <div style="font-family: 'Nunito Sans', sans-serif; font-size: 14.5px; font-weight: 600; line-height: 1.4; color: #2c3a26; text-wrap: pretty;">Le salen bien las cosas justo cuando deja de planearlas.</div>
+        <div style="font-family: 'Nunito Sans', sans-serif; font-size: 14.5px; font-weight: 600; line-height: 1.4; color: #2c3a26; text-wrap: pretty;">Cae bien antes de abrir la boca.</div>
+      </div>
+
+      <div style="background: #fdeee6; border: 1px solid #f2d5c5; border-radius: 12px; padding: 15px 17px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="background: #ff9147; color: #4a1707; border-radius: 999px; padding: 3px 10px; font-family: 'Nunito Sans', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;">En contra</div>
+        </div>
+        <div style="font-family: 'Nunito Sans', sans-serif; font-size: 14.5px; font-weight: 600; line-height: 1.4; color: #4a2a1c; text-wrap: pretty;">Se enamora de lo que no se queda quieto.</div>
+        <div style="font-family: 'Nunito Sans', sans-serif; font-size: 14.5px; font-weight: 600; line-height: 1.4; color: #4a2a1c; text-wrap: pretty;">Se le desdibuja el plan en cuanto aparece público.</div>
+      </div>
+
+    </div>
+
+    <!-- el borde del muro de pago -->
+    <div style="margin-top: auto; display: flex; flex-direction: column; gap: 11px; align-items: center; padding-top: 8px;">
+      <div style="font-family: 'Nunito Sans', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #99978f; text-align: center;">Quedan 6 habilidades y 12 signos</div>
+      <div style="background: {{accent}}; color: #ffffff; border-radius: 999px; padding: 13px 28px; font-family: 'Nunito Sans', sans-serif; font-size: 15px; font-weight: 700;">Ver la carta entera</div>
+    </div>
+
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#b26bf5","options":["#b26bf5","#51b1fb","#ff9147","#f788d2"],"section":"Tema"},"$preview":{"width":400,"height":860}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      accent: this.props.accent ?? '#b26bf5',
+      stats: [
+        { name: 'AGUA',   value: 98, pct: '98%', color: '#51b1fb' },
+        { name: 'FUEGO',  value: 54, pct: '54%', color: '#ff9147' },
+        { name: 'AIRE',   value: 12, pct: '12%', color: '#4ad5e8' },
+        { name: 'TIERRA', value: 6,  pct: '6%',  color: '#f788d2' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

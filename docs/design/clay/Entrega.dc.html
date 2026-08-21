@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&amp;family=Karla:wght@400;600;700&amp;display=swap">
+  <style>
+    body { margin: 0; font-family: Karla, "Helvetica Neue", system-ui, sans-serif; }
+    a { color: #0e6b85; } a:hover { color: #094c5f; }
+  </style>
+</helmet>
+
+<div style="width: 400px; background: #faf7f2; padding: 22px 18px 26px; display: flex; flex-direction: column; gap: 22px; box-sizing: border-box; color: #14120e;">
+
+  <div style="display: flex; flex-direction: column; gap: 7px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284;">Destiny Reports</div>
+    <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-weight: 800; font-size: 30px; line-height: 0.98; letter-spacing: -0.035em;">Entrega</div>
+    <div style="font-family: Karla, sans-serif; font-size: 13.5px; font-weight: 600; line-height: 1.42; color: #4a4438; text-wrap: pretty;">Tres momentos en <strong style="font-weight: 700;">/informe/&lt;token&gt;</strong>. Sin cuentas: el enlace <em>es</em> el acceso, y eso manda en el diseño.</div>
+  </div>
+
+  <!-- 1 · Pago hecho, informe encargado -->
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #9a9284;">1 · Pago confirmado</div>
+
+    <div style="background: #4d7c0f; border-radius: 28px; padding: 24px 22px; display: flex; flex-direction: column; gap: 13px;">
+      <div style="width: 38px; height: 38px; border-radius: 999px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="4,10.5 8.2,14.5 16,6"></polyline>
+        </svg>
+      </div>
+      <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-size: 26px; font-weight: 600; line-height: 1.16; letter-spacing: -0.025em; color: #ffffff; text-wrap: pretty;">Listo. Estamos escribiendo tu informe.</div>
+      <div style="font-family: Karla, sans-serif; font-size: 14px; font-weight: 600; line-height: 1.45; color: rgba(255,255,255,0.88); text-wrap: pretty;">Tarda un par de minutos. Puedes quedarte aquí mirando cómo llega, o cerrar y volver cuando quieras.</div>
+    </div>
+
+    <!-- Sin cuentas, el enlace es todo lo que hay. Esto no es un extra. -->
+    <div style="background: #ffffff; border-radius: 28px; padding: 20px; display: flex; flex-direction: column; gap: 13px;">
+      <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284;">Guarda este enlace</div>
+      <div style="background: #f0ece4; border-radius: 16px; padding: 13px 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+        <div style="font-family: 'Bricolage Grotesque', monospace; font-size: 12px; font-weight: 600; color: #4a4438; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">destinyreports.es/informe/k7f2…</div>
+        <div style="width: 34px; height: 34px; border-radius: 11px; background: #14120e; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="5.5" y="5.5" width="8" height="8" rx="2"></rect>
+            <path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 9.5h.5"></path>
+          </svg>
+        </div>
+      </div>
+      <div style="display: flex; align-items: flex-start; gap: 9px;">
+        <div style="width: 20px; height: 20px; border-radius: 6px; background: #d6ef8f; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">
+          <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#3f5410" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="1.5" y="3" width="11" height="8" rx="1.5"></rect>
+            <polyline points="1.8,3.8 7,7.5 12.2,3.8"></polyline>
+          </svg>
+        </div>
+        <div style="font-family: Karla, sans-serif; font-size: 13px; font-weight: 600; line-height: 1.4; color: #4a4438; text-wrap: pretty;">También te lo hemos mandado a <strong style="font-weight: 700;">[TU CORREO]</strong>. No hay cuenta ni contraseña: este enlace es tu informe.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 · Llegando -->
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #9a9284;">2 · Llegando — se lee mientras se escribe</div>
+
+    <div style="background: #ffffff; border-radius: 28px; padding: 20px; display: flex; flex-direction: column; gap: 13px;">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px;">
+        <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284;">Escribiendo</div>
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 800; letter-spacing: -0.03em; color: #0e6b85;">3 / 8</div>
+      </div>
+      <div style="height: 6px; background: #f0ece4; border-radius: 999px; overflow: hidden; display: flex;">
+        <div style="width: 37.5%; background: #0e6b85;"></div>
+      </div>
+      <div style="font-family: Karla, sans-serif; font-size: 13px; font-weight: 600; line-height: 1.4; color: #4a4438; text-wrap: pretty;">Las tres primeras ya se pueden leer. El resto va apareciendo solo — no hace falta recargar.</div>
+      <div style="background: {{accent}}; color: #ffffff; border-radius: 999px; padding: 14px 22px; min-height: 48px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-family: Karla, sans-serif; font-size: 15px; font-weight: 700;">Empezar por la primera</div>
+    </div>
+  </div>
+
+  <!-- 3 · Completo -->
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div style="font-family: Karla, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #9a9284;">3 · Completo — lo que se desbloquea</div>
+
+    <div style="background: #14120e; border-radius: 28px; padding: 24px 22px; display: flex; flex-direction: column; gap: 15px;">
+      <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-size: 26px; font-weight: 600; line-height: 1.16; letter-spacing: -0.025em; color: #ffffff; text-wrap: pretty;">Tu carta entera, ya.</div>
+
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <sc-for list="{{desbloqueado}}" as="d" hint-placeholder-count="4">
+          <div style="display: flex; align-items: center; gap: 11px; padding: 9px 0; border-top: 1px solid #2a251d; min-height: 44px; box-sizing: border-box;">
+            <div style="width: 18px; height: 18px; border-radius: 999px; background: {{d.dot}}; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#14120e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="2,6.5 4.8,9 10,3.5"></polyline>
+              </svg>
+            </div>
+            <div style="flex-grow: 1; font-family: Karla, sans-serif; font-size: 14.5px; font-weight: 600; color: #e8e2d6; text-wrap: pretty;">{{d.text}}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 11px;">
+      <div style="flex-grow: 1; background: {{accent}}; color: #ffffff; border-radius: 999px; padding: 15px 20px; min-height: 50px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-family: Karla, sans-serif; font-size: 15px; font-weight: 700;">Leer el informe</div>
+      <div style="background: #ffffff; border-radius: 999px; padding: 15px 20px; min-height: 50px; box-sizing: border-box; display: flex; align-items: center; gap: 8px; font-family: Karla, sans-serif; font-size: 15px; font-weight: 700; color: #14120e; flex-shrink: 0;">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#14120e" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="8" y1="10.5" x2="8" y2="2"></line>
+          <polyline points="5,5 8,2 11,5"></polyline>
+          <path d="M3 9.5v3a1.5 1.5 0 0 0 1.5 1.5h7a1.5 1.5 0 0 0 1.5-1.5v-3"></path>
+        </svg>
+        Compartir
+      </div>
+    </div>
+
+    <div style="font-family: Karla, sans-serif; font-size: 12px; font-weight: 600; line-height: 1.4; color: #9a9284; padding: 0 4px; text-wrap: pretty;">La carta desbloqueada es la misma de siempre con los cubos completos, las seis habilidades y los doce signos — no otra pantalla.</div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#0e6b85","options":["#0e6b85","#c2410c","#4d7c0f","#7c3aed"],"section":"Tema"},"$preview":{"width":400,"height":1420}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      accent: this.props.accent ?? '#0e6b85',
+      desbloqueado: [
+        { text: 'Las seis habilidades, con su planeta detrás del ?', dot: '#d6ef8f' },
+        { text: 'Los doce signos, uno a uno', dot: '#d6ef8f' },
+        { text: 'Quién te descoloca', dot: '#d6ef8f' },
+        { text: 'El informe, ocho secciones', dot: '#d6ef8f' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

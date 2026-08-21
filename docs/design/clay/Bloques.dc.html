@@ -1,0 +1,196 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&amp;family=Karla:wght@400;600;700&amp;display=swap">
+  <style>
+    body { margin: 0; font-family: Karla, "Helvetica Neue", system-ui, sans-serif; }
+    a { color: #0e6b85; } a:hover { color: #094c5f; }
+  </style>
+</helmet>
+
+<div style="width: 400px; min-height: 860px; background: #faf7f2; padding: 24px 18px 26px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box; color: #14120e;">
+
+  <!-- Block 1 — la clase, sobre el papel, sin tarjeta -->
+  <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 6px 4px;">
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284;">Tu personaje</div>
+    <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-weight: 800; font-size: 48px; line-height: 0.92; letter-spacing: -0.04em; color: #14120e; overflow-wrap: break-word;">ARTISTA</div>
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 15px; font-weight: 600; line-height: 1.35; color: #4a4438; text-wrap: pretty;">necesita público hasta para estar en su casa</div>
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #9a9284;">Sol en Leo · Ascendente en Piscis</div>
+  </div>
+
+  <!-- Block 2 — la frase, bloque dominante a sangre -->
+  <div style="background: {{accent}}; border-radius: 28px; padding: 26px 22px;">
+    <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-size: 25px; font-weight: 600; line-height: 1.22; letter-spacing: -0.02em; color: #ffffff; text-wrap: pretty;">Tu personaje habla en indirectas, se cura llorando en su cuarto y su punto débil es pagar impuestos.</div>
+  </div>
+
+  <!-- Block 3 — stats. Una fila por elemento: nombre, barra y número en
+       la misma línea. La barra ya dice la magnitud, así que el número no
+       necesita su propio renglón. -->
+  <div style="background: #ffffff; border-radius: 28px; padding: 16px 20px 17px; display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px;">
+      <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9a9284;">De qué está hecho</div>
+      <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #9a9284;">percentil</div>
+    </div>
+
+    <sc-for list="{{stats}}" as="s" hint-placeholder-count="4">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 54px; font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #14120e;">{{s.name}}</div>
+        <div style="flex-grow: 1; height: 6px; background: #f0ece4; border-radius: 999px; overflow: hidden; display: flex;">
+          <div style="width: {{s.pct}}; background: {{s.color}};"></div>
+        </div>
+        <div style="width: 38px; text-align: right; font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-size: 21px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: {{s.color}};">{{s.value}}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <!-- El realce: SIEMPRE está. Es selectFeature() aplicado a las stats —
+       titula lo más raro de esta persona. Cuando un cubo se queda vacío,
+       lo que sube aquí es el punto débil o el fuerte.
+       Objeto de otra clase — tinta a sangre, no pastel — para que lea
+       como titular y no como hueco tapado. -->
+  <div style="background: #14120e; border-radius: 28px; padding: 22px; display: flex; flex-direction: column; gap: 10px;">
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: {{featureColor}};">{{featureLabel}}</div>
+    <div style="font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif; font-size: 27px; font-weight: 600; line-height: 1.16; letter-spacing: -0.025em; color: #ffffff; text-wrap: pretty;">{{featureText}}</div>
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 12px; font-weight: 600; color: #8d8579;">{{featureReceipt}}</div>
+  </div>
+
+  <!-- ▼ EL CORTE ▼  Marca de revisión, no parte del producto.
+       Todo lo de arriba cabe en 711px = 1080×1920 a 400 de ancho.
+       Es lo que el usuario ve sin hacer scroll, y lo que captura. -->
+  <div style="display: flex; align-items: center; gap: 10px; padding: 2px 4px;">
+    <div style="flex-grow: 1; border-top: 1px dashed #c3b8a4;"></div>
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #a89c86; white-space: nowrap;">el corte · 711px · 1080×1920</div>
+    <div style="flex-grow: 1; border-top: 1px dashed #c3b8a4;"></div>
+  </div>
+
+  <!-- Blocks 4, 5 y 6 — tres cubos, apilados; sólo se pinta el que tiene filas -->
+  <sc-for list="{{buckets}}" as="b" hint-placeholder-count="2">
+    <div style="background: {{b.bg}}; border-radius: 28px; padding: 18px 18px; display: flex; flex-direction: column; gap: 11px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 19px; height: 19px; border-radius: 999px; background: {{b.chip}}; color: {{b.chipInk}}; font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; line-height: 1; flex-shrink: 0;">{{b.sign}}</div>
+        <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: {{b.ink}};">{{b.label}}</div>
+      </div>
+      <sc-for list="{{b.rows}}" as="r" hint-placeholder-count="2">
+        <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 14px; font-weight: 600; line-height: 1.36; color: {{b.ink}}; text-wrap: pretty;">{{r.text}}</div>
+      </sc-for>
+    </div>
+  </sc-for>
+
+  <!-- el borde del muro de pago -->
+  <div style="margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 14px; background: #14120e; border-radius: 28px; padding: 18px 20px;">
+    <div style="font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 13px; font-weight: 600; line-height: 1.35; color: #cfc8bb; text-wrap: pretty;">Quedan 6 habilidades y 12 signos</div>
+    <div style="background: {{accent}}; color: #ffffff; border-radius: 999px; padding: 12px 20px; font-family: Karla, 'Helvetica Neue', sans-serif; font-size: 14px; font-weight: 700; white-space: nowrap; flex-shrink: 0;">Ver la carta entera</div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#0e6b85","options":["#0e6b85","#c2410c","#4d7c0f","#7c3aed"],"section":"Tema"},"caso":{"editor":"enum","options":["sin-en-contra","los-tres","sin-a-favor"],"default":"sin-en-contra","section":"Caso"},"$preview":{"width":400,"height":860}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const caso = this.props.caso ?? 'sin-en-contra';
+
+    // Tres cubos, cada uno con su propio tono. "Mismo paquete" es
+    // deliberadamente neutro: la geometría no le da valencia.
+    const FAVOR = {
+      key: 'favor', label: 'A favor', sign: '+',
+      bg: '#d6ef8f', ink: '#23300a', chip: '#4d7c0f', chipInk: '#ffffff'
+    };
+    const CONTRA = {
+      key: 'contra', label: 'En contra', sign: '−',
+      bg: '#ffb59e', ink: '#4a1707', chip: '#c2410c', chipInk: '#ffffff'
+    };
+    const PAQUETE = {
+      key: 'paquete', label: 'Viene en el mismo paquete', sign: '=',
+      bg: '#e6e0d4', ink: '#3c362b', chip: '#6b6355', chipInk: '#ffffff'
+    };
+
+    const filas = {
+      favor: [
+        { text: 'Cae bien antes de abrir la boca.' },
+        { text: 'Aguanta más de lo que aparenta cuando algo le importa.' },
+        { text: 'Se toma en serio lo que empieza.' }
+      ],
+      contra: [
+        { text: 'Se enamora de lo que no se queda quieto.' },
+        { text: 'Se le desdibuja el plan en cuanto aparece público.' }
+      ],
+      paquete: [
+        { text: 'La suerte y el freno le llegan juntos.' },
+        { text: 'Quien es y cómo pelea son la misma cosa.' }
+      ]
+    };
+
+    // El realce sustituye al cubo que falta y sube por encima de los demás.
+    const DEBIL = {
+      label: 'Su punto débil',
+      text: 'Pagar impuestos.',
+      receipt: 'Tierra 6 · menos tierra que el 94% de la gente',
+      color: '#c98a5e'
+    };
+    const FUERTE = {
+      label: 'Su punto fuerte',
+      text: 'Lee la habitación antes de entrar en ella.',
+      receipt: 'Agua 98 · más agua que el 98% de la gente',
+      color: '#7fd4e8'
+    };
+
+    // Lo más raro de la persona cuando no falta ningún cubo.
+    const RARO = {
+      label: 'Lo más raro de este personaje',
+      text: 'Más agua que el 98% de la gente.',
+      receipt: 'Agua 98 · el percentil más extremo de sus cuatro',
+      color: '#7fd4e8'
+    };
+
+    let orden = [];
+    let feature = RARO;
+
+    if (caso === 'sin-en-contra') {
+      // bilbao-2000: cero aspectos tensos entre planetas personales.
+      orden = [FAVOR, PAQUETE];
+      feature = DEBIL;
+    } else if (caso === 'sin-a-favor') {
+      // el espejo, medido en madrid-1992.
+      orden = [CONTRA];
+      feature = FUERTE;
+    } else {
+      orden = [FAVOR, CONTRA, PAQUETE];
+    }
+
+    // Cinco filas como máximo repartidas entre los cubos, orbe más
+    // cerrado primero — aquí simplificado a un reparto por orden.
+    let quedan = 5;
+    const buckets = [];
+    for (const b of orden) {
+      const rows = (filas[b.key] || []).slice(0, Math.max(0, quedan));
+      if (rows.length === 0) continue;
+      quedan -= rows.length;
+      buckets.push(Object.assign({}, b, { rows: rows }));
+    }
+
+    return {
+      accent: this.props.accent ?? '#0e6b85',
+      buckets: buckets,
+      featureLabel: feature.label,
+      featureText: feature.text,
+      featureReceipt: feature.receipt,
+      featureColor: feature.color,
+      stats: [
+        { name: 'AGUA',   value: 98, pct: '98%', color: '#0e6b85' },
+        { name: 'FUEGO',  value: 54, pct: '54%', color: '#e2571e' },
+        { name: 'AIRE',   value: 12, pct: '12%', color: '#c9a227' },
+        { name: 'TIERRA', value: 6,  pct: '6%',  color: '#8a6240' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
