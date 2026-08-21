@@ -38,8 +38,8 @@ const REST = "0123456789 .,:;·—–-()«»\"'%°′";
 const TEXT = LETTERS + SPANISH + REST;
 
 const FACES = [
-  { name: "CardDisplay", family: "Fraunces:opsz,wght@9..144,400", text: TEXT },
-  { name: "CardMono", family: "IBM+Plex+Mono:wght@400", text: TEXT },
+  { name: "CardDisplay", family: "Bricolage+Grotesque:opsz,wght@12..96,800", text: TEXT },
+  { name: "CardBody", family: "Karla:wght@600", text: TEXT },
 ];
 
 // A modern UA string is required, or Google serves legacy TTF instead of woff2.
@@ -98,9 +98,9 @@ await writeFile(
   `// Regenerate only when the card's typefaces or character set change.\n` +
   `export const CARD_FONT_CSS = ${JSON.stringify(
     rules.join("") +
-    `.cc-display{font-family:"CardDisplay",Georgia,serif;}` +
-    `.cc-mono{font-family:"CardMono",ui-monospace,monospace;}` +
-    `.cc-glyph{font-family:"CardDisplay",serif;}`,
+    `.cc-display{font-family:"CardDisplay","Helvetica Neue",sans-serif;}` +
+    `.cc-mono{font-family:"CardBody","Helvetica Neue",sans-serif;}` +
+    `.cc-glyph{font-family:"CardDisplay",sans-serif;}`,
   )};\n`,
   "utf8",
 );
