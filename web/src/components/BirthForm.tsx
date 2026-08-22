@@ -1,19 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { CharacterCardView } from "./CharacterCard";
+import { PlaceCombo } from "./PlaceCombo";
 import { CharacterCardShare } from "./CharacterCardShare";
 import { Matches } from "./Matches";
 import { LoveHook } from "./LoveHook";
 import type { ChartResponse, FreeReading } from "./types";
-
-interface Place {
-  name: string;
-  region: string;
-  countryCode: string;
-  latitude: number;
-  longitude: number;
-}
+import type { Place } from "@/hooks/useBirthAnswers";
 
 export function BirthForm() {
   const [firstName, setFirstName] = useState("");
@@ -21,67 +15,11 @@ export function BirthForm() {
   const [time, setTime] = useState("");
   const [query, setQuery] = useState("");
   const [place, setPlace] = useState<Place | null>(null);
-  const [options, setOptions] = useState<Place[]>([]);
-  const [highlighted, setHighlighted] = useState(-1);
-  const [open, setOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<ChartResponse | null>(null);
   const [free, setFree] = useState<FreeReading | null>(null);
-
-  const comboRef = useRef<HTMLDivElement>(null);
-
-  // Debounced place lookup. Skipped once a place is chosen.
-  useEffect(() => {
-    if (place || query.trim().length < 2) {
-      setOptions([]);
-      return;
-    }
-    const id = setTimeout(async () => {
-      try {
-        const res = await fetch(`/api/places?q=${encodeURIComponent(query)}`);
-        const found: Place[] = await res.json();
-        setOptions(found);
-        setOpen(found.length > 0);
-        setHighlighted(found.length > 0 ? 0 : -1);
-      } catch {
-        setOptions([]);
-      }
-    }, 180);
-    return () => clearTimeout(id);
-  }, [query, place]);
-
-  useEffect(() => {
-    function onClickOutside(e: MouseEvent) {
-      if (!comboRef.current?.contains(e.target as Node)) setOpen(false);
-    }
-    document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
-  }, []);
-
-  const choose = useCallback((p: Place) => {
-    setPlace(p);
-    setQuery(`${p.name}, ${p.region || p.countryCode}`);
-    setOpen(false);
-    setOptions([]);
-  }, []);
-
-  function onPlaceKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (!open || options.length === 0) return;
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setHighlighted((h) => (h + 1) % options.length);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setHighlighted((h) => (h - 1 + options.length) % options.length);
-    } else if (e.key === "Enter" && highlighted >= 0) {
-      e.preventDefault();
-      choose(options[highlighted]);
-    } else if (e.key === "Escape") {
-      setOpen(false);
-    }
-  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -183,48 +121,14 @@ export function BirthForm() {
           que puedas.
         </p>
 
-        <div className="field combo" ref={comboRef}>
-          <label htmlFor="lugar">Lugar de nacimiento</label>
-          <input
-            id="lugar"
-            type="text"
-            role="combobox"
-            aria-expanded={open}
-            aria-controls="lugar-opciones"
-            aria-autocomplete="list"
-            aria-activedescendant={highlighted >= 0 ? `lugar-op-${highlighted}` : undefined}
-            autoComplete="off"
-            placeholder="Empieza a escribir…"
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setPlace(null);
-            }}
-            onKeyDown={onPlaceKeyDown}
-          />
-          {open && options.length > 0 && (
-            <ul className="options" id="lugar-opciones" role="listbox">
-              {options.map((p, i) => (
-                <li
-                  key={`${p.name}-${p.latitude}-${p.longitude}`}
-                  id={`lugar-op-${i}`}
-                  role="option"
-                  aria-selected={i === highlighted}
-                  onMouseEnter={() => setHighlighted(i)}
-                  onClick={() => choose(p)}
-                >
-                  <span className="place">{p.name}</span>
-                  <span className="where">
-                    {[p.region, p.countryCode].filter(Boolean).join(" · ")}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-          <span className="hint">
-            ¿Naciste en un pueblo muy pequeño? Elige el municipio más cercano.
-          </span>
-        </div>
+        <PlaceCombo
+          value={query}
+          onQueryChange={(q) => {
+            setQuery(q);
+            setPlace(null);
+          }}
+          onChoose={setPlace}
+        />
 
         <button className="submit" type="submit" disabled={loading}>
           {loading ? "Leyendo tu carta…" : "Ver mi lectura gratuita"}
