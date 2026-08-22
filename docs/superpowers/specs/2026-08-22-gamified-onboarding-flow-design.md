@@ -160,16 +160,36 @@ product that promises not to.
 error paths land in the same place."* With four questions answered it
 stops being a nuisance and becomes indefensible.
 
+### 10. The landing no longer states the grounding rule
+
+*"Cada frase nombra la posición exacta que la sustenta"* comes off the
+landing page. It is the method, not the benefit, and it is too technical
+to earn its place at the moment someone decides whether to bother. The
+subhead sells specificity instead.
+
+**Read this precisely, because it is easy to misread as something much
+worse.** What changed is the *marketing claim*. The *engineering rule is
+untouched*: `validateTeaser()` and `groundingProblems()` still gate
+output, grounding is still fatal on the paid tier, and `{{RULES_CHART}}`
+still governs which prompts may see the technical vocabulary. Dropping
+the sentence from a landing page has no bearing on whether the model is
+allowed to invent a retrogradation. It is not.
+
+Addendum 5's *"precision as mysticism"* direction was already superseded
+on the visual axis by the Clay reskin. This supersedes it on the copy
+axis: **the precision is still the product, it is just no longer the
+pitch.**
+
 ---
 
 ## The flow, step by step
 
 ### Landing — `/`
 
-Headline leads with the card and the invitation. Exactly one line of the
-precision argument survives above the fold so the moat is visible before
-the click; the current long paragraph moves down or folds into the
-existing privacy footnote.
+Headline leads with the card and the invitation. The subhead says the
+*benefit* — that this one is about them specifically — and never the
+method. The current long paragraph about astronomical precision comes
+out entirely; see decision 10.
 
 ```
         Destiny Reports
@@ -177,8 +197,8 @@ existing privacy footnote.
      Crea tu carta.
      Descubre tu personaje.
 
-  Sin horóscopos genéricos: cada frase
-  nombra la posición exacta que la sustenta.
+  No es un horóscopo. Es tu carta,
+  y no se parece a la de nadie.
 
      [  Empezar  ]
 
@@ -390,6 +410,13 @@ does not prove the tsx path works.
   the deliverable; these are placeholders that read correctly.
 - **Whether "40 segundos" survives measurement.** It is a promise on the
   landing page and should be timed on a real device before it ships.
+- **Whether the technical register also comes out of the teaser and the
+  final report.** Raised on 2026-08-22 alongside decision 10, and
+  deliberately *not* settled here: this spec only governs the landing.
+  It is a real question — the plain-register work (Addendum 17) already
+  moved the paid report off degrees, orbs and house numbers, so the
+  direction is consistent — but it touches `prompts/`, `src/sections.ts`
+  and the eight briefs, needs a battery run, and belongs in its own spec.
 - **Re-measuring `/api/free`.** The ~9.5s figure is from 2026-08-07 and
   the timing of the reveal is built on it. Worth re-running
   `scripts/battery-free.ts` before trusting the 4.5s floor.
