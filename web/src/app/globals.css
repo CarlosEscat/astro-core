@@ -278,6 +278,80 @@ body {
   text-wrap: pretty;
 }
 
+/* ── The flow: one question per screen ──────────────────────────── */
+/*
+ * HOLDING STYLING. The design canvas has no artboard for a one-question
+ * screen yet — `Entrada` still shows the old four-field panel. This uses only
+ * shipped tokens and reuses `.field` and `.submit` so nothing here invents a
+ * new visual language; it is meant to be replaced by a designed screen, not
+ * treated as one.
+ */
+.pregunta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 55vh;
+  max-width: var(--measure);
+  margin: 0 auto;
+}
+
+/* The question IS the screen, so it carries display type, not caption type.
+ * Written as `.field label.pregunta__q` (0,2,1) on purpose: plain
+ * `.pregunta__q` (0,1,0) loses to `.field label` (0,1,1) and renders at
+ * caption size. */
+.field label.pregunta__q {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--tinta);
+  margin-bottom: 1.1rem;
+  text-wrap: balance;
+}
+
+.reaccion {
+  background: var(--papel-alto);
+  border-radius: var(--radio-objeto);
+  padding: 1.25rem;
+  margin-top: 1.1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--tinta-lectura);
+  text-wrap: pretty;
+}
+
+/* The class name is the reward. It gets the loudest type on the screen. */
+.reaccion__clase {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  color: var(--agua);
+  margin-bottom: 0.5rem;
+}
+
+/* Deliberately quiet: an escape hatch, not an equal option. */
+.escape {
+  display: block;
+  width: 100%;
+  margin-top: 0.85rem;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--tinta-suave);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.escape:hover { color: var(--tinta-media); }
+
 /* ── Reading ────────────────────────────────────────────────────── */
 
 .reading { margin-top: 1.75rem; }
