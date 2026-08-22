@@ -50,7 +50,14 @@ export function useBirthAnswers() {
   // Storage does not exist during SSR, so the first render is always empty and
   // `ready` stays false until the client has read it. Guarding a step before
   // then would bounce everyone back to question 1.
+  //
+  // The rule wants this out of an effect, but every alternative is worse
+  // here: a lazy useState initialiser would read storage during the first
+  // render, which the server cannot do, producing a hydration mismatch. This
+  // runs exactly once on mount and is the "subscribe to an external system"
+  // case the rule's own documentation carves out.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAnswers(read());
     setReady(true);
   }, []);

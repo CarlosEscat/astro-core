@@ -262,6 +262,15 @@ body {
   transition: background 140ms ease;
 }
 
+/* The landing's CTA is a <Link>, not a <button>: an anchor needs the block
+ * layout and centring a button gets for free. */
+.submit--enlace {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  line-height: 1.25;
+}
+
 .submit:hover:not(:disabled) { background: var(--agua-honda); }
 .submit:disabled { opacity: 0.5; cursor: progress; }
 

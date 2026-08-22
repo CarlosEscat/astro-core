@@ -29,11 +29,13 @@ export function PlaceCombo({ value, onQueryChange, onChoose, onEmpty, id = "luga
   const comboRef = useRef<HTMLDivElement>(null);
 
   // Debounced place lookup. Skipped once a place is chosen.
+  //
+  // Nothing is cleared here on the way out: what the list SHOWS is derived
+  // below, so a stale `options` array from a previous query simply stops being
+  // visible. Clearing it synchronously in the effect was a cascading render,
+  // and it was the last of that pattern carried over from BirthForm.
   useEffect(() => {
-    if (chosen || value.trim().length < 2) {
-      setOptions([]);
-      return;
-    }
+    if (chosen || value.trim().length < 2) return;
     const timer = setTimeout(async () => {
       try {
         const res = await fetch(`/api/places?q=${encodeURIComponent(value)}`);
@@ -71,17 +73,20 @@ export function PlaceCombo({ value, onQueryChange, onChoose, onEmpty, id = "luga
     [onChoose, onQueryChange],
   );
 
+  /** What the listbox may show right now, rather than what was last fetched. */
+  const visible = !chosen && value.trim().length >= 2 ? options : [];
+
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (!open || options.length === 0) return;
+    if (!open || visible.length === 0) return;
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setHighlighted((h) => (h + 1) % options.length);
+      setHighlighted((h) => (h + 1) % visible.length);
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setHighlighted((h) => (h - 1 + options.length) % options.length);
+      setHighlighted((h) => (h - 1 + visible.length) % visible.length);
     } else if (e.key === "Enter" && highlighted >= 0) {
       e.preventDefault();
-      choose(options[highlighted]);
+      choose(visible[highlighted]);
     } else if (e.key === "Escape") {
       setOpen(false);
     }
@@ -107,9 +112,9 @@ export function PlaceCombo({ value, onQueryChange, onChoose, onEmpty, id = "luga
         }}
         onKeyDown={onKeyDown}
       />
-      {open && options.length > 0 && (
+      {open && visible.length > 0 && (
         <ul className="options" id="lugar-opciones" role="listbox">
-          {options.map((p, i) => (
+          {visible.map((p, i) => (
             <li
               key={`${p.name}-${p.latitude}-${p.longitude}`}
               id={`lugar-op-${i}`}
