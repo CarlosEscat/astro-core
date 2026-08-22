@@ -180,6 +180,24 @@ on the visual axis by the Clay reskin. This supersedes it on the copy
 axis: **the precision is still the product, it is just no longer the
 pitch.**
 
+### 11. The landing carries no step count and no time estimate
+
+*"4 preguntas · 40 segundos"* also comes off. The landing is now four
+elements: wordmark, headline, subhead, button.
+
+**What this trades away, recorded so it is a decision and not an
+oversight.** A step count tells someone the commitment is small, and a
+time estimate tells them it is short; without either, the button is an
+unlabelled door. The counter-argument, and the one taken: a number
+invites arithmetic at exactly the moment you want appetite, and the flow
+itself answers the question within two seconds of the first tap.
+
+**Do not add a reassurance line back without evidence.** If the landing
+ever needs one, it should come from a measured drop-off between `/` and
+`/crear/nombre`, not from a future session finding the page bare. The
+one benefit of it being gone is that nothing now promises a duration the
+reveal's 4.5s floor has to fit inside.
+
 ---
 
 ## The flow, step by step
@@ -201,13 +219,10 @@ out entirely; see decision 10.
   y no se parece a la de nadie.
 
      [  Empezar  ]
-
-     4 preguntas · 40 segundos
 ```
 
-The "40 segundos" claim is a promise the flow has to keep. Four inputs
-plus a 4.5s reveal is comfortably inside it; if the flow grows a fifth
-question, the number changes or comes out.
+**Nothing else.** No step count, no time estimate, no reassurance line —
+see decision 11.
 
 ### Q1 — `/crear/nombre`
 
@@ -408,8 +423,6 @@ does not prove the tsx path works.
   covers landing → free reading only.
 - **Exact wording.** Every Spanish line above is a draft. The tables are
   the deliverable; these are placeholders that read correctly.
-- **Whether "40 segundos" survives measurement.** It is a promise on the
-  landing page and should be timed on a real device before it ships.
 - **Whether the technical register also comes out of the teaser and the
   final report.** Raised on 2026-08-22 alongside decision 10, and
   deliberately *not* settled here: this spec only governs the landing.
