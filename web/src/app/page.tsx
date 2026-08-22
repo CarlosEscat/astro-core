@@ -1,6 +1,19 @@
-import { BirthForm } from "@/components/BirthForm";
+import Link from "next/link";
 import { ZodiacArc } from "@/components/ZodiacArc";
 
+/**
+ * Four elements: wordmark, headline, subhead, button.
+ *
+ * The subhead says the BENEFIT, never the method (spec decision 10). The old
+ * "cada frase nombra la posición exacta que la sustenta" is gone — it is too
+ * technical to earn its place at the moment someone decides whether to bother.
+ * The engineering rule it described is untouched: validateTeaser() and
+ * groundingProblems() still gate output.
+ *
+ * No step count and no time estimate either (spec decision 11). Do not add a
+ * reassurance line back without a measured drop-off between / and
+ * /crear/nombre.
+ */
 export default function Home() {
   return (
     <main>
@@ -10,17 +23,15 @@ export default function Home() {
 
         <div className="hero">
           <h1>
-            Tu carta natal, <em>leída de verdad</em>.
+            Crea tu carta.<br />
+            <em>Descubre tu personaje.</em>
           </h1>
-          <p>
-            Calculamos tu carta con precisión astronómica y la leemos con una
-            regla estricta: cada frase nombra la posición exacta que la
-            sustenta. Nada que valga para cualquiera. Empieza por tu lectura
-            gratuita.
-          </p>
+          <p>No es un horóscopo. Es tu carta, y no se parece a la de nadie.</p>
         </div>
 
-        <BirthForm />
+        <Link className="submit submit--enlace" href="/crear/nombre">
+          Empezar
+        </Link>
 
         <p className="foot">
           Tu fecha y tu lugar de nacimiento no salen de este servidor: la carta

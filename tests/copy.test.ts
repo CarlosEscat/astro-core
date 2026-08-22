@@ -4,6 +4,10 @@ import { SIGN_ES, SIGN_GLYPH, SUN_ES, MOON_ES, ASC_ES, PARTNER_ES } from "../src
 import { CLASS_ES } from "../src/copy/classes.es";
 import { SIGN_ORDER } from "../src/rulers";
 import { copyProblems, countGenderMarks } from "../src/validate";
+import {
+  CLASE_REACCION_ES, CUSPIDE_ES, HORA_ES, DIAL_ES, NOMBRE_ES,
+  HORA_DESCONOCIDA_ES, ERRORES_ES, horaReaccion,
+} from "../src/copy/flow.es";
 
 const TABLES = { SUN_ES, MOON_ES, ASC_ES, PARTNER_ES, SIGN_ES, SIGN_GLYPH };
 
@@ -143,5 +147,55 @@ describe("class copy", () => {
     for (const sign of SIGN_ORDER) {
       expect(CLASS_ES[sign], sign).toMatch(/(?:ISTA|EGA|E)$/);
     }
+  });
+});
+
+describe("flow copy", () => {
+  it("has a reaction for all twelve classes", () => {
+    for (const sign of SIGN_ORDER) {
+      expect(CLASE_REACCION_ES[sign], sign).toBeTruthy();
+    }
+    expect(Object.keys(CLASE_REACCION_ES)).toHaveLength(12);
+  });
+
+  it("covers the whole clock with ascending buckets ending at 24", () => {
+    const hours = HORA_ES.map((b) => b.untilHour);
+    expect([...hours].sort((a, b) => a - b)).toEqual(hours);
+    expect(hours.at(-1)).toBe(24);
+  });
+
+  it("maps a time to its bucket", () => {
+    expect(horaReaccion("22:45")).toBe(HORA_ES.at(-1)!.linea);
+    expect(horaReaccion("03:10")).toBe(HORA_ES[0].linea);
+    expect(horaReaccion("12:00")).toBe(HORA_ES[2].linea);
+  });
+
+  it("falls back to the last bucket rather than returning undefined", () => {
+    expect(horaReaccion("99:99")).toBe(HORA_ES.at(-1)!.linea);
+    expect(horaReaccion("")).toBeTruthy();
+  });
+
+  it("has six dial lines, and the placeholders they promise", () => {
+    expect(DIAL_ES).toHaveLength(6);
+    const all = DIAL_ES.join(" ");
+    for (const token of ["{coords}", "{ciudad}", "{fecha}"]) {
+      expect(all, token).toContain(token);
+    }
+  });
+
+  // The epicene rule. These are second-person Spanish, which is exactly where
+  // gendered participles get in.
+  it("is free of gendered and jargon copy", () => {
+    const lines = [
+      ...Object.values(CLASE_REACCION_ES),
+      ...HORA_ES.map((b) => b.linea),
+      ...DIAL_ES,
+      ...Object.values(ERRORES_ES),
+      ...Object.values(NOMBRE_ES),
+      CUSPIDE_ES,
+      HORA_DESCONOCIDA_ES,
+    ];
+    const bad = lines.flatMap((line) => copyProblems(line).map((p) => `${line} → ${p}`));
+    expect(bad).toEqual([]);
   });
 });

@@ -12,7 +12,7 @@ const n = (x: number) => x.toLocaleString("es-ES", { maximumFractionDigits: 1 })
  * which would be a number we invented and they cannot audit.
  *
  * Pure: no fetch, no browser APIs — so it can serve the free page, the
- * delivery route and Puppeteer alike, though today only `BirthForm` renders it.
+ * delivery route and Puppeteer alike, though today only `Reading` renders it.
  */
 export function CharacterCardView({
   card, firstName,

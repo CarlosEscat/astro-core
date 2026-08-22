@@ -189,3 +189,35 @@ describe("freeCard", () => {
     expect(freeCard(bilbao).rareza.oneIn).toBe(1728);
   });
 });
+
+describe("freeCard hourKnown", () => {
+  it("marks the Ascendant exact by default", () => {
+    expect(freeCard(bilbao).seVe.approximate).toBe(false);
+  });
+
+  it("marks the Ascendant approximate when the hour was skipped", () => {
+    expect(freeCard(bilbao, { hourKnown: false }).seVe.approximate).toBe(true);
+  });
+
+  it("treats an explicit hourKnown:true as exact", () => {
+    expect(freeCard(bilbao, { hourKnown: true }).seVe.approximate).toBe(false);
+  });
+
+  it("still returns a sign, so the card has something to render", () => {
+    const card = freeCard(bilbao, { hourKnown: false });
+    expect(card.seVe.sign).toBeTruthy();
+    expect(card.seVe.gloss).toBeTruthy();
+  });
+
+  // KNOWN AND ACCEPTED (spec decision 8, reaffirmed 2026-08-22): only the
+  // Ascendant is hedged. porDentro.area comes from the Moon's HOUSE, which is
+  // as hour-derived as the Ascendant is, so with an assumed 12:00 it is close
+  // to random — and the card states it plainly. The Moon's SIGN and gloss stay
+  // reliable (the Moon moves ~13°/day), so only the area string is affected.
+  // This test pins the accepted behaviour so a future change is deliberate.
+  it("does NOT hedge the Moon's life area, by decision", () => {
+    const card = freeCard(bilbao, { hourKnown: false });
+    expect(card.porDentro.area).toBeTruthy();
+    expect(card.porDentro).not.toHaveProperty("approximate");
+  });
+});

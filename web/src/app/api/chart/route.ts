@@ -13,7 +13,7 @@ export const runtime = "nodejs";
  * the product's whole argument.
  */
 export async function POST(req: NextRequest) {
-  const { date, time, latitude, longitude } = await req.json();
+  const { date, time, latitude, longitude, hourKnown } = await req.json();
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date ?? "") || !/^\d{2}:\d{2}$/.test(time ?? "")) {
     return NextResponse.json({ error: "Fecha u hora no válidas." }, { status: 400 });
@@ -55,6 +55,8 @@ export async function POST(req: NextRequest) {
                 weakest: elements.weakest, total: elements.total },
     ruler: { body: ruler.body, sign: ruler.sign, inDomicile: ruler.inDomicile },
     signature: signature(chart),
-    card: freeCard(chart),
+    // `hourKnown !== false` treats an absent field as a known hour, so every
+    // existing caller keeps working unchanged.
+    card: freeCard(chart, { hourKnown: hourKnown !== false }),
   });
 }

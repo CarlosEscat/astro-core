@@ -85,7 +85,42 @@ Found by measurement this session; all still unresolved in
 
 ---
 
-Last updated: 2026-08-22 — **THE CLAY RESKIN IS BUILT AND MERGED.** Still
+Last updated: 2026-08-22 — **THE GAMIFIED ONBOARDING FLOW IS BUILT, ON
+`feat/onboarding-flow`, NOT YET MERGED.** 338 → **406 tests**. Tasks 1-10 of
+`docs/superpowers/plans/2026-08-22-gamified-onboarding-flow.md` are done;
+spec is `docs/superpowers/specs/2026-08-22-gamified-onboarding-flow-design.md`,
+eleven decisions. This is **step 1 of the sequencing decision** at the top of
+this file — the landing and the path from it to a delivered free reading.
+
+The landing is now four elements (wordmark, headline, subhead, button) and
+the four-field panel is gone: `BirthForm.tsx` is **deleted**, replaced by
+five routes under `/crear`, one question per screen, each answer paying back
+something computed. Read **Addendum 21** before touching any of it.
+
+**Two things a future session must not "fix":**
+
+1. **The 4.5s reveal is deliberate.** `/api/chart` returns in ~80ms. The wait
+   exists so the person watches the system compute, which is what makes the
+   9,90 € feel earned — and it pushes the prose skeleton below the fold. This
+   **deliberately reverses the `Espera` artboard**, whose sticky note says the
+   calculating state is *"candidato a borrarse"*.
+2. **The landing no longer says "cada frase nombra la posición exacta que la
+   sustenta"** — nor does the page metadata. That is a **marketing** change
+   only. `validateTeaser()` and `groundingProblems()` are untouched and
+   grounding is still fatal on the paid tier.
+
+**STYLING IS HOLDING, NOT DESIGNED.** The canvas has no artboard for a
+one-question screen — `Entrada` still shows the old panel. Only shipped
+tokens are used and `.field`/`.submit` are reused, so nothing invents a new
+visual language, but these screens need a designed treatment before launch.
+**This is the most important open item on this branch.**
+
+Also still open, and needing Carlos's call: the two spec gaps at the top of
+the plan. `porDentro.area` is as hour-dependent as `seVe` but is NOT hedged,
+and the free prose is built on the Ascendant too. Decision 8 was reaffirmed
+as written on 2026-08-22, so both are known accepted states, pinned by a test.
+
+Before that, same day — **THE CLAY RESKIN IS BUILT AND MERGED.** Still
 338 tests, because **no test in this repo asserts a class, colour or
 font** — they cannot catch a visual regression, and that fact is the
 single most important thing to know before touching the visual layer
@@ -2331,3 +2366,101 @@ whole globe**, oceans and poles included. *"Más agua que el 98% de la
 gente"* should mean real people. All three battery charts came out
 weakest-in-Tierra, which may be real or may be an artifact of that
 sampling — check before baking.
+
+---
+
+## Addendum 21: the gamified onboarding flow (2026-08-22)
+
+Spec: `docs/superpowers/specs/2026-08-22-gamified-onboarding-flow-design.md`
+Plan: `docs/superpowers/plans/2026-08-22-gamified-onboarding-flow.md`
+Branch: `feat/onboarding-flow`, 338 → 406 tests, ten tasks, ten commits.
+
+### What it is
+
+Four questions asked one at a time — nombre, día, hora, lugar — each answer
+paying back something **computed and true, with zero LLM calls**, ending in a
+deliberate 4.5-second reveal and the character card. Five routes under
+`/crear`; answers live in `sessionStorage`, never in a URL.
+
+The reward at question 2 is the **class, not the sign**: `CLASS_ES` already
+shipped, so Leo arrives as **ARTISTA**. That was free copy and a better beat.
+
+### The cusp guard, and the measurement that replaced an estimate
+
+The flow names a class from the date alone, before the hour or place are
+known. `sunSignForDate()` (`src/sunsign.ts`) is what stops that contradicting
+`computeNatalChart` at question 4.
+
+The spec guessed a "boundary day ±1" rule. It was not needed. The Sun's
+ecliptic longitude increases monotonically, so local midnight at UTC+14 and
+local 23:59 at UTC−12 **bound every sign it can occupy** on a date. Checked
+across 1900-2030 at build time into a committed table.
+
+**MEASURED: 45 of 366 days guarded (12,3%)**, against the spec's estimate of
+~36 (~10%). Three to four days per boundary — the ~50h bracket plus a century
+of drift. On those days the flow shows the cusp line and names nothing.
+
+`src/sunsign.ts` imports **no ephemeris**, on purpose: it runs in the browser
+and `astronomy-engine` would land in the landing bundle. There is a grep for
+this in the plan's task 1.
+
+### Measured in the browser, on the real flow
+
+Card at **5015ms** from the commit press. Lines echoed *"43,26° N · 2,93° O"*
+and *"Bilbao el 28 de julio de 2000"*, ending on ARTISTA / Leo 6°03′.
+
+`/api/free` took **longer than 15s** on that run — slower than Addendum 7's
+~9,5s first-attempt figure, consistent with a gate retry. The card was on
+screen at 5s regardless, which is the whole point of splitting them.
+
+**Note for anyone re-measuring: a hidden browser pane throttles timers to
+1000ms**, so the dial lines appear ~1s apart rather than 750ms. That is the
+harness, not the code.
+
+### Five defects the browser caught and the tests could not
+
+The handover's standing warning — no test in this repo asserts a class, colour
+or font — earned its keep again.
+
+1. **`Lugar`'s commit button was permanently disabled** for anyone returning
+   to the step with a place already chosen. It seeded
+   `useState(answers.place)`, which captures the first render — always empty,
+   because the hook reads `sessionStorage` in an effect.
+2. **The dial flashed `Fijando tus coordenadas: —`** for 2ms, same cause.
+3. **The three questions rendered label and input on one line**, because they
+   did not reuse `.field`.
+4. **`.pregunta__q` (0,1,0) lost a specificity fight to `.field label`**
+   (0,1,1) and rendered the question at caption size. It is now written
+   `.field label.pregunta__q` with a comment saying why.
+5. **The page metadata still carried the removed grounding claim**, so it
+   showed in the browser tab, search results and link previews.
+
+All five are now covered by tests or comments. **The general lesson: any state
+seeded from `useBirthAnswers` on first render is empty.** Derive it, never
+seed it — there are four such sites and all four were wrong at first.
+
+### Two smaller things worth keeping
+
+**The sunsign property test was flaky, not broken** — ~4,1s against vitest's
+5s default, which it cleared alone and missed under parallel load. Narrowed to
+the bracket's own bounds (−12, 0, +14) and given an explicit 30s timeout.
+
+**Found and NOT fixed, pre-existing:** `computeNatalChart` rejects UTC years
+outside 1900-2100, so a birth on **1900-01-01 east of Greenwich** resolves to
+an 1899 instant it will not chart — and that is the earliest date the form
+offers. `/api/chart` throws rather than returning a handled error.
+
+### `copyProblems()` has a blind spot
+
+It checks adjectives and participles, **not object pronouns**. The Leo line
+originally read *"el sitio en el que lo ponen"*, which assumes a masculine
+object and passed the gate completely clean. Read new copy for pronouns by
+eye; the gate will not do it.
+
+### What is NOT built
+
+- **Designed question screens.** See the warning in Estado actual.
+- The rest of step 1: checkout, `/informe/<token>`, the returning visitor, the
+  second reading, expired tokens.
+- The two spec gaps: `porDentro.area` and the prose, both hour-dependent and
+  both deliberately unhedged.
