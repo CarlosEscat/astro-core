@@ -4,7 +4,7 @@ import { render, screen, cleanup, fireEvent, waitFor } from "@testing-library/re
 import userEvent from "@testing-library/user-event";
 import { Nombre } from "@/components/questions/Nombre";
 import { Cuando } from "@/components/questions/Cuando";
-import { Lugar } from "@/components/questions/Lugar";
+import { Donde } from "@/components/questions/Donde";
 import { STORAGE_KEY } from "@/hooks/useBirthAnswers";
 import { SUN_SIGN_BY_DAY } from "@core/sunsign-table";
 
@@ -17,13 +17,15 @@ const stored = () => JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? "{}");
 const GUARDED = `2000-${Object.entries(SUN_SIGN_BY_DAY).find(([, v]) => v === null)![0]}`;
 
 describe("Nombre", () => {
-  it("stores the name and reacts with it", async () => {
+  it("stores the name and advances without a reaction", async () => {
     const user = userEvent.setup();
-    render(<Nombre onNext={() => {}} />);
+    const onNext = vi.fn();
+    render(<Nombre onNext={onNext} />);
     await user.type(screen.getByLabelText(/te llamas/i), "Carlos");
     await user.click(screen.getByRole("button", { name: /siguiente/i }));
     expect(stored().firstName).toBe("Carlos");
-    expect(screen.getByText(/Vale, Carlos/)).toBeTruthy();
+    expect(onNext).toHaveBeenCalled();
+    expect(screen.queryByText(/Vale, Carlos/)).toBeNull();
   });
 
   it("is skippable and advances without a name", async () => {
@@ -35,12 +37,9 @@ describe("Nombre", () => {
     expect(onNext).toHaveBeenCalled();
   });
 
-  it("does not advance on an empty name via the main button", async () => {
-    const user = userEvent.setup();
-    const onNext = vi.fn();
-    render(<Nombre onNext={onNext} />);
-    await user.click(screen.getByRole("button", { name: /siguiente/i }));
-    expect(onNext).not.toHaveBeenCalled();
+  it("keeps the CTA disabled while the box is empty", () => {
+    render(<Nombre onNext={() => {}} />);
+    expect((screen.getByRole("button", { name: /siguiente/i }) as HTMLButtonElement).disabled).toBe(true);
   });
 });
 
@@ -112,7 +111,7 @@ describe("Cuando", () => {
   });
 });
 
-describe("Lugar", () => {
+describe("Donde", () => {
   beforeEach(() => {
     vi.stubGlobal("fetch", vi.fn(async () => ({
       ok: true,
@@ -124,7 +123,7 @@ describe("Lugar", () => {
   });
 
   it("cannot be committed before a place is chosen", () => {
-    render(<Lugar onNext={() => {}} />);
+    render(<Donde onNext={() => {}} />);
     expect((screen.getByRole("button", { name: /crear mi carta/i }) as HTMLButtonElement).disabled).toBe(true);
   });
 
@@ -132,7 +131,7 @@ describe("Lugar", () => {
   it("does not advance on choosing, only on the button", async () => {
     const user = userEvent.setup();
     const onNext = vi.fn();
-    render(<Lugar onNext={onNext} />);
+    render(<Donde onNext={onNext} />);
     await waitFor(() => screen.getByRole("combobox"));
     await user.type(screen.getByRole("combobox"), "Bilbao");
     await waitFor(() => screen.getByRole("option"));
@@ -145,7 +144,7 @@ describe("Lugar", () => {
   });
 
   it("shows no astrological reaction of its own", async () => {
-    render(<Lugar onNext={() => {}} />);
+    render(<Donde onNext={() => {}} />);
     await waitFor(() => screen.getByRole("combobox"));
     expect(screen.queryByText(/Ascendente/i)).toBeNull();
   });
@@ -183,21 +182,21 @@ describe("StepGuard", () => {
   });
 });
 
-describe("Lugar, returning to the step", () => {
+describe("Donde, returning to the step", () => {
   beforeEach(() => {
     vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => [] })));
   });
 
-  // Regression: Lugar seeded `useState(answers.place)`, which captures the
-  // FIRST render — always empty, because the hook reads storage in an effect.
-  // The commit button stayed disabled forever for anyone coming back here,
-  // which the browser caught and no test did.
+  // Regression: Donde (née Lugar) seeded `useState(answers.place)`, which
+  // captures the FIRST render — always empty, because the hook reads storage
+  // in an effect. The commit button stayed disabled forever for anyone coming
+  // back here, which the browser caught and no test did.
   it("is committable straight away when a place is already stored", async () => {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
       date: "2000-07-28", time: "22:45",
       place: { name: "Bilbao", region: "País Vasco", countryCode: "ES", latitude: 43.263, longitude: -2.935 },
     }));
-    render(<Lugar onNext={() => {}} />);
+    render(<Donde onNext={() => {}} />);
     await waitFor(() => {
       const commit = screen.getByRole("button", { name: /crear mi carta/i }) as HTMLButtonElement;
       expect(commit.disabled).toBe(false);

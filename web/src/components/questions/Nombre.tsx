@@ -2,19 +2,18 @@
 
 import { useState } from "react";
 import { useBirthAnswers } from "@/hooks/useBirthAnswers";
-import { NOMBRE_ES } from "@core/copy/flow.es";
 
 /**
- * Question 1. No astrology is available yet, so the reaction is framing only.
+ * Question 1. No reaction (spec decision 3 of the reskin): the name is stored
+ * and pays off later, on the card and in the reveal, where it means more.
  *
- * Asked plainly, with no "opcional" label — a character has a name (spec
- * decision 4) — but the escape link means nobody is walled out at step one,
- * before any value has been delivered.
+ * Asked plainly, with no "opcional" label — a character has a name — but the
+ * escape link means nobody is walled out at step one. The CTA is inert until
+ * the box has a name in it.
  */
 export function Nombre({ onNext }: { onNext: () => void }) {
   const { answers, set } = useBirthAnswers();
   const [typed, setTyped] = useState<string | null>(null);
-  const [reaccion, setReaccion] = useState<string | null>(null);
 
   // Derived, not synced: `typed` is null until the box is touched, so a name
   // answered earlier shows through once storage has been read.
@@ -25,7 +24,7 @@ export function Nombre({ onNext }: { onNext: () => void }) {
     const name = firstName.trim();
     if (!name) return;
     set({ firstName: name });
-    setReaccion(NOMBRE_ES.conNombre.replace("{nombre}", name));
+    onNext();
   }
 
   function skip() {
@@ -46,19 +45,13 @@ export function Nombre({ onNext }: { onNext: () => void }) {
         />
       </div>
 
-      {reaccion && <p className="reaccion" aria-live="polite">{reaccion}</p>}
+      <button type="submit" className="submit" disabled={!firstName.trim()}>
+        Siguiente
+      </button>
 
-      {reaccion ? (
-        <button type="button" className="submit" onClick={onNext}>Seguir</button>
-      ) : (
-        <button type="submit" className="submit">Siguiente</button>
-      )}
-
-      {!reaccion && (
-        <button type="button" className="escape" onClick={skip}>
-          Prefiero no decirlo
-        </button>
-      )}
+      <button type="button" className="escape" onClick={skip}>
+        Prefiero no decirlo
+      </button>
     </form>
   );
 }
