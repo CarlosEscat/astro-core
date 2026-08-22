@@ -5,5 +5,5 @@ import { Nombre } from "@/components/questions/Nombre";
 
 export default function Page() {
   const router = useRouter();
-  return <Nombre onNext={() => router.push("/crear/dia")} />;
+  return <Nombre onNext={() => router.push("/crear/cuando")} />;
 }

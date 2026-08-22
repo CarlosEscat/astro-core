@@ -3,8 +3,7 @@ import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
 import { render, screen, cleanup, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Nombre } from "@/components/questions/Nombre";
-import { Dia } from "@/components/questions/Dia";
-import { Hora } from "@/components/questions/Hora";
+import { Cuando } from "@/components/questions/Cuando";
 import { Lugar } from "@/components/questions/Lugar";
 import { STORAGE_KEY } from "@/hooks/useBirthAnswers";
 import { SUN_SIGN_BY_DAY } from "@core/sunsign-table";
@@ -45,68 +44,71 @@ describe("Nombre", () => {
   });
 });
 
-describe("Dia", () => {
-  it("names the class on a certain day", async () => {
-    const user = userEvent.setup();
-    render(<Dia onNext={() => {}} />);
+describe("Cuando", () => {
+  it("shows the class the moment a certain date is entered, with no press", () => {
+    const onNext = vi.fn();
+    render(<Cuando onNext={onNext} />);
     fireEvent.change(screen.getByLabelText(/día naciste/i), { target: { value: "2000-07-28" } });
-    await user.click(screen.getByRole("button", { name: /siguiente/i }));
     expect(screen.getByText("ARTISTA")).toBeTruthy();
-    expect(stored().date).toBe("2000-07-28");
+    expect(onNext).not.toHaveBeenCalled();
   });
 
   // The cusp guard at the surface. Naming a class here would contradict the
-  // card at question 4.
-  it("does NOT name a class on a guarded day", async () => {
-    const user = userEvent.setup();
-    render(<Dia onNext={() => {}} />);
+  // card at the reveal twenty seconds later.
+  it("renders the cusp line and no class on a guarded day", () => {
+    render(<Cuando onNext={() => {}} />);
     fireEvent.change(screen.getByLabelText(/día naciste/i), { target: { value: GUARDED } });
-    await user.click(screen.getByRole("button", { name: /siguiente/i }));
     expect(screen.queryByText("ARTISTA")).toBeNull();
     expect(screen.getByText(/cambiando de signo/i)).toBeTruthy();
   });
 
-  it("refuses an incomplete date", async () => {
+  it("commits date and a typed hour on the single advance press", async () => {
     const user = userEvent.setup();
-    render(<Dia onNext={() => {}} />);
+    const onNext = vi.fn();
+    render(<Cuando onNext={onNext} />);
+    fireEvent.change(screen.getByLabelText(/día naciste/i), { target: { value: "2000-07-28" } });
+    fireEvent.change(screen.getByLabelText(/qué hora/i), { target: { value: "22:45" } });
     await user.click(screen.getByRole("button", { name: /siguiente/i }));
-    expect(sessionStorage.getItem(STORAGE_KEY)).toBeNull();
+    expect(stored()).toMatchObject({ date: "2000-07-28", time: "22:45", hourKnown: true });
+    expect(onNext).toHaveBeenCalled();
+  });
+
+  it("writes 12:00 and hourKnown false when the hour is skipped, without advancing", async () => {
+    const user = userEvent.setup();
+    const onNext = vi.fn();
+    render(<Cuando onNext={onNext} />);
+    await user.click(screen.getByRole("button", { name: /no la sé/i }));
+    expect(stored()).toMatchObject({ time: "12:00", hourKnown: false });
+    expect(onNext).not.toHaveBeenCalled();
+  });
+
+  it("advances from a skipped hour once the date is filled", async () => {
+    const user = userEvent.setup();
+    const onNext = vi.fn();
+    render(<Cuando onNext={onNext} />);
+    await user.click(screen.getByRole("button", { name: /no la sé/i }));
+    fireEvent.change(screen.getByLabelText(/día naciste/i), { target: { value: "2000-07-28" } });
+    await user.click(screen.getByRole("button", { name: /siguiente/i }));
+    expect(onNext).toHaveBeenCalled();
+    expect(stored().date).toBe("2000-07-28");
+  });
+
+  it("keeps the CTA disabled until the date is valid and the hour answered", () => {
+    render(<Cuando onNext={() => {}} />);
+    const cta = () => screen.getByRole("button", { name: /siguiente/i }) as HTMLButtonElement;
+    expect(cta().disabled).toBe(true);
+    fireEvent.change(screen.getByLabelText(/día naciste/i), { target: { value: "2000-07-28" } });
+    expect(cta().disabled).toBe(true);
+    fireEvent.change(screen.getByLabelText(/qué hora/i), { target: { value: "22:45" } });
+    expect(cta().disabled).toBe(false);
   });
 
   it("restores a date already answered, for the back gesture", () => {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ date: "1992-04-15" }));
-    render(<Dia onNext={() => {}} />);
+    render(<Cuando onNext={() => {}} />);
     return waitFor(() =>
       expect((screen.getByLabelText(/día naciste/i) as HTMLInputElement).value).toBe("1992-04-15"),
     );
-  });
-});
-
-describe("Hora", () => {
-  it("records hourKnown true for a given hour and reacts to it", async () => {
-    const user = userEvent.setup();
-    render(<Hora onNext={() => {}} />);
-    fireEvent.change(screen.getByLabelText(/qué hora/i), { target: { value: "22:45" } });
-    await user.click(screen.getByRole("button", { name: /siguiente/i }));
-    expect(stored()).toMatchObject({ time: "22:45", hourKnown: true });
-    expect(screen.getByText(/Casi de noche/)).toBeTruthy();
-  });
-
-  it("records 12:00 and hourKnown false when the hour is skipped", async () => {
-    const user = userEvent.setup();
-    const onNext = vi.fn();
-    render(<Hora onNext={onNext} />);
-    await user.click(screen.getByRole("button", { name: /no la sé/i }));
-    expect(stored()).toMatchObject({ time: "12:00", hourKnown: false });
-    expect(onNext).toHaveBeenCalled();
-  });
-
-  it("picks the right bucket for the small hours", async () => {
-    const user = userEvent.setup();
-    render(<Hora onNext={() => {}} />);
-    fireEvent.change(screen.getByLabelText(/qué hora/i), { target: { value: "03:10" } });
-    await user.click(screen.getByRole("button", { name: /siguiente/i }));
-    expect(screen.getByText(/De madrugada/)).toBeTruthy();
   });
 });
 
