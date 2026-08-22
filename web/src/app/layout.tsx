@@ -1,19 +1,21 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Karla } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-// Bricolage Grotesque titles and carries the numbers; Karla is
-// everything that gets read. Weight does the work the serif used to.
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
-  subsets: ["latin"],
-  weight: ["600", "800"],
-});
-
-const karla = Karla({
-  variable: "--font-karla",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
+// General Sans (Fontshare, ITF Free Font License v2.0 — self-hosting
+// permitted). Roobert's approved substitute: heavy 700 at large sizes is the
+// system's signature, and General Sans is the closest geometric match. The
+// four static weights are loaded under one variable name so a later swap to
+// real Roobert never touches a call site.
+const generalSans = localFont({
+  src: [
+    { path: "../fonts/GeneralSans-Regular.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/GeneralSans-Medium.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/GeneralSans-Semibold.woff2", weight: "600", style: "normal" },
+    { path: "../fonts/GeneralSans-Bold.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-roobert",
+  display: "swap",
 });
 
 // Spec decision 10 took "cada frase nombra la posición exacta que la sustenta"
@@ -29,7 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es-ES"
-      className={`${bricolage.variable} ${karla.variable}`}
+      className={`${generalSans.variable}`}
     >
       <body>{children}</body>
     </html>
