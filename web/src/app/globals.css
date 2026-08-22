@@ -7,6 +7,49 @@
   fixed meaning.
 */
 :root {
+  /* ── Clay style reference (docs/design/DESIGN.md) ──────────────── */
+  --color-ink-black: #000000;
+  --color-paper-white: #ffffff;
+  --color-warm-cream: #f9f8f6;
+  --color-sand-border: #dad4c8;
+  --color-cool-mist: #e6e8ec;
+  --color-stone-gray: #55534e;
+  --color-ash-gray: #9f9b93;
+  --color-slate-gray: #222222;
+  --color-violet-pulse: #3859f9;
+
+  --text-caption: 12px;
+  --text-body-sm: 14px;
+  --text-body: 16px;
+  --text-subheading: 20px;
+  --text-heading-sm: 32px;
+  --text-heading: 44px;
+  --text-heading-lg: 60px;
+  --text-display: 80px;
+
+  --radius-sm: 2.75px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 24px;
+  --radius-full: 1584px;
+  --radius-inputs: 8px;
+  --radius-buttons: 1584px;
+  --radius-cards: 24px;
+
+  --shadow-subtle: rgba(0, 0, 0, 0.1) 0px 1px 1px 0px,
+    rgba(0, 0, 0, 0.04) 0px -1px 1px 0px inset,
+    rgba(0, 0, 0, 0.05) 0px -0.5px 1px 0px;
+
+  --font-display: var(--font-roobert), "Helvetica Neue", sans-serif;
+  --font-body: var(--font-roobert), "Helvetica Neue", system-ui, sans-serif;
+
+  --measure: 34rem;
+
+  /* ── Legacy warm-paper tokens ─────────────────────────────────────
+     Still consumed by the character card, the reveal, the reading, the
+     report and the share render. Migrate those components before deleting
+     this block — see docs/superpowers/specs/2026-08-22-flow-reskin-design.md. */
   --papel: #faf7f2;
   --papel-alto: #ffffff;
   --pista: #f0ece4;
@@ -37,11 +80,6 @@
   --radio-objeto: 28px;
   --radio-campo: 16px;
   --radio-pildora: 999px;
-
-  --font-display: var(--font-roobert), "Helvetica Neue", sans-serif;
-  --font-body: var(--font-roobert), "Helvetica Neue", system-ui, sans-serif;
-
-  --measure: 34rem;
 }
 
 * { box-sizing: border-box; }
@@ -83,11 +121,14 @@ body {
   .instrument { height: 15rem; }
 }
 
-.tick { stroke: var(--linea); stroke-width: 1; }
-.tick--sign { stroke: var(--aire); stroke-width: 1.5; }
+/* Decision 7: the arc moves to ink. Sign rules in ink-black, the 2° ticks in
+ * ash-gray, glyphs in ink. Geometry, SPAN and the U+FE0E glyph guard in
+ * ZodiacArc.tsx are untouched. */
+.tick { stroke: var(--color-ash-gray); stroke-width: 1; }
+.tick--sign { stroke: var(--color-ink-black); stroke-width: 1.5; }
 .glyph {
-  fill: var(--aire);
-  font-family: var(--font-body);
+  fill: var(--color-ink-black);
+  font-family: var(--font-roobert);
   font-size: 26px;
   text-anchor: middle;
   opacity: 0.9;
@@ -102,42 +143,48 @@ body {
 }
 
 .wordmark {
-  font-family: var(--font-body);
+  font-family: var(--font-roobert);
   font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--tinta-suave);
+  color: var(--color-ink-black);
   margin: 1.5rem 0 1.25rem;
   text-align: left;
 }
 
-/* The hero is the page's one bleed object. */
+/* The landing is the new Clay's white canvas; the warm body stays for the
+ * not-yet-migrated reading and report. */
+.landing {
+  background: var(--color-paper-white);
+  min-height: 100vh;
+}
+
+/* The hero is a centered display stack on the white canvas. */
 .hero {
-  background: var(--agua);
-  border-radius: var(--radio-objeto);
-  padding: 1.75rem 1.4rem 1.6rem;
-  margin-bottom: 0.875rem;
+  background: transparent;
+  padding: 0;
+  margin: 0 0 0.5rem;
 }
 
 .hero h1 {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: clamp(2.1rem, 9vw, 2.75rem);
-  line-height: 0.96;
-  letter-spacing: -0.042em;
-  color: var(--papel-alto);
-  margin: 0 0 0.85rem;
+  font-family: var(--font-roobert);
+  font-weight: 700;
+  font-size: clamp(2.5rem, 11vw, 4rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  color: var(--color-ink-black);
+  margin: 0 0 0.9rem;
   text-wrap: balance;
 }
 
-/* The brass italic is gone; emphasis is now weight, not another face. */
-.hero h1 em { font-style: normal; color: var(--papel-alto); }
+/* The emphasis is weight, not another face or colour. */
+.hero h1 em { font-style: normal; color: var(--color-ink-black); }
 
 .hero p {
-  color: rgba(255, 255, 255, 0.88);
-  font-weight: 600;
-  font-size: 0.9375rem;
+  color: var(--color-stone-gray);
+  font-weight: 400;
+  font-size: 1.125rem;
   line-height: 1.45;
   margin: 0;
   text-wrap: pretty;
@@ -168,18 +215,19 @@ body {
 
 .field label {
   display: block;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: var(--tinta);
+  font-family: var(--font-roobert);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-ink-black);
   margin-bottom: 0.45rem;
 }
 
 .hint {
   display: block;
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.4;
-  color: var(--tinta-suave);
+  color: var(--color-ash-gray);
   margin-top: 0.4rem;
   text-wrap: pretty;
 }
@@ -188,22 +236,22 @@ body {
 
 .field input {
   width: 100%;
-  background: var(--pista);
-  border: none;
-  border-radius: var(--radio-campo);
+  background: var(--color-paper-white);
+  border: 1px solid var(--color-cool-mist);
+  border-radius: var(--radius-inputs);
   padding: 0.85rem 1rem;
   min-height: 48px;
-  font-family: var(--font-body);
+  font-family: var(--font-roobert);
   font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--tinta);
+  font-weight: 500;
+  color: var(--color-ink-black);
 }
 
 .field input[type="date"],
-.field input[type="time"] { font-family: var(--font-body); }
+.field input[type="time"] { font-family: var(--font-roobert); }
 
-.field input::placeholder { color: var(--tinta-suave); }
-.field input:hover { background: var(--pista-alta); }
+.field input::placeholder { color: var(--color-ash-gray); }
+.field input:focus { border-color: var(--color-ink-black); outline: none; }
 
 .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 
@@ -213,10 +261,10 @@ body {
   list-style: none;
   margin: 0.35rem 0 0;
   padding: 0.375rem;
-  background: var(--papel-alto);
-  border: none;
-  border-radius: 18px;
-  box-shadow: 0 6px 22px rgba(70, 58, 40, 0.13);
+  background: var(--color-paper-white);
+  border: 1px solid var(--color-cool-mist);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.1);
   position: absolute;
   z-index: 10;
   width: 100%;
@@ -226,7 +274,7 @@ body {
 
 .options li {
   padding: 0.7rem 0.8rem;
-  border-radius: 13px;
+  border-radius: var(--radius-lg);
   min-height: 44px;
   cursor: pointer;
   display: flex;
@@ -235,13 +283,13 @@ body {
   justify-content: center;
 }
 
-.options li[aria-selected="true"] { background: var(--pista); }
-.options .place { font-size: 0.9375rem; font-weight: 700; color: var(--tinta); }
+.options li[aria-selected="true"] { background: var(--color-warm-cream); }
+.options .place { font-size: 0.9375rem; font-weight: 600; color: var(--color-ink-black); }
 
 .options .where {
   font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--tinta-suave);
+  font-weight: 500;
+  color: var(--color-ash-gray);
 }
 
 .submit {
@@ -262,14 +310,28 @@ body {
   transition: background 140ms ease;
 }
 
-/* The landing's CTA is a <Link>, not a <button>: an anchor needs the block
- * layout and centring a button gets for free. */
-.submit--enlace {
+/* The landing's CTA is a <Link>, not a <button>. It is a standalone class,
+ * not `.submit`, so the warm `.submit` hover never leaks onto it. */
+.cta {
   display: block;
+  width: 100%;
   text-align: center;
   text-decoration: none;
   line-height: 1.25;
+  margin-top: 1.25rem;
+  background: var(--color-ink-black);
+  color: var(--color-paper-white);
+  border: none;
+  border-radius: var(--radius-buttons);
+  padding: 0.75rem 1rem;
+  min-height: 52px;
+  font-family: var(--font-roobert);
+  font-size: var(--text-body);
+  font-weight: 500;
+  box-shadow: var(--shadow-subtle);
 }
+
+.cta:hover { opacity: 0.92; }
 
 .submit:hover:not(:disabled) { background: var(--agua-honda); }
 .submit:disabled { opacity: 0.5; cursor: progress; }
@@ -289,19 +351,20 @@ body {
 
 /* ── The flow: one question per screen ──────────────────────────── */
 /*
- * HOLDING STYLING. The design canvas has no artboard for a one-question
- * screen yet — `Entrada` still shows the old four-field panel. This uses only
- * shipped tokens and reuses `.field` and `.submit` so nothing here invents a
- * new visual language; it is meant to be replaced by a designed screen, not
- * treated as one.
+ * The question screens are the new Clay (docs/design/DESIGN.md): a white
+ * card separated by a 1px Sand border, black display type, 8px inputs and a
+ * black pill CTA. Monochrome throughout — no element colour appears here;
+ * that arrives all at once on the card (spec decision 4).
  */
 .pregunta {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  min-height: 55vh;
   max-width: var(--measure);
-  margin: 0 auto;
+  margin: 1.5rem auto 0;
+  padding: 1.5rem 1.5rem 1.75rem;
+  background: var(--color-paper-white);
+  border: 1px solid var(--color-sand-border);
+  border-radius: var(--radius-cards);
 }
 
 /* The question IS the screen, so it carries display type, not caption type.
@@ -310,38 +373,65 @@ body {
  * caption size. */
 .field label.pregunta__q {
   display: block;
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 800;
-  line-height: 1.15;
+  font-family: var(--font-roobert);
+  font-size: var(--text-heading-sm);
+  font-weight: 700;
+  line-height: 1.1;
   letter-spacing: -0.02em;
-  color: var(--tinta);
+  color: var(--color-ink-black);
   margin-bottom: 1.1rem;
   text-wrap: balance;
 }
 
 .reaccion {
-  background: var(--papel-alto);
-  border-radius: var(--radio-objeto);
+  background: var(--color-warm-cream);
+  border-radius: var(--radius-xl);
   padding: 1.25rem;
-  margin-top: 1.1rem;
+  margin-top: 1.25rem;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.45;
-  color: var(--tinta-lectura);
+  color: var(--color-stone-gray);
   text-wrap: pretty;
 }
 
 /* The class name is the reward. It gets the loudest type on the screen. */
 .reaccion__clase {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: 0.01em;
+  font-family: var(--font-roobert);
+  font-size: var(--text-heading-sm);
+  font-weight: 700;
+  letter-spacing: -0.02em;
   line-height: 1;
-  color: var(--agua);
+  color: var(--color-ink-black);
   margin-bottom: 0.5rem;
 }
+
+/* The flow's CTA is the black pill. The warm `.submit` stays for the share
+ * cards and the reveal, which are not reskinned yet — so these are scoped to
+ * `.pregunta` rather than written over the shared class. */
+.pregunta .submit {
+  margin-top: 1.25rem;
+  background: var(--color-ink-black);
+  color: var(--color-paper-white);
+  border: none;
+  border-radius: var(--radius-buttons);
+  padding: 0.75rem 1rem;
+  min-height: 52px;
+  font-family: var(--font-roobert);
+  font-size: var(--text-body);
+  font-weight: 500;
+  box-shadow: var(--shadow-subtle);
+  transition: opacity 140ms ease;
+}
+
+.pregunta .submit:hover:not(:disabled) {
+  background: var(--color-ink-black);
+  opacity: 0.92;
+}
+
+.pregunta .submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.pregunta .error { color: var(--color-stone-gray); font-weight: 500; }
 
 /* Deliberately quiet: an escape hatch, not an equal option. */
 .escape {
@@ -360,6 +450,26 @@ body {
 }
 
 .escape:hover { color: var(--tinta-media); }
+
+/* The flow's escape hatch is a ghost pill; the warm underlined `.escape`
+ * above stays for the reading's retry link. */
+.pregunta .escape {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: 1px solid var(--color-cool-mist);
+  border-radius: var(--radius-buttons);
+  font-family: var(--font-roobert);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  color: var(--color-ink-black);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.pregunta .escape:hover { border-color: var(--color-ink-black); color: var(--color-ink-black); }
 
 /* ── The reveal ─────────────────────────────────────────────────── */
 /*
@@ -699,11 +809,11 @@ body {
 .foot {
   margin-top: 2.5rem;
   padding-top: 1.25rem;
-  border-top: 1px solid var(--linea);
+  border-top: 1px solid var(--color-sand-border);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.45;
-  color: var(--tinta-suave);
+  color: var(--color-stone-gray);
   text-align: left;
   text-wrap: pretty;
 }

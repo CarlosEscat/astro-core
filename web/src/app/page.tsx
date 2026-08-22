@@ -16,7 +16,7 @@ import { ZodiacArc } from "@/components/ZodiacArc";
  */
 export default function Home() {
   return (
-    <main>
+    <main className="landing">
       <ZodiacArc />
       <div className="shell">
         <p className="wordmark">Destiny Reports</p>
@@ -29,7 +29,7 @@ export default function Home() {
           <p>No es un horóscopo. Es tu carta, y no se parece a la de nadie.</p>
         </div>
 
-        <Link className="submit submit--enlace" href="/crear/nombre">
+        <Link className="cta" href="/crear/nombre">
           Empezar
         </Link>
 

@@ -65,7 +65,7 @@ export function Cuando({ onNext }: { onNext: () => void }) {
     <form className="pregunta" onSubmit={submit} noValidate>
       <div className="row">
         <div className="field">
-          <label className="pregunta__q" htmlFor="dia">¿Qué día naciste?</label>
+          <label htmlFor="dia">¿Qué día naciste?</label>
           <input
             id="dia"
             type="date"
@@ -77,7 +77,7 @@ export function Cuando({ onNext }: { onNext: () => void }) {
         </div>
 
         <div className="field">
-          <label className="pregunta__q" htmlFor="hora">¿A qué hora naciste?</label>
+          <label htmlFor="hora">¿A qué hora naciste?</label>
           <input
             id="hora"
             type="time"
