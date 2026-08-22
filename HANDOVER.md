@@ -85,17 +85,28 @@ Found by measurement this session; all still unresolved in
 
 ---
 
-Last updated: 2026-08-22 — **THE GAMIFIED ONBOARDING FLOW IS BUILT, ON
-`feat/onboarding-flow`, NOT YET MERGED.** 338 → **406 tests**. Tasks 1-10 of
-`docs/superpowers/plans/2026-08-22-gamified-onboarding-flow.md` are done;
-spec is `docs/superpowers/specs/2026-08-22-gamified-onboarding-flow-design.md`,
-eleven decisions. This is **step 1 of the sequencing decision** at the top of
-this file — the landing and the path from it to a delivered free reading.
+Last updated: 2026-08-22 — **THE FLOW IS SHORTENED AND RESKINNED, MERGED TO
+`main`.** 406 → **403 tests**. The four questions over eight presses are now
+**three questions over four presses**: `/crear/nombre` → `/crear/cuando`
+(date+hour merged) → `/crear/donde` (renamed from `lugar`). The landing and the
+three question screens are on the `docs/design/DESIGN.md` Clay (white canvas,
+black display type, 1px Sand borders, black pill CTA); General Sans is
+self-hosted as `--font-roobert`. Spec:
+`docs/superpowers/specs/2026-08-22-flow-reskin-design.md`; plan:
+`docs/superpowers/plans/2026-08-22-flow-reskin.md`. Read **Addendum 22**.
 
-The landing is now four elements (wordmark, headline, subhead, button) and
-the four-field panel is gone: `BirthForm.tsx` is **deleted**, replaced by
-five routes under `/crear`, one question per screen, each answer paying back
-something computed. Read **Addendum 21** before touching any of it.
+The character card, reveal, reading, report and share render are **still
+warm-paper** — the app changes systems at the `/crear/donde` → reveal seam,
+accepted as the cost of not doing a big-bang reskin. The `:root` block is now
+**dual-token**: the DESIGN.md tokens for the flow plus a marked legacy
+warm-paper block for the not-yet-migrated components.
+
+Before that — **THE GAMIFIED ONBOARDING FLOW IS BUILT.** 338 → 406 tests.
+Tasks 1-10 of `docs/superpowers/plans/2026-08-22-gamified-onboarding-flow.md`
+done; spec `docs/superpowers/specs/2026-08-22-gamified-onboarding-flow-design.md`,
+eleven decisions. `BirthForm.tsx` is **deleted**, replaced by routes under
+`/crear`, one question per screen, each answer paying back something computed.
+Read **Addendum 21** before touching any of it.
 
 **Two things a future session must not "fix":**
 
@@ -109,11 +120,11 @@ something computed. Read **Addendum 21** before touching any of it.
    only. `validateTeaser()` and `groundingProblems()` are untouched and
    grounding is still fatal on the paid tier.
 
-**STYLING IS HOLDING, NOT DESIGNED.** The canvas has no artboard for a
-one-question screen — `Entrada` still shows the old panel. Only shipped
-tokens are used and `.field`/`.submit` are reused, so nothing invents a new
-visual language, but these screens need a designed treatment before launch.
-**This is the most important open item on this branch.**
+**STYLING IS NO LONGER HOLDING.** The one-question screens are designed and
+reskinned (Addendum 22) — the "STYLING IS HOLDING, NOT DESIGNED" note that
+stood here is resolved. The remaining warm-paper surfaces (card, reveal,
+reading, report, share) are the seam, and each still needs its own migration
+spec.
 
 Also still open, and needing Carlos's call: the two spec gaps at the top of
 the plan. `porDentro.area` is as hour-dependent as `seVe` but is NOT hedged,
@@ -2459,8 +2470,83 @@ eye; the gate will not do it.
 
 ### What is NOT built
 
-- **Designed question screens.** See the warning in Estado actual.
 - The rest of step 1: checkout, `/informe/<token>`, the returning visitor, the
   second reading, expired tokens.
 - The two spec gaps: `porDentro.area` and the prose, both hour-dependent and
   both deliberately unhedged.
+
+---
+
+## Addendum 22: the flow is shortened and reskinned (2026-08-22)
+
+Spec: `docs/superpowers/specs/2026-08-22-flow-reskin-design.md`
+Plan: `docs/superpowers/plans/2026-08-22-flow-reskin.md`
+Merged to `main`, 406 → **403 tests**, six commits.
+
+### What changed
+
+- **Four questions, eight presses → three questions, four presses.**
+  `/crear/dia` and `/crear/hora` are deleted; `/crear/cuando` asks date and
+  hour on one card. `/crear/lugar` is renamed `/crear/donde`. The press only
+  ever advances: the class appears the moment the date validates, no
+  submit-to-see step.
+- **The nombre reaction is gone.** The name is stored and pays off on the
+  card. `NOMBRE_ES`, `HORA_ES`, `HourBucket` and `horaReaccion()` are deleted
+  from `src/copy/flow.es.ts`; the epicene gate still covers the survivors.
+- **The flow and landing are on the DESIGN.md Clay.** White canvas, black
+  display type, 1px Sand borders, 8px inputs, black pill CTA, violet links
+  only. The ZodiacArc moved to ink (decision 7): ink-black sign rules,
+  ash-gray 2° ticks, ink glyphs — geometry, `SPAN` and the U+FE0E guard
+  untouched.
+- **General Sans, self-hosted** as `--font-roobert` via `next/font/local`
+  (four static weights 400/500/600/700 under `web/src/fonts/`). The licence is
+  the ITF Free Font License v2.0, which explicitly permits self-hosting and
+  `@font-face`. `--font-display`/`--font-body` alias `--font-roobert`, so a
+  later swap to real Roobert never touches a call site.
+
+### Decisions the spec left open, resolved here
+
+1. **`:root` is dual-token, not wholesale-replaced.** The spec's Styles section
+   says "replaced wholesale," but its own out-of-scope list says the card,
+   reveal, reading, report and share render "remain warm-paper" — and those
+   components read `var(--papel)`, `var(--agua)`, `var(--radio-objeto)` and
+   friends. Deleting those tokens would break them. The `:root` now holds the
+   DESIGN.md tokens **plus** a marked legacy warm-paper block. Migrate the
+   out-of-scope components before deleting that block.
+2. **The `cuando` skip pill writes storage immediately; the date commits on
+   the CTA.** The spec says the pill "sets `time: 12:00` and `hourKnown:
+   false`" and its test list requires "both ghost-pill skips writing the right
+   storage" without a press. So skip writes `{ time: "12:00", hourKnown: false }`
+   on click and does not advance; the single CTA press commits the date (and
+   the hour, when one was typed).
+3. **Decision 6 (element colour remap) is a no-op here.** The deepened palette
+   (`#c2410c` / `#0667d9` / `#0a7d70` / `#02693e`) is consumed by the card and
+   the dial, both out of scope. It lands in follow-on work #1; the values are
+   recorded in the plan so they are not lost.
+4. **The canvas stays warm-paper behind the flow.** The global `html`/`body`
+   background is still `--papel` (#faf7f2): flipping it to white would turn the
+   out-of-scope warm-paper cards (white `--papel-alto`, borderless) invisible
+   against it. The flow screens are white cards on that canvas, and the landing
+   is white via a `.landing` class. The page-level canvas flip happens with the
+   card migration, which also adds the Sand borders that make white-on-white
+   work.
+
+### The shared-class seam
+
+`.submit`, `.escape` and `.error` are used by both the flow and the
+out-of-scope components (the share cards' buttons, the reveal's retry, the
+reading's retry link). To avoid reskinning those, the new black-pill CTA and
+ghost-pill escape are **scoped under `.pregunta`** (`.pregunta .submit`,
+`.pregunta .escape`, `.pregunta .error`); the warm versions stay for everyone
+else. The landing CTA moved to a standalone `.cta` class so the warm `.submit`
+hover cannot leak onto it.
+
+### Verified
+
+`npm test` green (403), `npx tsc --noEmit` green in root and `web`,
+`npm run example` green, `npm run build` green, and a `next start` smoke pass:
+`/`, `/crear/nombre`, `/crear/cuando`, `/crear/donde` all 200 with the new
+classes and the General Sans face; `/crear/dia`, `/crear/hora`, `/crear/lugar`
+404 as accepted in the spec's Risks. The visual pass is still a browser job —
+**no test asserts a class, colour or font** — so the actual look needs Carlos's
+eye before this closes.

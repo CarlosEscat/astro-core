@@ -23,7 +23,7 @@ dated addenda in the same file.
 
 ## Working notes
 
-- `npm test` must stay green (215 tests). `npm run example` smoke-tests
+- `npm test` must stay green (403 tests). `npm run example` smoke-tests
   the tsx path — vitest passing does NOT prove tsx works (ESM interop).
 - Prompts are composed from fragments, never copy-pasted. `{{RULES}}` is
   universal; `{{RULES_CHART}}` holds the technical vocabulary and may
