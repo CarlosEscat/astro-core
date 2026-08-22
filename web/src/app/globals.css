@@ -352,6 +352,52 @@ body {
 
 .escape:hover { color: var(--tinta-media); }
 
+/* ── The reveal ─────────────────────────────────────────────────── */
+/*
+ * A deliberate 4.5s wait, NOT a spinner waiting on the network — /api/chart
+ * returns in ~80ms. See Dial.tsx. Do not "optimise" this away.
+ *
+ * No bespoke reduced-motion rule is needed: the global block near the end of
+ * this file already neutralises every animation with !important, which leaves
+ * a static ring while the lines keep advancing on their JS timer.
+ */
+.dial {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 55vh;
+  max-width: var(--measure);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.dial__aro {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: 3px solid var(--linea);
+  border-top-color: var(--agua);
+  margin-bottom: 1.6rem;
+  animation: dial-giro 1.1s linear infinite;
+}
+
+@keyframes dial-giro {
+  to { transform: rotate(360deg); }
+}
+
+/* Reserves two lines so the longest status does not shove the ring upward
+ * as the sequence advances. */
+.dial__linea {
+  min-height: 3em;
+  max-width: 22rem;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--tinta-media);
+  text-wrap: pretty;
+}
+
 /* ── Reading ────────────────────────────────────────────────────── */
 
 .reading { margin-top: 1.75rem; }
