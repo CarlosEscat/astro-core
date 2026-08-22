@@ -5,8 +5,8 @@ import { CLASS_ES } from "../src/copy/classes.es";
 import { SIGN_ORDER } from "../src/rulers";
 import { copyProblems, countGenderMarks } from "../src/validate";
 import {
-  CLASE_REACCION_ES, CUSPIDE_ES, HORA_ES, DIAL_ES, NOMBRE_ES,
-  HORA_DESCONOCIDA_ES, ERRORES_ES, horaReaccion,
+  CLASE_REACCION_ES, CUSPIDE_ES, DIAL_ES,
+  HORA_DESCONOCIDA_ES, ERRORES_ES,
 } from "../src/copy/flow.es";
 
 const TABLES = { SUN_ES, MOON_ES, ASC_ES, PARTNER_ES, SIGN_ES, SIGN_GLYPH };
@@ -158,23 +158,6 @@ describe("flow copy", () => {
     expect(Object.keys(CLASE_REACCION_ES)).toHaveLength(12);
   });
 
-  it("covers the whole clock with ascending buckets ending at 24", () => {
-    const hours = HORA_ES.map((b) => b.untilHour);
-    expect([...hours].sort((a, b) => a - b)).toEqual(hours);
-    expect(hours.at(-1)).toBe(24);
-  });
-
-  it("maps a time to its bucket", () => {
-    expect(horaReaccion("22:45")).toBe(HORA_ES.at(-1)!.linea);
-    expect(horaReaccion("03:10")).toBe(HORA_ES[0].linea);
-    expect(horaReaccion("12:00")).toBe(HORA_ES[2].linea);
-  });
-
-  it("falls back to the last bucket rather than returning undefined", () => {
-    expect(horaReaccion("99:99")).toBe(HORA_ES.at(-1)!.linea);
-    expect(horaReaccion("")).toBeTruthy();
-  });
-
   it("has six dial lines, and the placeholders they promise", () => {
     expect(DIAL_ES).toHaveLength(6);
     const all = DIAL_ES.join(" ");
@@ -188,10 +171,8 @@ describe("flow copy", () => {
   it("is free of gendered and jargon copy", () => {
     const lines = [
       ...Object.values(CLASE_REACCION_ES),
-      ...HORA_ES.map((b) => b.linea),
       ...DIAL_ES,
       ...Object.values(ERRORES_ES),
-      ...Object.values(NOMBRE_ES),
       CUSPIDE_ES,
       HORA_DESCONOCIDA_ES,
     ];

@@ -11,12 +11,6 @@ import type { Sign } from "../types";
  * through copyProblems().
  */
 
-export const NOMBRE_ES = {
-  /** `{nombre}` is replaced with what they typed. */
-  conNombre: "Vale, {nombre}. Vamos a ver quién eres.",
-  sinNombre: "Sin nombre, entonces. Igual funciona.",
-};
-
 /**
  * Shown under the class name at question 2. The class itself comes from
  * CLASS_ES, which already ships — Leo arrives as ARTISTA.
@@ -49,39 +43,6 @@ export const CLASE_REACCION_ES: Record<Sign, string> = {
  */
 export const CUSPIDE_ES =
   "Ese día el Sol estaba cambiando de signo. Tu hora decide de qué lado caes.";
-
-export interface HourBucket {
-  /** Exclusive upper bound, 0-24. */
-  untilHour: number;
-  linea: string;
-}
-
-/**
- * Question 3's reaction. Qualitative on purpose: the place is not known yet,
- * so the Ascendant cannot be computed. These say that the hour matters
- * without claiming to know where it lands.
- */
-export const HORA_ES: HourBucket[] = [
-  { untilHour: 6, linea: "De madrugada. El cielo estaba en su punto más callado." },
-  { untilHour: 9, linea: "Al amanecer. El horizonte se movía deprisa a esa hora." },
-  { untilHour: 13, linea: "Por la mañana, con el Sol subiendo por el lado que se ve." },
-  { untilHour: 17, linea: "Con el Sol arriba, en la parte más pública del cielo." },
-  { untilHour: 21, linea: "Por la tarde. El cielo empezaba a darse la vuelta." },
-  { untilHour: 24, linea: "Casi de noche. Eso empuja tu Ascendente al otro extremo." },
-];
-
-/**
- * "HH:MM" → the line for its bucket. Anything unparseable gets the last
- * bucket rather than undefined: a missing reaction breaks the flow, a
- * slightly wrong one does not.
- */
-export function horaReaccion(time: string): string {
-  const hour = Number(time.slice(0, 2));
-  const bucket = Number.isFinite(hour)
-    ? HORA_ES.find((b) => hour < b.untilHour)
-    : undefined;
-  return (bucket ?? HORA_ES[HORA_ES.length - 1]).linea;
-}
 
 /**
  * The reveal. `{coords}`, `{ciudad}` and `{fecha}` are filled from the
