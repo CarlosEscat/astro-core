@@ -17,7 +17,7 @@ afterEach(cleanup);
 // Sun·Ascendant·Moon. With distinct signs, a swap changes the rendered text.
 const card: FreeCard = {
   clase: { sign: "Leo", nombre: "ARTISTA", signDegree: 7.2, gloss: "glosa del sol" },
-  seVe: { sign: "Aries", signDegree: 12.4, gloss: "glosa del ascendente" },
+  seVe: { sign: "Aries", signDegree: 12.4, gloss: "glosa del ascendente", approximate: false },
   porDentro: {
     sign: "Pisces", signDegree: 3.1,
     area: "el dinero y lo tuyo", gloss: "glosa de la luna",

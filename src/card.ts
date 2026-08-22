@@ -84,7 +84,7 @@ const SHOWN_PLANETS = 7;
  */
 export interface FreeCard {
   clase: { sign: Sign; nombre: string; signDegree: number; gloss: string };
-  seVe: { sign: Sign; signDegree: number; gloss: string };
+  seVe: { sign: Sign; signDegree: number; gloss: string; approximate: boolean };
   porDentro: { sign: Sign; signDegree: number; area: string; gloss: string };
   afinidad: Balance<Element>;
   rareza: { oneIn: number };
@@ -92,7 +92,20 @@ export interface FreeCard {
   bloqueado: { rasgos: number; tensiones: number; planetas: number };
 }
 
-export function freeCard(chart: NatalChart): FreeCard {
+export interface FreeCardOptions {
+  /**
+   * False when the person skipped the birth hour and 12:00 was assumed.
+   * The Ascendant is then a guess, and the card says so rather than printing
+   * it as fact.
+   *
+   * Deliberately narrow: porDentro.area comes from the Moon's HOUSE and is
+   * just as hour-derived, but it is NOT hedged. That is spec decision 8,
+   * reaffirmed on 2026-08-22 after the gap was raised.
+   */
+  hourKnown?: boolean;
+}
+
+export function freeCard(chart: NatalChart, opts: FreeCardOptions = {}): FreeCard {
   const sun = chart.planets.find((p) => p.body === "Sun")!;
   const moon = chart.planets.find((p) => p.body === "Moon")!;
   const asc = chart.angles.ascendant;
@@ -105,6 +118,7 @@ export function freeCard(chart: NatalChart): FreeCard {
     },
     seVe: {
       sign: asc.sign, signDegree: asc.signDegree, gloss: ASC_ES[asc.sign],
+      approximate: opts.hourKnown === false,
     },
     porDentro: {
       sign: moon.sign, signDegree: moon.signDegree,
