@@ -15,9 +15,21 @@ import { ERRORES_ES } from "@core/copy/flow.es";
  */
 export function Lugar({ onNext }: { onNext: () => void }) {
   const { answers, set } = useBirthAnswers();
+  const [touched, setTouched] = useState(false);
   const [query, setQuery] = useState("");
-  const [place, setPlace] = useState<Place | null>(answers.place ?? null);
+  const [picked, setPicked] = useState<Place | null>(null);
   const [empty, setEmpty] = useState(false);
+
+  // Derived, not seeded. useState(answers.place) captures the FIRST render,
+  // which is always empty — the hook reads sessionStorage in an effect.
+  // Seeding it left the commit button permanently disabled for anyone
+  // returning to this step with a place already chosen.
+  const place = touched ? picked : answers.place ?? null;
+  const value = touched
+    ? query
+    : answers.place
+      ? `${answers.place.name}, ${answers.place.region || answers.place.countryCode}`
+      : "";
 
   function commit() {
     if (!place) return;
@@ -28,9 +40,9 @@ export function Lugar({ onNext }: { onNext: () => void }) {
   return (
     <div className="pregunta">
       <PlaceCombo
-        value={query}
-        onQueryChange={(q) => { setQuery(q); setPlace(null); setEmpty(false); }}
-        onChoose={(p) => { setPlace(p); setEmpty(false); }}
+        value={value}
+        onQueryChange={(q) => { setTouched(true); setQuery(q); setPicked(null); setEmpty(false); }}
+        onChoose={(p) => { setTouched(true); setPicked(p); setEmpty(false); }}
         onEmpty={() => setEmpty(true)}
       />
 

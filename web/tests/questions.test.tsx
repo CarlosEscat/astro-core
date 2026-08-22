@@ -180,3 +180,26 @@ describe("StepGuard", () => {
     expect(replace).not.toHaveBeenCalled();
   });
 });
+
+describe("Lugar, returning to the step", () => {
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => [] })));
+  });
+
+  // Regression: Lugar seeded `useState(answers.place)`, which captures the
+  // FIRST render — always empty, because the hook reads storage in an effect.
+  // The commit button stayed disabled forever for anyone coming back here,
+  // which the browser caught and no test did.
+  it("is committable straight away when a place is already stored", async () => {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+      date: "2000-07-28", time: "22:45",
+      place: { name: "Bilbao", region: "País Vasco", countryCode: "ES", latitude: 43.263, longitude: -2.935 },
+    }));
+    render(<Lugar onNext={() => {}} />);
+    await waitFor(() => {
+      const commit = screen.getByRole("button", { name: /crear mi carta/i }) as HTMLButtonElement;
+      expect(commit.disabled).toBe(false);
+    });
+    expect((screen.getByRole("combobox") as HTMLInputElement).value).toBe("Bilbao, País Vasco");
+  });
+});
